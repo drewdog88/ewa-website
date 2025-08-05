@@ -1371,6 +1371,170 @@ app.get('/api/officers/template', (req, res) => {
     }
 });
 
+// Analytics API Routes
+
+// Get analytics overview
+app.get('/api/analytics/overview', async (req, res) => {
+    try {
+        // For now, return mock data
+        // In a real application, you would query your analytics database
+        const analyticsData = {
+            pageViews: Math.floor(Math.random() * 10000) + 1000,
+            uniqueVisitors: Math.floor(Math.random() * 3000) + 500,
+            popularPage: 'Home',
+            topLink: 'LWSD Athletics'
+        };
+        
+        res.json({ success: true, ...analyticsData });
+    } catch (error) {
+        console.error('Error getting analytics overview:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Generate analytics report
+app.post('/api/analytics/report', async (req, res) => {
+    try {
+        const { type, dateRange } = req.body;
+        
+        if (!type || !dateRange) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Report type and date range are required' 
+            });
+        }
+        
+        let reportData = [];
+        
+        switch (type) {
+            case 'usage':
+                reportData = await generateUsageReport(dateRange);
+                break;
+            case 'links':
+                reportData = await generateLinksReport(dateRange);
+                break;
+            case 'officers':
+                reportData = await generateOfficersReport(dateRange);
+                break;
+            case 'documents':
+                reportData = await generateDocumentsReport(dateRange);
+                break;
+            default:
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Invalid report type' 
+                });
+        }
+        
+        res.json({ success: true, report: reportData });
+    } catch (error) {
+        console.error('Error generating report:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Helper functions for report generation
+async function generateUsageReport(dateRange) {
+    // Mock data - in a real app, you'd query your analytics database
+    const days = Math.min(dateRange, 30); // Cap at 30 days for demo
+    const report = [];
+    
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        
+        report.push({
+            date: date.toISOString().split('T')[0],
+            pageViews: Math.floor(Math.random() * 500) + 100,
+            uniqueVisitors: Math.floor(Math.random() * 200) + 50,
+            popularPage: ['Home', 'Team', 'News', 'Volunteers'][Math.floor(Math.random() * 4)]
+        });
+    }
+    
+    return report;
+}
+
+async function generateLinksReport(dateRange) {
+    // Mock data - in a real app, you'd query your link tracking database
+    const clubs = [
+        'EHS Band Boosters', 'Eastlake Baseball Club', 'Eastlake Boys Basketball Booster Club',
+        'Eastlake Girls Basketball Booster Club', 'Eastlake Cheer Booster Club', 'Eastlake Choir',
+        'Eastlake Cross-Country Boosters', 'Eastlake Dance Team Boosters', 'EHS DECA Booster Club',
+        'Eastlake Drama', 'Eastlake Fastpitch (Girls)', 'Eastlake Boys Golf Booster Club',
+        'Eastlake Girls Golf Booster Club', 'EHS Orchestra Boosters Club', 'Eastlake Robotics Club',
+        'Eastlake Boys Soccer', 'Eastlake Girls Soccer', 'Eastlake Boys Swim & Dive Booster Club',
+        'Eastlake Girls Swim & Dive Booster Club', 'EHS Track and Field Booster Club',
+        'Eastlake Volleyball Booster Club', 'EHS Wrestling Booster Club'
+    ];
+    
+    const report = clubs.map(club => ({
+        url: `https://${club.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.org`,
+        club: club,
+        clicks: Math.floor(Math.random() * 100) + 1,
+        lastClicked: new Date(Date.now() - Math.random() * dateRange * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    }));
+    
+    return report;
+}
+
+async function generateOfficersReport(dateRange) {
+    try {
+        const officers = await getOfficers();
+        const report = officers.map(officer => ({
+            name: officer.name,
+            position: officer.position,
+            email: officer.email,
+            club: officer.booster_club,
+            status: 'Active' // You could add a status field to officers if needed
+        }));
+        
+        return report;
+    } catch (error) {
+        console.error('Error generating officers report:', error);
+        return [];
+    }
+}
+
+async function generateDocumentsReport(dateRange) {
+    try {
+        const insuranceSubmissions = await getInsurance();
+        const form1099Submissions = await getForm1099();
+        
+        const report = [];
+        
+        // Add insurance submissions
+        insuranceSubmissions.forEach(submission => {
+            report.push({
+                type: 'Insurance Form',
+                club: submission.boosterClub,
+                submittedDate: new Date(submission.submittedAt).toISOString().split('T')[0],
+                status: submission.status
+            });
+        });
+        
+        // Add 1099 submissions
+        form1099Submissions.forEach(submission => {
+            report.push({
+                type: '1099 Form',
+                club: submission.boosterClub,
+                submittedDate: new Date(submission.submittedAt).toISOString().split('T')[0],
+                status: submission.status
+            });
+        });
+        
+        return report;
+    } catch (error) {
+        console.error('Error generating documents report:', error);
+        return [];
+    }
+}
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ 
