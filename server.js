@@ -1,3 +1,6 @@
+// Load environment variables from .env.local file
+require('dotenv').config({ path: '.env.local' });
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -22,13 +25,15 @@ if (process.env.NODE_ENV === 'production') {
 
 // Import Vercel Blob for file storage
 let blob;
-if (process.env.NODE_ENV === 'production') {
+if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
         blob = require('@vercel/blob');
         console.log('Vercel Blob initialized successfully');
     } catch (error) {
         console.log('Vercel Blob not available:', error.message);
     }
+} else {
+    console.log('BLOB_READ_WRITE_TOKEN not found, blob storage disabled');
 }
 
 const app = express();
