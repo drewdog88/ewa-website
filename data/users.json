@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "username": "admin",
+    "password": "ewa2025",
+    "role": "admin",
+    "club": "",
+    "clubName": "",
+    "createdAt": "2025-08-05T02:42:49.109Z"
+  },
+  "orchestra_booster": {
+    "username": "orchestra_booster",
+    "password": "ewa_orchestra_2025",
+    "role": "booster_officer",
+    "club": "orchestra",
+    "clubName": "EHS Orchestra Boosters Club",
+    "createdAt": "2025-08-05T02:42:49.109Z"
+  }
+}
