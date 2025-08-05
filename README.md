@@ -10,7 +10,7 @@ A comprehensive website for the Eastlake Wolves Association (EWA) with admin pan
 - **Session management** with secure authentication
 - **Vercel Blob** file storage for documents and images
 - **Volunteer interest submission** and management
-- **Insurance and 1099 form** management
+- **Insurance and 1099 form** management with **W9 file upload** support
 - **Document upload and management** with blob storage
 - **Analytics and reporting** capabilities
 - **Comprehensive logging** and error handling
@@ -119,13 +119,22 @@ curl http://localhost:3000/api/officers
 - `GET /api/insurance` - Get insurance forms (admin only)
 - `POST /api/insurance` - Submit insurance form
 - `GET /api/1099` - Get 1099 forms (admin only)
-- `POST /api/1099` - Submit 1099 form
+- `POST /api/1099` - Submit 1099 form with W9 file metadata
+- `POST /api/1099/upload-w9` - Upload W9 form files to Vercel Blob
 
 ### File Management
 - `POST /api/upload` - Upload files to Vercel Blob
 - `GET /api/documents` - Get all documents (admin only)
 - `GET /api/documents/:boosterClub` - Get documents by club
 - `DELETE /api/documents/:documentId` - Delete document
+
+### W9 Form Upload
+The 1099 module includes W9 form upload functionality:
+- **Supported formats**: PDF, JPG, PNG, GIF
+- **File size limit**: 10MB
+- **Storage**: Vercel Blob with public access
+- **Metadata**: Stored in PostgreSQL database
+- **Access**: Admin dashboard with file preview links
 
 ## 🔧 Database Management
 
