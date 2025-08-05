@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - Eastlake Wolfpack Association</title>
     
     <!-- Enhanced SEO Meta Tags -->
-    <meta name="description" content="Browse our photo gallery showcasing Eastlake High School athletics and events. See our student athletes in action and relive memorable moments from the Eastlake Wolfpack Association.">
-    <meta name="keywords" content="Eastlake High School, Wolfpack, photo gallery, athletics, sports photos, Kirkland, WA, EWA gallery">
+    <meta name="description" content="Stay updated with the latest news from the Eastlake Wolfpack Association. Get information about events, achievements, and updates from Eastlake High School athletics and booster clubs.">
+    <meta name="keywords" content="Eastlake High School, Wolfpack, news, events, athletics, booster clubs, Kirkland, WA, EWA updates">
     <meta name="author" content="Eastlake Wolfpack Association">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="googlebot" content="noai, noimageai, nosnippet">
     <meta name="bingbot" content="noai, noimageai, nosnippet">
     
     <!-- Enhanced Open Graph Tags -->
-    <meta property="og:title" content="Photo Gallery - Eastlake Wolfpack Association">
-    <meta property="og:description" content="Browse our photo gallery showcasing Eastlake High School athletics and events. See our student athletes in action.">
+    <meta property="og:title" content="News - Eastlake Wolfpack Association">
+    <meta property="og:description" content="Stay updated with the latest news from the Eastlake Wolfpack Association. Get information about events, achievements, and updates.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ewa-website.com/new/gallery.html">
+    <meta property="og:url" content="https://ewa-website.com/news.html">
     <meta property="og:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
     <meta property="og:image:alt" content="Eastlake Wolfpack Association Logo">
     <meta property="og:site_name" content="Eastlake Wolfpack Association">
@@ -24,13 +25,13 @@
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Photo Gallery - Eastlake Wolfpack Association">
-    <meta name="twitter:description" content="Browse our photo gallery showcasing Eastlake High School athletics and events">
+    <meta name="twitter:title" content="News - Eastlake Wolfpack Association">
+    <meta name="twitter:description" content="Stay updated with the latest news from the Eastlake Wolfpack Association">
     <meta name="twitter:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
     <meta name="twitter:image:alt" content="Eastlake Wolfpack Association Logo">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://ewa-website.com/new/gallery.html">
+    <link rel="canonical" href="https://ewa-website.com/news.html">
     
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="../assets/ewa-wolf.jpg">
@@ -77,7 +78,7 @@
     <!-- Vercel Speed Insights -->
     <script defer src="/_vercel/speed-insights/script.js"></script>
     
-    <title>Photo Gallery - Eastlake Wolfpack Association</title>
+    <title>News & Updates - Eastlake Wolfpack Association</title>
     
     <style>
         /* Reset and Base Styles */
@@ -229,77 +230,35 @@
             margin-bottom: 60px;
         }
         
-        /* Gallery Styles */
-        .gallery-container {
+        /* News Article Styles */
+        .news-article {
             background: white;
-            padding: 40px;
+            padding: 30px;
+            margin-bottom: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #dc3545;
         }
         
-        .gallery-controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        
-        .gallery-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-        
-        .gallery-btn:hover {
-            background-color: #c82333;
-        }
-        
-        .gallery-btn:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
-        }
-        
-        .gallery-display {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .gallery-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            /* Performance optimization: will-change for GPU acceleration */
-            will-change: transform;
-            /* Optimize for animations */
-            transform: translateZ(0);
-        }
-        
-        .gallery-info {
-            margin-top: 20px;
+        .news-article h2 {
             color: #2c3e50;
-        }
-        
-        .gallery-info h3 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin-bottom: 10px;
         }
         
-        .gallery-info p {
-            color: #6c757d;
-            font-size: 1rem;
-        }
-        
-        .gallery-counter {
-            text-align: center;
+        .news-article .date {
             color: #6c757d;
             font-size: 0.9rem;
-            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .news-article .content {
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+        
+        .news-article .content p {
+            margin-bottom: 15px;
         }
         
         /* Responsive Design */
@@ -318,13 +277,8 @@
                 font-size: 2.5rem;
             }
             
-            .gallery-container {
+            .news-article {
                 padding: 20px;
-            }
-            
-            .gallery-controls {
-                flex-direction: column;
-                align-items: center;
             }
         }
     </style>
@@ -338,39 +292,56 @@
             <div class="logo" role="img" aria-label="Eastlake Wolfpack Association Logo"></div>
             <a href="index.html">Home</a>
             <a href="team.html">EWA Team</a>
-            <a href="gallery.html" aria-current="page">Photo Gallery</a>
-            <a href="news.html">News</a>
+            <a href="gallery.html">Photo Gallery</a>
+            <a href="news.html" aria-current="page">News</a>
             <a href="volunteers.html">Volunteer</a>
             <a href="links.html">Resources</a>
         </nav>
         <div class="header-right" role="navigation" aria-label="Secondary navigation">
-            <a href="../original/gallery.html" class="version-toggle">Revert to Original</a>
+
             <a href="admin/login.html" class="admin-link">Admin</a>
         </div>
     </header>
 
     <main id="main-content" class="main-content" role="main">
-        <h1>Photo Gallery</h1>
-        <p class="subtitle">Browse our collection of photos showcasing Eastlake High School athletics and events.</p>
+        <h1>News</h1>
+        <p class="subtitle">Stay updated with the latest news and events from the Eastlake Wolfpack Association.</p>
         
-        <div class="gallery-container">
-            <div class="gallery-controls">
-                <button class="gallery-btn" id="prevBtn" aria-label="Previous image">Previous</button>
-                <button class="gallery-btn" id="nextBtn" aria-label="Next image">Next</button>
+        <article class="news-article">
+            <h2>Welcome to the 2024-2025 School Year</h2>
+            <div class="date">September 1, 2024</div>
+            <div class="content">
+                <p>Welcome back to another exciting year of Eastlake High School athletics! The Eastlake Wolfpack Association is ready to support our student athletes and booster clubs throughout the 2024-2025 school year.</p>
+                <p>We have many exciting events planned, including fundraisers, volunteer opportunities, and community building activities. Stay tuned for updates on how you can get involved and support our programs.</p>
             </div>
-            
-            <div class="gallery-display">
-                <img id="galleryImage" class="gallery-image" src="../assets/ewa-wolf.jpg" alt="Eastlake Wolfpack Association Logo" role="img">
-                <div class="gallery-info">
-                    <h3 id="imageTitle">Eastlake Wolfpack Association Logo</h3>
-                    <p id="imageDescription">Our official logo representing the spirit and pride of Eastlake High School athletics.</p>
-                </div>
+        </article>
+        
+        <article class="news-article">
+            <h2>Fall Sports Season Begins</h2>
+            <div class="date">August 15, 2024</div>
+            <div class="content">
+                <p>The fall sports season is officially underway! Our football, soccer, volleyball, cross-country, and swimming teams are all in action. Come out and support our Wolfpack athletes as they compete this season.</p>
+                <p>Check our Resources page for game schedules and booster club information. We encourage all families to get involved with their respective booster clubs to help support our programs.</p>
             </div>
-            
-            <div class="gallery-counter">
-                <span id="imageCounter">Image 1 of 1</span>
+        </article>
+        
+        <article class="news-article">
+            <h2>Volunteer Opportunities Available</h2>
+            <div class="date">August 10, 2024</div>
+            <div class="content">
+                <p>We're always looking for dedicated volunteers to help support our programs. Whether you can spare a few hours or want to take on a more involved role, there are opportunities for everyone.</p>
+                <p>Visit our Volunteer page to express your interest in helping with concessions, fundraising, event planning, or other areas where we need support. Every volunteer makes a difference!</p>
             </div>
-        </div>
+        </article>
+        
+        <article class="news-article">
+            <h2>Spring Sports Success</h2>
+            <div class="date">June 15, 2024</div>
+            <div class="content">
+                <p>Congratulations to all our spring sports teams on another successful season! Our baseball, softball, track & field, tennis, and golf teams all had outstanding performances this year.</p>
+                <p>Special recognition goes to our state qualifiers and championship participants. Your hard work and dedication inspire us all. Thank you to the coaches, parents, and booster clubs for your support throughout the season.</p>
+            </div>
+        </article>
     </main>
 
     <footer class="footer-banner" role="contentinfo">
@@ -383,99 +354,5 @@
             <a href="volunteers.html">Volunteer</a>
         </nav>
     </footer>
-
-    <script>
-        // Sample gallery data - in a real implementation, this would come from a database
-        const galleryImages = [
-            {
-                src: '../assets/ewa-wolf.jpg',
-                title: 'Eastlake Wolfpack Association Logo',
-                description: 'Our official logo representing the spirit and pride of Eastlake High School athletics.',
-                alt: 'Eastlake Wolfpack Association Logo'
-            },
-            {
-                src: '../assets/ewa-wolf.jpg',
-                title: 'Football Team Celebration',
-                description: 'The Eastlake football team celebrating a victory during the 2024 season.',
-                alt: 'Football team celebration'
-            },
-            {
-                src: '../assets/ewa-wolf.jpg',
-                title: 'Basketball Championship',
-                description: 'Our basketball teams competing in the state championship tournament.',
-                alt: 'Basketball championship game'
-            },
-            {
-                src: '../assets/ewa-wolf.jpg',
-                title: 'Track & Field Success',
-                description: 'Eastlake athletes competing in track and field events.',
-                alt: 'Track and field competition'
-            },
-            {
-                src: '../assets/ewa-wolf.jpg',
-                title: 'Volunteer Appreciation',
-                description: 'Recognizing our dedicated volunteers who make everything possible.',
-                alt: 'Volunteer appreciation event'
-            }
-        ];
-        
-        let currentImageIndex = 0;
-        
-        // Get DOM elements
-        const galleryImage = document.getElementById('galleryImage');
-        const imageTitle = document.getElementById('imageTitle');
-        const imageDescription = document.getElementById('imageDescription');
-        const imageCounter = document.getElementById('imageCounter');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        
-        // Function to update gallery display
-        function updateGallery() {
-            const currentImage = galleryImages[currentImageIndex];
-            
-            galleryImage.src = currentImage.src;
-            galleryImage.alt = currentImage.alt;
-            imageTitle.textContent = currentImage.title;
-            imageDescription.textContent = currentImage.description;
-            imageCounter.textContent = `Image ${currentImageIndex + 1} of ${galleryImages.length}`;
-            
-            // Update button states
-            prevBtn.disabled = currentImageIndex === 0;
-            nextBtn.disabled = currentImageIndex === galleryImages.length - 1;
-            
-            // Update ARIA labels
-            prevBtn.setAttribute('aria-label', currentImageIndex === 0 ? 'Previous image (disabled)' : 'Previous image');
-            nextBtn.setAttribute('aria-label', currentImageIndex === galleryImages.length - 1 ? 'Next image (disabled)' : 'Next image');
-        }
-        
-        // Event listeners for navigation buttons
-        prevBtn.addEventListener('click', () => {
-            if (currentImageIndex > 0) {
-                currentImageIndex--;
-                updateGallery();
-            }
-        });
-        
-        nextBtn.addEventListener('click', () => {
-            if (currentImageIndex < galleryImages.length - 1) {
-                currentImageIndex++;
-                updateGallery();
-            }
-        });
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' && currentImageIndex > 0) {
-                currentImageIndex--;
-                updateGallery();
-            } else if (e.key === 'ArrowRight' && currentImageIndex < galleryImages.length - 1) {
-                currentImageIndex++;
-                updateGallery();
-            }
-        });
-        
-        // Initialize gallery
-        updateGallery();
-    </script>
 </body>
 </html> 

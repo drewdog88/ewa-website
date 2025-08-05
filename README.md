@@ -64,24 +64,22 @@ ewa_website/
 │   ├── volunteers.json    # Volunteer submissions
 │   ├── officers.json      # Officer information
 │   └── officer_import_template.csv  # CSV template
-├── new/                   # Main website files
-│   ├── admin/            # Admin interface
-│   │   ├── dashboard.html # Main admin dashboard
-│   │   ├── dashboard.css  # Admin styles
-│   │   └── login.html    # Admin login
-│   ├── index.html        # Main homepage
-│   ├── team.html         # Team/officers page
-│   ├── volunteers.html   # Volunteer form
-│   ├── news.html         # News and updates
-│   ├── gallery.html      # Photo gallery
-│   ├── links.html        # Resources and links
-│   ├── payment.html      # Payment information
-│   └── security.js       # Security features
-├── index.html            # Main entry point (redirects to new/)
-├── server.js             # Node.js backend server
-├── package.json          # Dependencies and scripts
-├── vercel.json           # Vercel deployment config
-└── README.md             # Project documentation
+├── admin/                 # Admin interface
+│   ├── dashboard.html     # Main admin dashboard
+│   ├── dashboard.css      # Admin styles
+│   └── login.html         # Admin login
+├── index.html             # Main homepage
+├── team.html              # Team/officers page
+├── volunteers.html        # Volunteer form
+├── news.html              # News and updates
+├── gallery.html           # Photo gallery
+├── links.html             # Resources and links
+├── payment.html           # Payment information
+├── security.js            # Security features
+├── server.js              # Node.js backend server
+├── package.json           # Dependencies and scripts
+├── vercel.json            # Vercel deployment config
+└── README.md              # Project documentation
 ```
 
 ## 🛠️ API Endpoints
