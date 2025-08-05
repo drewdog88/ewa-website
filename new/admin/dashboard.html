@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EWA Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        
+        .admin-header {
+            background: #dc3545;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            padding: 20px 0;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 20px;
+            color: #2c3e50;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-card h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .quick-actions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quick-actions h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #c82333;
+        }
+        
+        .action-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .action-btn.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .recent-activity {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .recent-activity h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-time {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .activity-text {
+            margin-top: 5px;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            margin-bottom: 20px;
+        }
+        
+        .section-header h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .section-header p {
+            color: #6c757d;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .btn-small {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .btn-small:hover {
+            background: #c82333;
+        }
+        
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1>EWA Admin Dashboard</h1>
+        <a href="login.html" class="logout-btn">Logout</a>
+    </div>
+    
+    <div class="admin-container">
+        <div class="sidebar">
+            <ul class="sidebar-nav">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
+                <li><a href="#officers" class="nav-link" data-section="officers">Officer Management</a></li>
+                <li><a href="#news" class="nav-link" data-section="news">News & Announcements</a></li>
+                <li><a href="#links" class="nav-link" data-section="links">Links & Resources</a></li>
+                <li><a href="#documents" class="nav-link" data-section="documents">Document Management</a></li>
+                <li><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
+                <li><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
+                <li><a href="#users" class="nav-link" data-section="users">User Management</a></li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                    <p>Welcome to the EWA Admin Dashboard. Manage your booster clubs, content, and analytics from here.</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Total Booster Clubs</h3>
+                        <div class="stat-number">22</div>
+                        <div class="stat-label">Active clubs</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Total Officers</h3>
+                        <div class="stat-number">67</div>
+                        <div class="stat-label">Registered officers</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Pending Documents</h3>
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">1099 forms due</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Site Visitors</h3>
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">This month</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <a href="#officers" class="action-btn nav-link" data-section="officers">Add New Officer</a>
+                        <a href="#news" class="action-btn nav-link" data-section="news">Post News</a>
+                        <a href="#documents" class="action-btn nav-link" data-section="documents">Review Documents</a>
+                        <a href="#analytics" class="action-btn secondary nav-link" data-section="analytics">View Reports</a>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-item">
+                        <div class="activity-time">2 hours ago</div>
+                        <div class="activity-text">New officer added to EHS Band Boosters</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">1 day ago</div>
+                        <div class="activity-text">1099 form submitted by EHS Football Boosters</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">2 days ago</div>
+                        <div class="activity-text">News post published: "Spring Sports Registration"</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">3 days ago</div>
+                        <div class="activity-text">New link added: "Eastlake Athletics Calendar"</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Officer Management Section -->
+            <div id="officers" class="content-section">
+                <div class="section-header">
+                    <h2>Officer Management</h2>
+                    <p>Manage booster club officers and import data from spreadsheets.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Import Officer Data</h3>
+                    <div class="form-group">
+                        <label for="spreadsheet">Upload Spreadsheet (CSV/Excel)</label>
+                        <input type="file" id="spreadsheet" accept=".csv,.xlsx,.xls">
+                    </div>
+                    <button class="action-btn">Import Data</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Add New Officer</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="officerName">Name</label>
+                            <input type="text" id="officerName" placeholder="Officer Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="officerPosition">Position</label>
+                            <input type="text" id="officerPosition" placeholder="President, Treasurer, etc.">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="officerEmail">Email</label>
+                            <input type="email" id="officerEmail" placeholder="officer@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="officerPhone">Phone</label>
+                            <input type="tel" id="officerPhone" placeholder="(425) 555-0101">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="boosterClub">Booster Club</label>
+                        <select id="boosterClub">
+                            <option value="">Select Booster Club</option>
+                            <option value="band">EHS Band Boosters</option>
+                            <option value="football">EHS Football Boosters</option>
+                            <option value="basketball">EHS Basketball Boosters</option>
+                            <!-- Add all clubs -->
+                        </select>
+                    </div>
+                    <button class="action-btn">Add Officer</button>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Club</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sarah Johnson</td>
+                            <td>President</td>
+                            <td>EHS Band Boosters</td>
+                            <td>sarah.johnson@example.com</td>
+                            <td>(425) 555-0101</td>
+                            <td>
+                                <button class="btn-small">Edit</button>
+                                <button class="btn-small">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mike Chen</td>
+                            <td>Treasurer</td>
+                            <td>EHS Band Boosters</td>
+                            <td>mike.chen@example.com</td>
+                            <td>(425) 555-0102</td>
+                            <td>
+                                <button class="btn-small">Edit</button>
+                                <button class="btn-small">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- News Management Section -->
+            <div id="news" class="content-section">
+                <div class="section-header">
+                    <h2>News & Announcements</h2>
+                    <p>Manage news posts and meeting minutes.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Add News Post</h3>
+                    <div class="form-group">
+                        <label for="newsTitle">Title</label>
+                        <input type="text" id="newsTitle" placeholder="News Title">
+                    </div>
+                    <div class="form-group">
+                        <label for="newsContent">Content</label>
+                        <textarea id="newsContent" placeholder="News content..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="newsDate">Date</label>
+                        <input type="date" id="newsDate">
+                    </div>
+                    <button class="action-btn">Publish News</button>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Content</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-01-15</td>
+                            <td>Next Board Meeting - January 20th</td>
+                            <td>Join us for our monthly board meeting...</td>
+                            <td>
+                                <button class="btn-small">Edit</button>
+                                <button class="btn-small">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Links Management Section -->
+            <div id="links" class="content-section">
+                <div class="section-header">
+                    <h2>Links & Resources</h2>
+                    <p>Manage external links and track their usage.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Add New Link</h3>
+                    <div class="form-group">
+                        <label for="linkTitle">Title</label>
+                        <input type="text" id="linkTitle" placeholder="Link Title">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkUrl">URL</label>
+                        <input type="url" id="linkUrl" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkCategory">Category</label>
+                        <select id="linkCategory">
+                            <option value="athletics">Athletics</option>
+                            <option value="calendar">Calendar</option>
+                            <option value="resources">Resources</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <button class="action-btn">Add Link</button>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>URL</th>
+                            <th>Category</th>
+                            <th>Clicks</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Eastlake Athletics Schedule</td>
+                            <td>https://www.lwsd.org/schools/eastlake/athletics</td>
+                            <td>Athletics</td>
+                            <td>156</td>
+                            <td>
+                                <button class="btn-small">Edit</button>
+                                <button class="btn-small">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Document Management Section -->
+            <div id="documents" class="content-section">
+                <div class="section-header">
+                    <h2>Document Management</h2>
+                    <p>Manage 1099 forms and insurance information submissions.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>1099 Form Submission</h3>
+                    <p>Booster clubs can submit their 1099 forms here. This area will be accessible only to logged-in users.</p>
+                    <div class="form-group">
+                        <label for="boosterClub1099">Booster Club</label>
+                        <select id="boosterClub1099">
+                            <option value="">Select Booster Club</option>
+                            <option value="band">EHS Band Boosters</option>
+                            <option value="football">EHS Football Boosters</option>
+                            <!-- Add all clubs -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendorName">Vendor/Contractor Name</label>
+                        <input type="text" id="vendorName" placeholder="Vendor Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="vendorTaxId">Tax ID (SSN or EIN)</label>
+                        <input type="text" id="vendorTaxId" placeholder="123-45-6789 or 12-3456789">
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentAmount">Payment Amount</label>
+                        <input type="number" id="paymentAmount" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="1099File">Upload 1099 Form</label>
+                        <input type="file" id="1099File" accept=".pdf,.jpg,.png">
+                    </div>
+                    <button class="action-btn">Submit 1099</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Insurance Information</h3>
+                    <p>Submit event and activity information for insurance purposes.</p>
+                    <div class="form-group">
+                        <label for="eventName">Event/Activity Name</label>
+                        <input type="text" id="eventName" placeholder="Event Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Event Date</label>
+                        <input type="date" id="eventDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Event Description</label>
+                        <textarea id="eventDescription" placeholder="Describe the event, activities, and any special requirements..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="participantCount">Expected Participants</label>
+                        <input type="number" id="participantCount" placeholder="Number of participants">
+                    </div>
+                    <button class="action-btn">Submit Insurance Info</button>
+                </div>
+            </div>
+            
+            <!-- Analytics Section -->
+            <div id="analytics" class="content-section">
+                <div class="section-header">
+                    <h2>Analytics & Reports</h2>
+                    <p>View site usage statistics and generate reports.</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Page Views</h3>
+                        <div class="stat-number">5,234</div>
+                        <div class="stat-label">This month</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Unique Visitors</h3>
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">This month</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Most Popular Page</h3>
+                        <div class="stat-number">Home</div>
+                        <div class="stat-label">2,156 views</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Top External Link</h3>
+                        <div class="stat-number">LWSD Athletics</div>
+                        <div class="stat-label">89 clicks</div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Generate Report</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportType">Report Type</label>
+                            <select id="reportType">
+                                <option value="usage">Site Usage</option>
+                                <option value="links">Link Analytics</option>
+                                <option value="officers">Officer Activity</option>
+                                <option value="documents">Document Submissions</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportDateRange">Date Range</label>
+                            <select id="reportDateRange">
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="action-btn">Generate Report</button>
+                </div>
+            </div>
+            
+            <!-- Content Management Section -->
+            <div id="content" class="content-section">
+                <div class="section-header">
+                    <h2>Content Management</h2>
+                    <p>Edit booster club descriptions and manage site content.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Edit Booster Club Description</h3>
+                    <div class="form-group">
+                        <label for="clubSelect">Select Club</label>
+                        <select id="clubSelect">
+                            <option value="">Select Booster Club</option>
+                            <option value="band">EHS Band Boosters</option>
+                            <option value="football">EHS Football Boosters</option>
+                            <option value="basketball">EHS Basketball Boosters</option>
+                            <!-- Add all clubs -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clubDescription">Description</label>
+                        <textarea id="clubDescription" placeholder="Enter the club's description..."></textarea>
+                    </div>
+                    <button class="action-btn">Update Description</button>
+                </div>
+            </div>
+            
+            <!-- User Management Section -->
+            <div id="users" class="content-section">
+                <div class="section-header">
+                    <h2>User Management</h2>
+                    <p>Manage admin users and permissions.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Add New User</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newUsername">Username</label>
+                            <input type="text" id="newUsername" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="newEmail">Email</label>
+                            <input type="email" id="newEmail" placeholder="user@example.com">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newPassword">Password</label>
+                            <input type="password" id="newPassword" placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                            <label for="userRole">Role</label>
+                            <select id="userRole">
+                                <option value="admin">Admin</option>
+                                <option value="editor">Editor</option>
+                                <option value="viewer">Viewer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="action-btn">Add User</button>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>admin</td>
+                            <td>admin@ewa-website.com</td>
+                            <td>Admin</td>
+                            <td>2025-01-15 14:30</td>
+                            <td>
+                                <button class="btn-small">Edit</button>
+                                <button class="btn-small">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links and sections
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+        
+        // Prevent AI training
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        
+        // Demo data loading
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate loading data
+            console.log('Admin dashboard loaded');
+        });
+    </script>
+</body>
+</html> 
