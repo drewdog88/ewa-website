@@ -550,7 +550,8 @@
                     </div>
                     <div class="form-group">
                         <label for="insuranceParticipantCount">Expected Participants</label>
-                        <input type="number" id="insuranceParticipantCount" placeholder="Number of participants">
+                        <input type="number" id="insuranceParticipantCount" placeholder="Number of participants" min="1" oninput="validateParticipantCount(this)">
+                        <div id="participantCountError" class="error-message" style="display: none; color: #dc3545; font-size: 12px; margin-top: 5px;"></div>
                     </div>
                     <button class="action-btn" onclick="submitInsuranceForm()">Submit Insurance Form</button>
                 </div>
@@ -594,7 +595,8 @@
                     </div>
                     <div class="form-group">
                         <label for="1099Amount">Payment Amount *</label>
-                        <input type="number" id="1099Amount" placeholder="0.00" step="0.01" required>
+                        <input type="number" id="1099Amount" placeholder="0.00" step="0.01" min="0" required oninput="validatePaymentAmount(this)">
+                        <div id="amountError" class="error-message" style="display: none; color: #dc3545; font-size: 12px; margin-top: 5px;"></div>
                     </div>
                     <div class="form-group">
                         <label for="1099Description">Description</label>
@@ -1267,16 +1269,24 @@
         function submitInsuranceForm() {
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             
+            const participantCountInput = document.getElementById('insuranceParticipantCount');
+            
             const formData = {
                 club: currentUser.club,
                 eventName: document.getElementById('insuranceEventName').value,
                 eventDate: document.getElementById('insuranceEventDate').value,
                 eventDescription: document.getElementById('insuranceEventDescription').value,
-                participantCount: document.getElementById('insuranceParticipantCount').value
+                participantCount: participantCountInput.value
             };
             
             if (!formData.eventName || !formData.eventDate || !formData.eventDescription) {
                 alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Validate participant count if provided
+            if (formData.participantCount && !validateParticipantCount(participantCountInput)) {
+                alert('Please fix the participant count errors before submitting');
                 return;
             }
             
@@ -1314,16 +1324,23 @@
             const submitBtn = document.getElementById('submit1099Btn');
             const fileInput = document.getElementById('1099W9File');
             
-            // Validate required fields
-            const recipientName = document.getElementById('1099RecipientName').value;
-            const recipientTin = document.getElementById('1099RecipientTin').value;
-            const amount = document.getElementById('1099Amount').value;
-            const taxYear = document.getElementById('1099TaxYear').value;
-            
-            if (!recipientName || !recipientTin || !amount || !taxYear) {
-                alert('Please fill in all required fields');
-                return;
-            }
+                    // Validate required fields
+        const recipientName = document.getElementById('1099RecipientName').value;
+        const recipientTin = document.getElementById('1099RecipientTin').value;
+        const amountInput = document.getElementById('1099Amount');
+        const amount = amountInput.value;
+        const taxYear = document.getElementById('1099TaxYear').value;
+        
+        if (!recipientName || !recipientTin || !amount || !taxYear) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
+        // Validate payment amount
+        if (!validatePaymentAmount(amountInput)) {
+            alert('Please fix the payment amount errors before submitting');
+            return;
+        }
             
             if (!fileInput.files[0]) {
                 alert('Please select a W9 form file');
@@ -2467,6 +2484,90 @@
             csv += `"${row.type}","${row.club}","${row.submittedDate}","${row.status}"\n`;
         });
         return csv;
+    }
+    
+    // Payment amount validation function
+    function validatePaymentAmount(input) {
+        const value = input.value;
+        const errorDiv = document.getElementById('amountError');
+        
+        // Clear previous error
+        errorDiv.style.display = 'none';
+        
+        // Check if empty
+        if (!value) {
+            return true; // Let HTML5 validation handle required field
+        }
+        
+        // Check if it's a valid number
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) {
+            errorDiv.textContent = 'Please enter a valid number';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        // Check if it's negative
+        if (numValue < 0) {
+            errorDiv.textContent = 'Payment amount cannot be negative';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        // Check if it has more than 2 decimal places
+        const decimalPlaces = (value.split('.')[1] || '').length;
+        if (decimalPlaces > 2) {
+            errorDiv.textContent = 'Payment amount can have maximum 2 decimal places';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        // Check if it's too large (prevent overflow)
+        if (numValue > 999999999.99) {
+            errorDiv.textContent = 'Payment amount is too large';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Participant count validation function
+    function validateParticipantCount(input) {
+        const value = input.value;
+        const errorDiv = document.getElementById('participantCountError');
+        
+        // Clear previous error
+        errorDiv.style.display = 'none';
+        
+        // Check if empty
+        if (!value) {
+            return true; // Let HTML5 validation handle required field
+        }
+        
+        // Check if it's a valid integer
+        const intValue = parseInt(value);
+        if (isNaN(intValue)) {
+            errorDiv.textContent = 'Please enter a valid number';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        // Check if it's less than 1
+        if (intValue < 1) {
+            errorDiv.textContent = 'Participant count must be at least 1';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        // Check if it's too large (prevent overflow)
+        if (intValue > 999999) {
+            errorDiv.textContent = 'Participant count is too large';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        
+        return true;
     }
 </script>
 </body>
