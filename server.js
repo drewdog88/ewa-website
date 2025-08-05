@@ -39,7 +39,25 @@ if (process.env.BLOB_READ_WRITE_TOKEN) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Function to load initial data from JSON files
+function loadInitialData() {
+    try {
+        // Load officers data
+        const officersPath = path.join(__dirname, 'data', 'officers.json');
+        if (fs.existsSync(officersPath)) {
+            const officersData = fs.readFileSync(officersPath, 'utf8');
+            const officers = JSON.parse(officersData);
+            console.log(`Loaded ${officers.length} officers from data file`);
+            return { officers };
+        }
+    } catch (error) {
+        console.error('Error loading initial data:', error);
+    }
+    return { officers: [] };
+}
+
 // In-memory storage for development fallback
+const initialData = loadInitialData();
 const memoryStorage = {
     volunteers: [],
     users: {
@@ -70,7 +88,7 @@ const memoryStorage = {
             "lastLogin": null
         }
     },
-    officers: [],
+    officers: initialData.officers,
     insurance: [],
     form1099: []
 };
