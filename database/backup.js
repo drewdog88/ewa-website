@@ -1,4 +1,4 @@
-const { query, getRows } = require('./connection');
+const { getSql } = require('./neon-functions');
 const fs = require('fs');
 const path = require('path');
 
@@ -31,23 +31,28 @@ class DatabaseBackup {
                 tables: {}
             };
 
+            const sql = getSql();
+            if (!sql) {
+                throw new Error('Database connection not available');
+            }
+
             // Backup officers
-            backup.tables.officers = await getRows('SELECT * FROM officers ORDER BY created_at') || [];
+            backup.tables.officers = await sql`SELECT * FROM officers ORDER BY created_at` || [];
 
             // Backup users
-            backup.tables.users = await getRows('SELECT * FROM users ORDER BY created_at') || [];
+            backup.tables.users = await sql`SELECT * FROM users ORDER BY created_at` || [];
 
             // Backup volunteers
-            backup.tables.volunteers = await getRows('SELECT * FROM volunteers ORDER BY created_at') || [];
+            backup.tables.volunteers = await sql`SELECT * FROM volunteers ORDER BY created_at` || [];
 
             // Backup insurance forms
-            backup.tables.insurance_forms = await getRows('SELECT * FROM insurance_forms ORDER BY created_at') || [];
+            backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at` || [];
 
             // Backup 1099 forms
-            backup.tables.form_1099 = await getRows('SELECT * FROM form_1099 ORDER BY created_at') || [];
+            backup.tables.form_1099 = await sql`SELECT * FROM form_1099 ORDER BY created_at` || [];
 
             // Backup documents
-            backup.tables.documents = await getRows('SELECT * FROM documents ORDER BY created_at') || [];
+            backup.tables.documents = await sql`SELECT * FROM documents ORDER BY created_at` || [];
 
             // Write backup to file
             fs.writeFileSync(backupPath, JSON.stringify(backup, null, 2));
@@ -86,24 +91,29 @@ class DatabaseBackup {
 
             console.log(`📅 Backup timestamp: ${backup.timestamp}`);
 
+            const sql = getSql();
+            if (!sql) {
+                throw new Error('Database connection not available');
+            }
+
             // Begin transaction
-            await query('BEGIN');
+            await sql`BEGIN`;
 
             try {
                 // Clear existing data (except users to preserve admin access)
-                await query('DELETE FROM documents');
-                await query('DELETE FROM form_1099');
-                await query('DELETE FROM insurance_forms');
-                await query('DELETE FROM volunteers');
-                await query('DELETE FROM officers');
+                await sql`DELETE FROM documents`;
+                await sql`DELETE FROM form_1099`;
+                await sql`DELETE FROM insurance_forms`;
+                await sql`DELETE FROM volunteers`;
+                await sql`DELETE FROM officers`;
 
                 // Restore officers
                 if (backup.tables.officers) {
                     for (const officer of backup.tables.officers) {
-                        await query(
-                            'INSERT INTO officers (id, name, position, email, phone, club, club_name, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                            [officer.id, officer.name, officer.position, officer.email, officer.phone, officer.club, officer.club_name, officer.created_at, officer.updated_at]
-                        );
+                        await sql`
+                            INSERT INTO officers (id, name, position, email, phone, club, club_name, created_at, updated_at) 
+                            VALUES (${officer.id}, ${officer.name}, ${officer.position}, ${officer.email}, ${officer.phone}, ${officer.club}, ${officer.club_name}, ${officer.created_at}, ${officer.updated_at})
+                        `;
                     }
                     console.log(`✅ Restored ${backup.tables.officers.length} officers`);
                 }
@@ -111,10 +121,10 @@ class DatabaseBackup {
                 // Restore volunteers
                 if (backup.tables.volunteers) {
                     for (const volunteer of backup.tables.volunteers) {
-                        await query(
-                            'INSERT INTO volunteers (id, name, email, phone, club, club_name, interests, availability, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-                            [volunteer.id, volunteer.name, volunteer.email, volunteer.phone, volunteer.club, volunteer.club_name, volunteer.interests, volunteer.availability, volunteer.created_at, volunteer.updated_at]
-                        );
+                        await sql`
+                            INSERT INTO volunteers (id, name, email, phone, club, club_name, interests, availability, created_at, updated_at) 
+                            VALUES (${volunteer.id}, ${volunteer.name}, ${volunteer.email}, ${volunteer.phone}, ${volunteer.club}, ${volunteer.club_name}, ${volunteer.interests}, ${volunteer.availability}, ${volunteer.created_at}, ${volunteer.updated_at})
+                        `;
                     }
                     console.log(`✅ Restored ${backup.tables.volunteers.length} volunteers`);
                 }
@@ -122,10 +132,10 @@ class DatabaseBackup {
                 // Restore insurance forms
                 if (backup.tables.insurance_forms) {
                     for (const form of backup.tables.insurance_forms) {
-                        await query(
-                            'INSERT INTO insurance_forms (id, event_name, event_date, event_description, participant_count, submitted_by, status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                            [form.id, form.event_name, form.event_date, form.event_description, form.participant_count, form.submitted_by, form.status, form.created_at, form.updated_at]
-                        );
+                        await sql`
+                            INSERT INTO insurance_forms (id, event_name, event_date, event_description, participant_count, submitted_by, status, created_at, updated_at) 
+                            VALUES (${form.id}, ${form.event_name}, ${form.event_date}, ${form.event_description}, ${form.participant_count}, ${form.submitted_by}, ${form.status}, ${form.created_at}, ${form.updated_at})
+                        `;
                     }
                     console.log(`✅ Restored ${backup.tables.insurance_forms.length} insurance forms`);
                 }
@@ -133,10 +143,10 @@ class DatabaseBackup {
                 // Restore 1099 forms
                 if (backup.tables.form_1099) {
                     for (const form of backup.tables.form_1099) {
-                        await query(
-                            'INSERT INTO form_1099 (id, recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-                            [form.id, form.recipient_name, form.recipient_tin, form.amount, form.description, form.submitted_by, form.tax_year, form.status, form.created_at, form.updated_at]
-                        );
+                        await sql`
+                            INSERT INTO form_1099 (id, recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, created_at, updated_at) 
+                            VALUES (${form.id}, ${form.recipient_name}, ${form.recipient_tin}, ${form.amount}, ${form.description}, ${form.submitted_by}, ${form.tax_year}, ${form.status}, ${form.created_at}, ${form.updated_at})
+                        `;
                     }
                     console.log(`✅ Restored ${backup.tables.form_1099.length} 1099 forms`);
                 }
@@ -144,21 +154,21 @@ class DatabaseBackup {
                 // Restore documents
                 if (backup.tables.documents) {
                     for (const doc of backup.tables.documents) {
-                        await query(
-                            'INSERT INTO documents (id, filename, original_name, blob_url, file_size, mime_type, booster_club, uploaded_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                            [doc.id, doc.filename, doc.original_name, doc.blob_url, doc.file_size, doc.mime_type, doc.booster_club, doc.uploaded_by, doc.created_at]
-                        );
+                        await sql`
+                            INSERT INTO documents (id, filename, original_name, blob_url, file_size, mime_type, booster_club, uploaded_by, created_at) 
+                            VALUES (${doc.id}, ${doc.filename}, ${doc.original_name}, ${doc.blob_url}, ${doc.file_size}, ${doc.mime_type}, ${doc.booster_club}, ${doc.uploaded_by}, ${doc.created_at})
+                        `;
                     }
                     console.log(`✅ Restored ${backup.tables.documents.length} documents`);
                 }
 
                 // Commit transaction
-                await query('COMMIT');
+                await sql`COMMIT`;
                 console.log('✅ Database restore completed successfully');
 
             } catch (error) {
                 // Rollback on error
-                await query('ROLLBACK');
+                await sql`ROLLBACK`;
                 throw error;
             }
 
