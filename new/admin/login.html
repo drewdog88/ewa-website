@@ -156,15 +156,31 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Simple demo authentication (in production, this would be server-side)
-            if (username === 'admin' && password === 'ewa2025') {
-                showMessage('Login successful! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-            } else {
-                showMessage('Invalid username or password. Please try again.', 'error');
-            }
+            // Submit login to server
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Store user info in session storage
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showMessage('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    showMessage('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Error during login. Please try again.', 'error');
+            });
         });
         
         function showMessage(message, type) {
