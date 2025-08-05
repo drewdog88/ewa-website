@@ -184,6 +184,15 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Test endpoint to verify API is working
+app.get('/test', (req, res) => {
+    res.json({ 
+        message: 'API is working!',
+        timestamp: new Date().toISOString(),
+        routes: ['/health', '/test', '/1099', '/officers', '/login']
+    });
+});
+
 // User authentication
 app.post('/login', async (req, res) => {
     try {
