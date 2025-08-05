@@ -16,7 +16,7 @@ const {
     addInsurance,
     getForm1099,
     addForm1099,
-    updateForm1099Status,
+    updateForm1099Status, updateForm1099, deleteForm1099,
     getDocuments,
     addDocument,
     deleteDocument
@@ -567,6 +567,81 @@ app.post('/1099/upload-w9', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to upload W9 file'
+        });
+    }
+});
+
+// Update 1099 form data
+app.put('/1099/:id', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const { id } = req.params;
+        const { 
+            recipientName, recipientTin, amount, description, 
+            taxYear, boosterClub 
+        } = req.body;
+        
+        if (!recipientName || !recipientTin || !amount || !taxYear) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Missing required fields: recipientName, recipientTin, amount, taxYear' 
+            });
+        }
+
+        const updates = {
+            recipientName,
+            recipientTin,
+            amount: parseFloat(amount),
+            description: description || '',
+            taxYear: parseInt(taxYear),
+            boosterClub: boosterClub || null
+        };
+
+        const result = await updateForm1099(id, updates);
+        if (result) {
+            res.json({ 
+                success: true, 
+                message: '1099 form updated successfully',
+                submission: result
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: '1099 form not found' 
+            });
+        }
+    } catch (error) {
+        console.error('Error updating 1099 form:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Delete 1099 form
+app.delete('/1099/:id', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const { id } = req.params;
+        
+        const success = await deleteForm1099(id);
+        if (success) {
+            res.json({ 
+                success: true, 
+                message: '1099 form deleted successfully'
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: '1099 form not found' 
+            });
+        }
+    } catch (error) {
+        console.error('Error deleting 1099 form:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
         });
     }
 });
