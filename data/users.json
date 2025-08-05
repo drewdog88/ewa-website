@@ -9,10 +9,15 @@
   },
   "orchestra_booster": {
     "username": "orchestra_booster",
-    "password": "ewa_orchestra_2025",
-    "role": "booster_officer",
+    "password": "ewa2025",
+    "role": "booster_admin",
     "club": "orchestra",
     "clubName": "EHS Orchestra Boosters Club",
-    "createdAt": "2025-08-05T02:42:49.109Z"
+    "createdAt": "2025-08-05T02:42:49.109Z",
+    "isLocked": false,
+    "isFirstLogin": false,
+    "secretQuestion": "Pets First name",
+    "secretAnswer": "spot",
+    "lastLogin": "2025-08-05T04:30:58.880Z"
   }
 }
