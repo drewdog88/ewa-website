@@ -611,7 +611,7 @@
                             </select>
                         </div>
                     </div>
-                    <button class="action-btn">Generate Report</button>
+                    <button class="action-btn" onclick="generateReport()">Generate Report</button>
                 </div>
             </div>
             
@@ -2104,9 +2104,169 @@
                 });
             }
             
-            // Initialize website links display
-            displayWebsiteLinks();
+                    // Initialize website links display
+        displayWebsiteLinks();
+        
+        // Add event listener for analytics section
+        const analyticsLink = document.querySelector('a[data-section="analytics"]');
+        if (analyticsLink) {
+            analyticsLink.addEventListener('click', function() {
+                loadAnalyticsData();
+            });
+        }
+    });
+    
+    // Analytics & Reports Functions
+    
+    // Load analytics data
+    function loadAnalyticsData() {
+        // Load basic analytics data
+        fetch('/api/analytics/overview')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateAnalyticsDisplay(data);
+                } else {
+                    console.error('Error loading analytics:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    
+    // Update analytics display
+    function updateAnalyticsDisplay(data) {
+        // Update the dashboard cards with real data
+        const pageViewsElement = document.querySelector('#analytics .dashboard-card:nth-child(1) .stat-number');
+        const uniqueVisitorsElement = document.querySelector('#analytics .dashboard-card:nth-child(2) .stat-number');
+        const popularPageElement = document.querySelector('#analytics .dashboard-card:nth-child(3) .stat-number');
+        const topLinkElement = document.querySelector('#analytics .dashboard-card:nth-child(4) .stat-number');
+        
+        if (pageViewsElement) pageViewsElement.textContent = data.pageViews || '0';
+        if (uniqueVisitorsElement) uniqueVisitorsElement.textContent = data.uniqueVisitors || '0';
+        if (popularPageElement) popularPageElement.textContent = data.popularPage || 'Home';
+        if (topLinkElement) topLinkElement.textContent = data.topLink || 'None';
+    }
+    
+    // Generate report
+    function generateReport() {
+        const reportType = document.getElementById('reportType').value;
+        const dateRange = document.getElementById('reportDateRange').value;
+        
+        if (!reportType) {
+            alert('Please select a report type.');
+            return;
+        }
+        
+        // Show loading state
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Generating...';
+        button.disabled = true;
+        
+        fetch('/api/analytics/report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: reportType,
+                dateRange: parseInt(dateRange)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Create and download the report
+                downloadReport(data.report, reportType, dateRange);
+            } else {
+                alert('Error generating report: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error generating report. Please try again.');
+        })
+        .finally(() => {
+            // Restore button state
+            button.textContent = originalText;
+            button.disabled = false;
         });
-    </script>
+    }
+    
+    // Download report
+    function downloadReport(reportData, type, dateRange) {
+        let filename = `ewa_report_${type}_${dateRange}days_${new Date().toISOString().split('T')[0]}.csv`;
+        let csvContent = '';
+        
+        switch (type) {
+            case 'usage':
+                csvContent = generateUsageReport(reportData);
+                break;
+            case 'links':
+                csvContent = generateLinksReport(reportData);
+                break;
+            case 'officers':
+                csvContent = generateOfficersReport(reportData);
+                break;
+            case 'documents':
+                csvContent = generateDocumentsReport(reportData);
+                break;
+            default:
+                alert('Unknown report type');
+                return;
+        }
+        
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        alert('Report generated and downloaded successfully!');
+    }
+    
+    // Generate usage report CSV
+    function generateUsageReport(data) {
+        let csv = 'Date,Page Views,Unique Visitors,Most Popular Page\n';
+        data.forEach(row => {
+            csv += `${row.date},${row.pageViews},${row.uniqueVisitors},"${row.popularPage}"\n`;
+        });
+        return csv;
+    }
+    
+    // Generate links report CSV
+    function generateLinksReport(data) {
+        let csv = 'Link,Club,Clicks,Last Clicked\n';
+        data.forEach(row => {
+            csv += `"${row.url}","${row.club}",${row.clicks},"${row.lastClicked}"\n`;
+        });
+        return csv;
+    }
+    
+    // Generate officers report CSV
+    function generateOfficersReport(data) {
+        let csv = 'Name,Position,Email,Club,Status\n';
+        data.forEach(row => {
+            csv += `"${row.name}","${row.position}","${row.email}","${row.club}","${row.status}"\n`;
+        });
+        return csv;
+    }
+    
+    // Generate documents report CSV
+    function generateDocumentsReport(data) {
+        let csv = 'Type,Club,Submitted Date,Status\n';
+        data.forEach(row => {
+            csv += `"${row.type}","${row.club}","${row.submittedDate}","${row.status}"\n`;
+        });
+        return csv;
+    }
+</script>
 </body>
 </html> 
