@@ -12,8 +12,88 @@
     
     <title>Admin Dashboard - Eastlake Wolfpack Association</title>
     <link rel="stylesheet" href="dashboard.css">
+    <style>
+        /* File upload styles */
+        .file-upload-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
         
-
+        .file-upload-container:hover {
+            border-color: #007bff;
+        }
+        
+        .file-upload-container input[type="file"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload-info {
+            color: #666;
+        }
+        
+        .file-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .file-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .file-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .file-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .file-link:hover {
+            text-decoration: underline;
+        }
+        
+        .no-file {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-header">
@@ -505,38 +585,44 @@
                 <div class="form-section">
                     <h3>Submit 1099 Information</h3>
                     <div class="form-group">
-                        <label for="1099VendorName">Vendor/Contractor Name</label>
-                        <input type="text" id="1099VendorName" placeholder="Vendor Name">
+                        <label for="1099RecipientName">Recipient Name *</label>
+                        <input type="text" id="1099RecipientName" placeholder="Recipient Name" required>
                     </div>
                     <div class="form-group">
-                        <label for="1099VendorTaxId">Tax ID (SSN or EIN)</label>
-                        <input type="text" id="1099VendorTaxId" placeholder="123-45-6789 or 12-3456789">
+                        <label for="1099RecipientTin">Tax ID (SSN or EIN) *</label>
+                        <input type="text" id="1099RecipientTin" placeholder="123-45-6789 or 12-3456789" required>
                     </div>
                     <div class="form-group">
-                        <label for="1099PaymentAmount">Payment Amount</label>
-                        <input type="number" id="1099PaymentAmount" placeholder="0.00" step="0.01">
+                        <label for="1099Amount">Payment Amount *</label>
+                        <input type="number" id="1099Amount" placeholder="0.00" step="0.01" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="1099VendorAddress">Vendor Address</label>
-                            <input type="text" id="1099VendorAddress" placeholder="Street Address">
-                        </div>
-                        <div class="form-group">
-                            <label for="1099VendorCity">City</label>
-                            <input type="text" id="1099VendorCity" placeholder="City">
+                    <div class="form-group">
+                        <label for="1099Description">Description</label>
+                        <textarea id="1099Description" placeholder="Description of services or goods" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="1099TaxYear">Tax Year *</label>
+                        <select id="1099TaxYear" required>
+                            <option value="">Select Tax Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    
+                    <!-- W9 File Upload Section -->
+                    <div class="form-group">
+                        <label for="1099W9File">W9 Form Upload *</label>
+                        <div class="file-upload-container">
+                            <input type="file" id="1099W9File" accept=".pdf,.jpg,.jpeg,.png,.gif" required>
+                            <div class="file-upload-info">
+                                <small>Accepted formats: PDF, JPG, PNG, GIF (Max 10MB)</small>
+                                <div id="w9FileStatus" class="file-status"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="1099VendorState">State</label>
-                            <input type="text" id="1099VendorState" placeholder="State" maxlength="2">
-                        </div>
-                        <div class="form-group">
-                            <label for="1099VendorZip">ZIP Code</label>
-                            <input type="text" id="1099VendorZip" placeholder="ZIP Code">
-                        </div>
-                    </div>
-                    <button class="action-btn" onclick="submit1099Form()">Submit 1099 Information</button>
+                    
+                    <button class="action-btn" onclick="submit1099Form()" id="submit1099Btn">Submit 1099 Information</button>
                 </div>
                 
                 <div class="form-section">
@@ -545,10 +631,11 @@
                         <thead>
                             <tr>
                                 <th>Date Submitted</th>
-                                <th>Vendor Name</th>
+                                <th>Recipient Name</th>
                                 <th>Tax ID</th>
-                                <th>Payment Amount</th>
-                                <th>Address</th>
+                                <th>Amount</th>
+                                <th>Tax Year</th>
+                                <th>W9 Form</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -1222,53 +1309,113 @@
         }
         
         // Submit 1099 form
-        function submit1099Form() {
+        async function submit1099Form() {
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const submitBtn = document.getElementById('submit1099Btn');
+            const fileInput = document.getElementById('1099W9File');
             
-            const formData = {
-                club: currentUser.club,
-                vendorName: document.getElementById('1099VendorName').value,
-                vendorTaxId: document.getElementById('1099VendorTaxId').value,
-                paymentAmount: document.getElementById('1099PaymentAmount').value,
-                vendorAddress: document.getElementById('1099VendorAddress').value,
-                vendorCity: document.getElementById('1099VendorCity').value,
-                vendorState: document.getElementById('1099VendorState').value,
-                vendorZip: document.getElementById('1099VendorZip').value
-            };
+            // Validate required fields
+            const recipientName = document.getElementById('1099RecipientName').value;
+            const recipientTin = document.getElementById('1099RecipientTin').value;
+            const amount = document.getElementById('1099Amount').value;
+            const taxYear = document.getElementById('1099TaxYear').value;
             
-            if (!formData.vendorName || !formData.vendorTaxId || !formData.paymentAmount) {
+            if (!recipientName || !recipientTin || !amount || !taxYear) {
                 alert('Please fill in all required fields');
                 return;
             }
             
-            fetch('/api/1099', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
+            if (!fileInput.files[0]) {
+                alert('Please select a W9 form file');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            
+            try {
+                // First, upload the W9 file
+                const file = fileInput.files[0];
+                const fileData = await readFileAsBase64(file);
+                
+                const uploadResponse = await fetch('/api/1099/upload-w9', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        file: fileData,
+                        filename: file.name,
+                        mimeType: file.type
+                    })
+                });
+                
+                const uploadResult = await uploadResponse.json();
+                
+                if (!uploadResult.success) {
+                    throw new Error(uploadResult.message);
+                }
+                
+                // Then submit the 1099 form with W9 file info
+                const formData = {
+                    recipientName: recipientName,
+                    recipientTin: recipientTin,
+                    amount: amount,
+                    description: document.getElementById('1099Description').value,
+                    submittedBy: currentUser.username,
+                    taxYear: taxYear,
+                    w9Filename: uploadResult.filename,
+                    w9BlobUrl: uploadResult.blobUrl,
+                    w9FileSize: uploadResult.fileSize,
+                    w9MimeType: uploadResult.mimeType
+                };
+                
+                const response = await fetch('/api/1099', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
                 if (data.success) {
                     alert('1099 information submitted successfully!');
                     // Clear form
-                    document.getElementById('1099VendorName').value = '';
-                    document.getElementById('1099VendorTaxId').value = '';
-                    document.getElementById('1099PaymentAmount').value = '';
-                    document.getElementById('1099VendorAddress').value = '';
-                    document.getElementById('1099VendorCity').value = '';
-                    document.getElementById('1099VendorState').value = '';
-                    document.getElementById('1099VendorZip').value = '';
+                    document.getElementById('1099RecipientName').value = '';
+                    document.getElementById('1099RecipientTin').value = '';
+                    document.getElementById('1099Amount').value = '';
+                    document.getElementById('1099Description').value = '';
+                    document.getElementById('1099TaxYear').value = '';
+                    document.getElementById('1099W9File').value = '';
+                    document.getElementById('w9FileStatus').innerHTML = '';
                     // Reload data
                     load1099Data();
                 } else {
                     alert('Error submitting form: ' + data.message);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
-                alert('Error submitting form. Please try again.');
+                alert('Error submitting form: ' + error.message);
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit 1099 Information';
+            }
+        }
+        
+        // Helper function to read file as base64
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1]; // Remove data URL prefix
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             });
         }
         
@@ -1347,15 +1494,19 @@
             tbody.innerHTML = '';
             
             submissions.forEach(submission => {
-                const address = `${submission.vendorAddress}, ${submission.vendorCity}, ${submission.vendorState} ${submission.vendorZip}`.replace(/^,\s*/, '');
+                const w9Link = submission.w9_blob_url ? 
+                    `<a href="${submission.w9_blob_url}" target="_blank" class="file-link">View W9</a>` : 
+                    '<span class="no-file">No W9 uploaded</span>';
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${new Date(submission.submittedAt).toLocaleDateString()}</td>
-                    <td>${submission.vendorName}</td>
-                    <td>${submission.vendorTaxId}</td>
-                    <td>$${submission.paymentAmount.toFixed(2)}</td>
-                    <td>${address}</td>
-                    <td><span class="status-active">${submission.status}</span></td>
+                    <td>${new Date(submission.created_at).toLocaleDateString()}</td>
+                    <td>${submission.recipient_name}</td>
+                    <td>${submission.recipient_tin}</td>
+                    <td>$${parseFloat(submission.amount).toFixed(2)}</td>
+                    <td>${submission.tax_year}</td>
+                    <td>${w9Link}</td>
+                    <td><span class="status-${submission.status}">${submission.status}</span></td>
                 `;
                 tbody.appendChild(row);
             });

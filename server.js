@@ -725,34 +725,54 @@ app.get('/api/insurance', async (req, res) => {
 // Submit 1099 information
 app.post('/api/1099', async (req, res) => {
     try {
-        const { club, vendorName, vendorTaxId, paymentAmount, vendorAddress, vendorCity, vendorState, vendorZip } = req.body;
+        const { 
+            recipientName, 
+            recipientTin, 
+            amount, 
+            description, 
+            submittedBy, 
+            taxYear,
+            w9Filename,
+            w9BlobUrl,
+            w9FileSize,
+            w9MimeType
+        } = req.body;
         
-        if (!club || !vendorName || !vendorTaxId || !paymentAmount) {
+        if (!recipientName || !recipientTin || !amount || !submittedBy || !taxYear) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'Missing required fields: club, vendorName, vendorTaxId, paymentAmount' 
+                message: 'Missing required fields: recipientName, recipientTin, amount, submittedBy, taxYear' 
+            });
+        }
+
+        // Validate W9 file is provided
+        if (!w9Filename || !w9BlobUrl) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'W9 form is required for 1099 submissions' 
             });
         }
 
         const form1099Data = {
-            id: Date.now().toString(),
-            club,
-            vendorName,
-            vendorTaxId,
-            paymentAmount: parseFloat(paymentAmount),
-            vendorAddress: vendorAddress || '',
-            vendorCity: vendorCity || '',
-            vendorState: vendorState || '',
-            vendorZip: vendorZip || '',
-            submittedAt: new Date().toISOString(),
-            status: 'pending'
+            recipientName,
+            recipientTin,
+            amount: parseFloat(amount),
+            description: description || '',
+            submittedBy,
+            taxYear: parseInt(taxYear),
+            status: 'pending',
+            w9Filename,
+            w9BlobUrl,
+            w9FileSize: w9FileSize ? parseInt(w9FileSize) : null,
+            w9MimeType
         };
 
-        if (await addForm1099(form1099Data)) {
+        const result = await addForm1099(form1099Data);
+        if (result) {
             res.json({ 
                 success: true, 
                 message: '1099 information submitted successfully',
-                submission: form1099Data
+                submission: result
             });
         } else {
             res.status(500).json({ 
@@ -795,6 +815,65 @@ app.get('/api/1099', async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: 'Internal server error' 
+        });
+    }
+});
+
+// Upload W9 form for 1099 submission
+app.post('/api/1099/upload-w9', async (req, res) => {
+    try {
+        // Check if blob storage is available
+        if (!blob) {
+            return res.status(500).json({
+                success: false,
+                message: 'File storage not available'
+            });
+        }
+
+        // Handle file upload using multer or similar
+        // For now, we'll expect the file data in the request body
+        const { file, filename, mimeType } = req.body;
+        
+        if (!file || !filename) {
+            return res.status(400).json({
+                success: false,
+                message: 'File data is required'
+            });
+        }
+
+        // Validate file type (PDF, image, etc.)
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(mimeType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid file type. Only PDF and image files are allowed.'
+            });
+        }
+
+        // Generate unique filename
+        const timestamp = Date.now();
+        const uniqueFilename = `w9-${timestamp}-${filename}`;
+
+        // Upload to Vercel Blob
+        const { url } = await blob.put(uniqueFilename, Buffer.from(file, 'base64'), {
+            access: 'public',
+            addRandomSuffix: false
+        });
+
+        res.json({
+            success: true,
+            message: 'W9 file uploaded successfully',
+            filename: uniqueFilename,
+            blobUrl: url,
+            fileSize: Buffer.from(file, 'base64').length,
+            mimeType
+        });
+
+    } catch (error) {
+        console.error('Error uploading W9 file:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to upload W9 file'
         });
     }
 });

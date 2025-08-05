@@ -80,6 +80,10 @@ async function migrateToNeon() {
             submitted_by VARCHAR(100) REFERENCES users(username),
             tax_year INTEGER NOT NULL,
             status VARCHAR(50) DEFAULT 'pending',
+            w9_filename VARCHAR(255),
+            w9_blob_url VARCHAR(500),
+            w9_file_size INTEGER,
+            w9_mime_type VARCHAR(100),
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
