@@ -1057,28 +1057,37 @@
         
         // Session management with timeout
         const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in milliseconds
+        const SESSION_EXTENSION_THRESHOLD = 5 * 60 * 1000; // 5 minutes before expiry
         
         function checkSessionTimeout() {
             const loginTime = sessionStorage.getItem('loginTime');
             if (!loginTime) {
                 // No login time found, redirect to login
+                console.log('No login time found, redirecting to login');
                 window.location.href = 'login.html';
                 return;
             }
             
             const currentTime = new Date().getTime();
             const timeSinceLogin = currentTime - parseInt(loginTime);
+            const timeRemaining = SESSION_TIMEOUT - timeSinceLogin;
+            
+            console.log(`Session check: ${Math.round(timeRemaining / 1000 / 60)} minutes remaining`);
             
             if (timeSinceLogin > SESSION_TIMEOUT) {
                 // Session expired, clear storage and redirect
+                console.log('Session expired, clearing storage');
                 sessionStorage.clear();
                 alert('Your session has expired. Please login again.');
                 window.location.href = 'login.html';
                 return;
             }
             
-            // Update login time to extend session
-            sessionStorage.setItem('loginTime', currentTime.toString());
+            // Only extend session if we're within 5 minutes of expiry
+            if (timeSinceLogin > (SESSION_TIMEOUT - SESSION_EXTENSION_THRESHOLD)) {
+                console.log('Extending session');
+                sessionStorage.setItem('loginTime', currentTime.toString());
+            }
         }
         
         // Check session timeout every 5 minutes
