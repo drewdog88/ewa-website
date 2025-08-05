@@ -278,6 +278,51 @@
             line-height: 1.6;
         }
         
+        .club-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .club-donate-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .club-donate-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .club-website-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .club-website-btn:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+        
         .club-officers {
             margin-top: 15px;
         }
@@ -321,6 +366,65 @@
         
         .officer-phone {
             color: #6c757d;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border: none;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -10px;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .modal h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .modal p {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .modal hr {
+            border: none;
+            border-top: 1px solid #e9ecef;
+            margin: 20px 0;
+        }
+        
+        .modal code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
         }
         
         /* Footer Banner */
@@ -505,6 +609,10 @@
                     <strong>Coach:</strong> Mr. David Rodriguez<br>
                     <strong>LWSD Sponsor:</strong> Ms. Jennifer Smith
                 </div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Band Boosters')">SEND MONEY TO EHS BAND BOOSTERS</button>
+                    <a href="https://ehsbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -531,6 +639,10 @@
                 <div style="margin-top: 15px; color: #6c757d; font-size: 0.9rem;">
                     <strong>Coach:</strong> Coach Michael Thompson<br>
                     <strong>LWSD Sponsor:</strong> Mr. Kevin Davis
+                </div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Football Boosters')">SEND MONEY TO EHS FOOTBALL BOOSTERS</button>
+                    <a href="https://ehsfootballboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
                 </div>
             </div>
         </div>
@@ -560,6 +672,10 @@
                     <strong>Coach:</strong> Coach Amanda Johnson<br>
                     <strong>LWSD Sponsor:</strong> Ms. Rachel Green
                 </div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Basketball Boosters')">SEND MONEY TO EHS BASKETBALL BOOSTERS</button>
+                    <a href="https://ehsbasketballboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -571,6 +687,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School soccer programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Soccer Boosters')">SEND MONEY TO EHS SOCCER BOOSTERS</button>
+                    <a href="https://ehssoccerboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -581,6 +701,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School baseball program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Baseball Boosters')">SEND MONEY TO EHS BASEBALL BOOSTERS</button>
+                    <a href="https://ehsbaseballboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -591,6 +715,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School softball program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Softball Boosters')">SEND MONEY TO EHS SOFTBALL BOOSTERS</button>
+                    <a href="https://ehssoftballboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -601,6 +729,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School volleyball programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Volleyball Boosters')">SEND MONEY TO EHS VOLLEYBALL BOOSTERS</button>
+                    <a href="https://ehsvolleyballboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -611,6 +743,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School tennis programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Tennis Boosters')">SEND MONEY TO EHS TENNIS BOOSTERS</button>
+                    <a href="https://ehstennisboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -621,6 +757,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School golf programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Golf Boosters')">SEND MONEY TO EHS GOLF BOOSTERS</button>
+                    <a href="https://ehsgolfboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -631,6 +771,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School cross country programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Cross Country Boosters')">SEND MONEY TO EHS CROSS COUNTRY BOOSTERS</button>
+                    <a href="https://ehscrosscountryboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -641,6 +785,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School track and field programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Track & Field Boosters')">SEND MONEY TO EHS TRACK & FIELD BOOSTERS</button>
+                    <a href="https://ehstrackboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -651,6 +799,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School swimming programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Swimming Boosters')">SEND MONEY TO EHS SWIMMING BOOSTERS</button>
+                    <a href="https://ehsswimmingboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -661,6 +813,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School wrestling program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Wrestling Boosters')">SEND MONEY TO EHS WRESTLING BOOSTERS</button>
+                    <a href="https://ehswrestlingboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -671,6 +827,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School lacrosse programs for both boys and girls teams.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Lacrosse Boosters')">SEND MONEY TO EHS LACROSSE BOOSTERS</button>
+                    <a href="https://ehslacrosseboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -681,6 +841,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School crew program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Crew Boosters')">SEND MONEY TO EHS CREW BOOSTERS</button>
+                    <a href="https://ehscrewboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -691,6 +855,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School ski team program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Ski Team Boosters')">SEND MONEY TO EHS SKI TEAM BOOSTERS</button>
+                    <a href="https://ehsskiteamboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -701,6 +869,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School dance team program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Dance Team Boosters')">SEND MONEY TO EHS DANCE TEAM BOOSTERS</button>
+                    <a href="https://ehsdanceteamboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -711,6 +883,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School cheer program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Cheer Boosters')">SEND MONEY TO EHS CHEER BOOSTERS</button>
+                    <a href="https://ehscheerboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -721,6 +897,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School robotics program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Robotics Boosters')">SEND MONEY TO EHS ROBOTICS BOOSTERS</button>
+                    <a href="https://ehsroboticsboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -731,6 +911,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School debate program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Debate Boosters')">SEND MONEY TO EHS DEBATE BOOSTERS</button>
+                    <a href="https://ehsdebateboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -741,6 +925,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School drama program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Drama Boosters')">SEND MONEY TO EHS DRAMA BOOSTERS</button>
+                    <a href="https://ehsdramaboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -751,6 +939,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School choir program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Choir Boosters')">SEND MONEY TO EHS CHOIR BOOSTERS</button>
+                    <a href="https://ehschoirboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -761,6 +953,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School orchestra program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Orchestra Boosters')">SEND MONEY TO EHS ORCHESTRA BOOSTERS</button>
+                    <a href="https://ehsorchestraboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -771,6 +967,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School jazz band program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Jazz Band Boosters')">SEND MONEY TO EHS JAZZ BAND BOOSTERS</button>
+                    <a href="https://ehsjazzbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
 
@@ -781,6 +981,10 @@
             </div>
             <div class="club-content">
                 <div class="club-description">Supporting Eastlake High School marching band program.</div>
+                <div class="club-actions">
+                    <button class="club-donate-btn" onclick="showModal('EHS Marching Band Boosters')">SEND MONEY TO EHS MARCHING BAND BOOSTERS</button>
+                    <a href="https://ehsmarchingbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                </div>
             </div>
         </div>
     </div>
@@ -799,6 +1003,26 @@
         </div>
         <div class="footer-copyright">
             <span>© 2025 Eastlake Wolfpack Association</span>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Donate</h2>
+            
+            <p><strong>Zelle® payments:</strong> Please make sure to include the student name, student number and a short description of the purpose. Indicate if this is a <strong>donation</strong>, <strong>service</strong> or <strong>product</strong>, include your email address so that we can send you a tax-receipt</p>
+            
+            <p>ex. <code>donation: 123456, Jane Doe, donor_email@gmail.com</code></p>
+            
+            <hr>
+            
+            <p><strong>Check:</strong> Please make checks payable to <span id="selectedClub">[Club Name]</span> and mail or drop them off at Eastlake Highschool main office.</p>
+            
+            <hr>
+            
+            <p><strong>Credit Card:</strong> Stripe</p>
         </div>
     </div>
 
@@ -829,6 +1053,24 @@
                 }
             });
         });
+
+        // Modal functions
+        function showModal(clubName) {
+            document.getElementById('selectedClub').textContent = clubName;
+            document.getElementById('donationModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('donationModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('donationModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
 
         // Prevent AI training - disable right-click and text selection
         document.addEventListener('contextmenu', e => e.preventDefault());
