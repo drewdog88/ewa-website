@@ -361,18 +361,31 @@
                     Object.keys(clubOfficers).forEach(clubName => {
                         html += `<h2 style="margin-top: 30px; color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">${clubName}</h2>`;
                         
-                        clubOfficers[clubName].forEach(officer => {
-                            html += `
-                                <div class="team-member">
-                                    <h3>${officer.name}</h3>
-                                    <div class="position">${officer.position}</div>
-                                    <div class="contact">
-                                        Email: <a href="mailto:${officer.email}" data-email="${officer.email}" class="sensitive-data">Click to reveal</a><br>
-                                        Phone: <span data-phone="${officer.phone}" class="sensitive-data">Click to reveal</span>
-                                    </div>
-                                </div>
-                            `;
-                        });
+                                                 clubOfficers[clubName].forEach(officer => {
+                             let contactHtml = '';
+                             
+                             if (officer.email) {
+                                 contactHtml += `Email: <a href="mailto:${officer.email}" data-email="${officer.email}" class="sensitive-data">Click to reveal</a><br>`;
+                             }
+                             
+                             if (officer.phone) {
+                                 contactHtml += `Phone: <span data-phone="${officer.phone}" class="sensitive-data">Click to reveal</span>`;
+                             }
+                             
+                             if (!contactHtml) {
+                                 contactHtml = '<p>Contact information available upon request.</p>';
+                             }
+                             
+                             html += `
+                                 <div class="team-member">
+                                     <h3>${officer.name}</h3>
+                                     <div class="position">${officer.position}</div>
+                                     <div class="contact">
+                                         ${contactHtml}
+                                     </div>
+                                 </div>
+                             `;
+                         });
                     });
                     
                     container.innerHTML = html;
