@@ -629,6 +629,14 @@
                 
                 <div class="form-section">
                     <h3>Your 1099 Submissions</h3>
+                    <div style="margin-bottom: 15px;">
+                        <button class="action-btn" onclick="load1099Data()" style="background-color: #007bff;">
+                            🔄 Refresh Submissions
+                        </button>
+                        <span style="margin-left: 10px; font-size: 14px; color: #666;">
+                            Click to reload your 1099 submissions
+                        </span>
+                    </div>
                     <table class="data-table" id="1099Table">
                         <thead>
                             <tr>
@@ -1480,70 +1488,144 @@
             });
         }
         
-        // Load 1099 data
+        // Load 1099 data - COMPLETELY REWRITTEN
         function load1099Data() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
-            console.log('🔍 Loading 1099 data for user:', currentUser);
+            console.log('🚀 Starting 1099 data load...');
             
+            // Get current user
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            console.log('👤 Current user:', currentUser);
+            
+            // Determine API URL based on user role
             let url = '/api/1099';
             if (currentUser.role === 'booster_admin' && currentUser.club) {
                 url = `/api/1099/${currentUser.club}`;
             }
             
-            console.log('🌐 Fetching from URL:', url);
+            console.log('🌐 Making API request to:', url);
             
-            fetch(url)
-                .then(response => {
-                    console.log('📡 Response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('📊 Received data:', data);
-                    if (data.success) {
-                        console.log('✅ Success, displaying', data.submissions.length, 'submissions');
-                        display1099Data(data.submissions);
-                    } else {
-                        console.error('❌ Error loading 1099 data:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('💥 Fetch error:', error);
-                });
+            // Show loading state
+            const tbody = document.querySelector('#1099Table tbody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Loading 1099 submissions...</td></tr>';
+            }
+            
+            // Make API request
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                console.log('📡 API Response status:', response.status);
+                console.log('📡 API Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                console.log('📊 API Response data:', data);
+                
+                if (data && data.success) {
+                    console.log('✅ API call successful, submissions count:', data.submissions ? data.submissions.length : 0);
+                    display1099Data(data.submissions || []);
+                } else {
+                    console.error('❌ API returned error:', data);
+                    display1099Data([]);
+                    showErrorMessage('Failed to load 1099 data: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('💥 Fetch error:', error);
+                display1099Data([]);
+                showErrorMessage('Network error loading 1099 data: ' + error.message);
+            });
         }
         
-        // Display 1099 data
+        // Display 1099 data - COMPLETELY REWRITTEN
         function display1099Data(submissions) {
-            console.log('🎨 Displaying 1099 data:', submissions);
+            console.log('🎨 Starting to display 1099 data...');
+            console.log('📋 Submissions to display:', submissions);
+            
+            // Find the table body
             const tbody = document.querySelector('#1099Table tbody');
             if (!tbody) {
                 console.error('❌ Could not find #1099Table tbody element');
+                showErrorMessage('Could not find 1099 table element');
                 return;
             }
             
-            console.log('📋 Found tbody, clearing and adding', submissions.length, 'rows');
+            console.log('✅ Found table body, clearing existing content');
             tbody.innerHTML = '';
             
+            // Check if we have submissions
+            if (!submissions || submissions.length === 0) {
+                console.log('📭 No submissions to display');
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #666;">No 1099 submissions found</td></tr>';
+                return;
+            }
+            
+            console.log(`📝 Processing ${submissions.length} submissions...`);
+            
+            // Process each submission
             submissions.forEach((submission, index) => {
-                console.log(`📝 Processing submission ${index + 1}:`, submission);
-                const w9Link = submission.w9_blob_url ? 
-                    `<a href="${submission.w9_blob_url}" target="_blank" class="file-link">View W9</a>` : 
-                    '<span class="no-file">No W9 uploaded</span>';
+                console.log(`📄 Processing submission ${index + 1}:`, submission);
                 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${new Date(submission.created_at).toLocaleDateString()}</td>
-                    <td>${submission.recipient_name}</td>
-                    <td>${submission.recipient_tin}</td>
-                    <td>$${parseFloat(submission.amount).toFixed(2)}</td>
-                    <td>${submission.tax_year}</td>
-                    <td>${w9Link}</td>
-                    <td><span class="status-${submission.status}">${submission.status}</span></td>
-                `;
-                tbody.appendChild(row);
-                console.log(`✅ Added row for ${submission.recipient_name}`);
+                try {
+                    // Create W9 link
+                    const w9Link = submission.w9_blob_url ? 
+                        `<a href="${submission.w9_blob_url}" target="_blank" class="file-link">View W9</a>` : 
+                        '<span class="no-file">No W9 uploaded</span>';
+                    
+                    // Format date
+                    const formattedDate = submission.created_at ? 
+                        new Date(submission.created_at).toLocaleDateString() : 
+                        'N/A';
+                    
+                    // Format amount
+                    const formattedAmount = submission.amount ? 
+                        `$${parseFloat(submission.amount).toFixed(2)}` : 
+                        'N/A';
+                    
+                    // Create table row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${submission.recipient_name || 'N/A'}</td>
+                        <td>${submission.recipient_tin || 'N/A'}</td>
+                        <td>${formattedAmount}</td>
+                        <td>${submission.tax_year || 'N/A'}</td>
+                        <td>${w9Link}</td>
+                        <td><span class="status-${submission.status || 'pending'}">${submission.status || 'pending'}</span></td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                    console.log(`✅ Added row for ${submission.recipient_name || 'Unknown'}`);
+                    
+                } catch (error) {
+                    console.error(`❌ Error processing submission ${index + 1}:`, error);
+                }
             });
             
             console.log('🎉 Finished displaying 1099 data');
+        }
+        
+        // Helper function to show error messages
+        function showErrorMessage(message) {
+            console.error('🚨 Error:', message);
+            
+            // Try to show error in the table
+            const tbody = document.querySelector('#1099Table tbody');
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px; color: red;">Error: ${message}</td></tr>`;
+            }
+            
+            // Also show alert for immediate feedback
+            alert('Error: ' + message);
         }
         
         // Profile Management Functions
