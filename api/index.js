@@ -89,6 +89,22 @@ function generateCSV(submissions) {
     return csvContent;
 }
 
+// Validation functions
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
+const validatePhone = (phone) => {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+};
+
+const sanitizeInput = (input) => {
+    if (!input) return '';
+    return input.toString().trim().replace(/[<>]/g, '');
+};
+
 // Function to initialize database connection
 async function initializeDatabase() {
     try {
@@ -645,6 +661,148 @@ app.delete('/1099/:id', async (req, res) => {
         });
     }
 });
+
+// Volunteer Management
+
+// Submit volunteer interest
+app.post('/volunteers', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        console.log('Received volunteer submission request:', req.body);
+        
+        const { boosterClub, volunteerName, childName, email, phone, message } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedBoosterClub = sanitizeInput(boosterClub);
+        const sanitizedVolunteerName = sanitizeInput(volunteerName);
+        const sanitizedChildName = sanitizeInput(childName);
+        const sanitizedEmail = sanitizeInput(email);
+        const sanitizedPhone = sanitizeInput(phone);
+        const sanitizedMessage = sanitizeInput(message);
+        
+        // Validate required fields
+        if (!sanitizedBoosterClub || !sanitizedVolunteerName || !sanitizedEmail) {
+            const missingFields = [];
+            if (!sanitizedBoosterClub) missingFields.push('boosterClub');
+            if (!sanitizedVolunteerName) missingFields.push('volunteerName');
+            if (!sanitizedEmail) missingFields.push('email');
+            
+            return res.status(400).json({ 
+                success: false, 
+                message: `Missing required fields: ${missingFields.join(', ')}` 
+            });
+        }
+        
+        // Validate email format
+        if (!validateEmail(sanitizedEmail)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email format'
+            });
+        }
+        
+        // Validate phone format if provided
+        if (sanitizedPhone && !validatePhone(sanitizedPhone)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid phone number format'
+            });
+        }
+
+        const volunteerData = {
+            name: sanitizedVolunteerName,
+            email: sanitizedEmail,
+            phone: sanitizedPhone || '',
+            club: sanitizedBoosterClub,
+            clubName: getBoosterClubDisplayName(sanitizedBoosterClub),
+            interests: sanitizedMessage || '',
+            availability: sanitizedChildName ? `Child: ${sanitizedChildName}` : ''
+        };
+
+        console.log('Adding new volunteer:', volunteerData);
+        
+        const result = await addVolunteer(volunteerData);
+        if (result) {
+            console.log('Volunteer saved successfully');
+            res.json({ 
+                success: true, 
+                message: 'Volunteer interest submitted successfully',
+                volunteer: result
+            });
+        } else {
+            console.error('Failed to save volunteer data');
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to save volunteer data' 
+            });
+        }
+    } catch (error) {
+        console.error('Error submitting volunteer form:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Get all volunteers (for admin)
+app.get('/volunteers', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const volunteers = await getVolunteers();
+        res.json({ success: true, volunteers });
+    } catch (error) {
+        console.error('Error getting volunteers:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Get volunteers by club (for booster club officers)
+app.get('/volunteers/:club', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const { club } = req.params;
+        const volunteers = await getVolunteers();
+        const clubVolunteers = volunteers.filter(v => v.club === club);
+        res.json({ success: true, volunteers: clubVolunteers });
+    } catch (error) {
+        console.error('Error getting club volunteers:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Helper function to get booster club display name
+function getBoosterClubDisplayName(boosterClub) {
+    const clubNames = {
+        'band': 'EHS Band Boosters',
+        'football': 'EHS Football Boosters',
+        'basketball': 'EHS Basketball Boosters',
+        'soccer': 'EHS Soccer Boosters',
+        'baseball': 'EHS Baseball Boosters',
+        'softball': 'EHS Softball Boosters',
+        'volleyball': 'EHS Volleyball Boosters',
+        'swimming': 'EHS Swimming Boosters',
+        'track': 'EHS Track & Field Boosters',
+        'tennis': 'EHS Tennis Boosters',
+        'golf': 'EHS Golf Boosters',
+        'wrestling': 'EHS Wrestling Boosters',
+        'cheer': 'EHS Cheer Boosters',
+        'dance': 'EHS Dance Boosters',
+        'orchestra': 'EHS Orchestra Boosters',
+        'choir': 'EHS Choir Boosters',
+        'drama': 'EHS Drama Boosters',
+        'debate': 'EHS Debate Boosters',
+        'robotics': 'EHS Robotics Boosters',
+        'other': 'Other'
+    };
+    return clubNames[boosterClub] || boosterClub;
+}
 
 // Export for Vercel
 module.exports = app; 
