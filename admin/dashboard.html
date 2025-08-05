@@ -1416,8 +1416,11 @@
                     document.getElementById('1099TaxYear').value = '';
                     document.getElementById('1099W9File').value = '';
                     document.getElementById('w9FileStatus').innerHTML = '';
-                    // Reload data
-                    load1099Data();
+                    // Reload data with a small delay to ensure DOM is ready
+                    setTimeout(() => {
+                        console.log('🔄 Reloading 1099 data after successful submission...');
+                        load1099Data();
+                    }, 100);
                 } else {
                     alert('Error submitting form: ' + data.message);
                 }
@@ -1504,10 +1507,21 @@
             
             console.log('🌐 Making API request to:', url);
             
-            // Show loading state
+            // Show loading state - with better error handling
             const tbody = document.querySelector('#1099Table tbody');
+            console.log('🔍 Looking for #1099Table tbody element...');
+            console.log('🔍 Found tbody element:', tbody);
+            
             if (tbody) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Loading 1099 submissions...</td></tr>';
+            } else {
+                console.error('❌ Could not find #1099Table tbody element - table may not be loaded yet');
+                // Try again after a short delay
+                setTimeout(() => {
+                    console.log('🔄 Retrying load1099Data after delay...');
+                    load1099Data();
+                }, 500);
+                return;
             }
             
             // Make API request
