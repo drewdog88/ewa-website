@@ -69,7 +69,7 @@ setInterval(() => {
 
 // Middleware
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? ['https://ewa-website.com'] : true,
+    origin: process.env.NODE_ENV === 'production' ? true : true,
     credentials: true
 }));
 app.use(bodyParser.json({ limit: '1mb' }));
