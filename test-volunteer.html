@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Volunteer Submission</title>
+</head>
+<body>
+    <h1>Test Volunteer Submission</h1>
+    <form id="testForm">
+        <div>
+            <label for="boosterClub">Booster Club:</label>
+            <select id="boosterClub" name="boosterClub" required>
+                <option value="">Select a Booster Club</option>
+                <option value="orchestra">EHS Orchestra Boosters Club</option>
+            </select>
+        </div>
+        <div>
+            <label for="volunteerName">Name:</label>
+            <input type="text" id="volunteerName" name="volunteerName" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <button type="submit">Submit Test</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const volunteerData = {
+                boosterClub: formData.get('boosterClub'),
+                volunteerName: formData.get('volunteerName'),
+                email: formData.get('email')
+            };
+            
+            console.log('Submitting data:', volunteerData);
+            
+            fetch('/api/volunteers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(volunteerData)
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            });
+        });
+    </script>
+</body>
+</html> 

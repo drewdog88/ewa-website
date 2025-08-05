@@ -344,50 +344,56 @@
             if (e.ctrlKey && e.key === 'c') e.preventDefault();
         });
 
-                            // Form submission handling
-                    document.getElementById('volunteerForm').addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        
-                        // Get form data
-                        const formData = new FormData(this);
-                        const volunteerData = {
-                            boosterClub: formData.get('boosterClub'),
-                            volunteerName: formData.get('volunteerName'),
-                            childName: formData.get('childName'),
-                            email: formData.get('email'),
-                            phone: formData.get('phone')
-                        };
-                        
-                        // Submit to server
-                        fetch('/api/volunteers', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(volunteerData)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Show success message
-                                document.getElementById('successMessage').style.display = 'block';
-                                
-                                // Reset form
-                                this.reset();
-                                
-                                // Hide success message after 5 seconds
-                                setTimeout(() => {
-                                    document.getElementById('successMessage').style.display = 'none';
-                                }, 5000);
-                            } else {
-                                alert('Error: ' + data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Error submitting volunteer interest. Please try again.');
-                        });
-                    });
+        // Form submission handling
+        document.getElementById('volunteerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const volunteerData = {
+                boosterClub: formData.get('boosterClub'),
+                volunteerName: formData.get('volunteerName'),
+                childName: formData.get('childName'),
+                email: formData.get('email'),
+                phone: formData.get('phone')
+            };
+            
+            console.log('Submitting volunteer data:', volunteerData);
+            
+            // Submit to server
+            fetch('/api/volunteers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(volunteerData)
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    // Show success message
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Reset form
+                    this.reset();
+                    
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 5000);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting volunteer interest. Please try again.');
+            });
+        });
     </script>
 </body>
 </html> 
