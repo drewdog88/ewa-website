@@ -159,14 +159,6 @@ const sanitizeInput = (input) => {
     return input.replace(/[<>]/g, '').trim();
 };
 
-// Serve static files from the root directory with enhanced caching
-app.use(express.static('.', {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
-    etag: true,
-    lastModified: true,
-    immutable: process.env.NODE_ENV === 'production'
-}));
-
 // Compression middleware for better performance
 const compression = require('compression');
 app.use(compression({
@@ -1770,6 +1762,14 @@ app.get('/api/health', (req, res) => {
         storage: kv ? 'Vercel KV' : 'In-memory'
     });
 });
+
+// Serve static files from the root directory with enhanced caching
+app.use(express.static('.', {
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+    etag: true,
+    lastModified: true,
+    immutable: process.env.NODE_ENV === 'production'
+}));
 
 // Serve the main page
 app.get('/', (req, res) => {
