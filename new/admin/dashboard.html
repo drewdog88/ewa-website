@@ -334,6 +334,7 @@
                 <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
                 <li><a href="#officers" class="nav-link" data-section="officers">Officer Management</a></li>
                 <li><a href="#club-websites" class="nav-link" data-section="club-websites">Club Website Links</a></li>
+                <li><a href="#volunteers" class="nav-link" data-section="volunteers">Volunteer Management</a></li>
                 <li><a href="#news" class="nav-link" data-section="news">News & Announcements</a></li>
                 <li><a href="#links" class="nav-link" data-section="links">Links & Resources</a></li>
                 <li><a href="#documents" class="nav-link" data-section="documents">Document Management</a></li>
@@ -759,6 +760,133 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            
+            <!-- Volunteer Management Section -->
+            <div id="volunteers" class="content-section">
+                <div class="section-header">
+                    <h2>Volunteer Management</h2>
+                    <p>View and manage volunteer interest submissions for your booster club.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Filter Volunteers</h3>
+                    <div class="form-group">
+                        <label for="volunteerClubFilter">Filter by Club</label>
+                        <select id="volunteerClubFilter">
+                            <option value="">All Clubs</option>
+                            <option value="band">EHS Band Boosters</option>
+                            <option value="baseball">Eastlake Baseball Club</option>
+                            <option value="boys-basketball">Eastlake Boys Basketball Booster Club</option>
+                            <option value="girls-basketball">Eastlake Girls Basketball Booster Club</option>
+                            <option value="cheer">Eastlake Cheer Booster Club</option>
+                            <option value="choir">Eastlake Choir</option>
+                            <option value="cross-country">Eastlake Cross-Country Boosters</option>
+                            <option value="dance">Eastlake Dance Team Boosters</option>
+                            <option value="deca">EHS DECA Booster Club</option>
+                            <option value="drama">Eastlake Drama</option>
+                            <option value="fastpitch">Eastlake Fastpitch (Girls)</option>
+                            <option value="boys-golf">Eastlake Boys Golf Booster Club</option>
+                            <option value="girls-golf">Eastlake Girls Golf Booster Club</option>
+                            <option value="orchestra">EHS Orchestra Boosters Club</option>
+                            <option value="robotics">Eastlake Robotics Club</option>
+                            <option value="boys-soccer">Eastlake Boys Soccer</option>
+                            <option value="girls-soccer">Eastlake Girls Soccer</option>
+                            <option value="boys-swim">Eastlake Boys Swim & Dive Booster Club</option>
+                            <option value="girls-swim">Eastlake Girls Swim & Dive Booster Club</option>
+                            <option value="track">EHS Track and Field Booster Club</option>
+                            <option value="volleyball">Eastlake Volleyball Booster Club</option>
+                            <option value="wrestling">EHS Wrestling Booster Club</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="volunteerStatusFilter">Filter by Status</label>
+                        <select id="volunteerStatusFilter">
+                            <option value="">All Statuses</option>
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="declined">Declined</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Volunteer Submissions</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Booster Club</th>
+                                <th>Volunteer Name</th>
+                                <th>Child's Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-01-15</td>
+                                <td>EHS Band Boosters</td>
+                                <td>Sarah Johnson</td>
+                                <td>Michael Johnson</td>
+                                <td>sarah.johnson@email.com</td>
+                                <td>(555) 123-4567</td>
+                                <td><span class="status-active">New</span></td>
+                                <td>
+                                    <button class="btn-small">Contact</button>
+                                    <button class="btn-small">Confirm</button>
+                                    <button class="btn-small">Decline</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-01-14</td>
+                                <td>Eastlake Baseball Club</td>
+                                <td>David Chen</td>
+                                <td>Alex Chen</td>
+                                <td>david.chen@email.com</td>
+                                <td>(555) 987-6543</td>
+                                <td><span class="status-active">Contacted</span></td>
+                                <td>
+                                    <button class="btn-small">Confirm</button>
+                                    <button class="btn-small">Decline</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-01-13</td>
+                                <td>Eastlake Girls Basketball Booster Club</td>
+                                <td>Maria Rodriguez</td>
+                                <td>Isabella Rodriguez</td>
+                                <td>maria.rodriguez@email.com</td>
+                                <td>(555) 456-7890</td>
+                                <td><span class="status-active">Confirmed</span></td>
+                                <td>
+                                    <button class="btn-small">View Details</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-01-12</td>
+                                <td>EHS Wrestling Booster Club</td>
+                                <td>Robert Wilson</td>
+                                <td></td>
+                                <td>robert.wilson@email.com</td>
+                                <td>(555) 321-0987</td>
+                                <td><span class="status-inactive">Declined</span></td>
+                                <td>
+                                    <button class="btn-small">View Details</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Export Volunteer Data</h3>
+                    <p>Download volunteer submissions for your club in CSV format.</p>
+                    <button class="action-btn">Export to CSV</button>
                 </div>
             </div>
             
