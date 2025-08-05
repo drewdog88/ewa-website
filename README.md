@@ -46,6 +46,7 @@ A modern, responsive website for the Eastlake Wolfpack Association, supporting E
 - ✅ **File upload/download** for templates and documents
 - ✅ **Status tracking** for submissions and approvals
 - ✅ **Filtering and search** capabilities
+- ✅ **Vercel Blob storage** for document and file management
 
 ### **Payment System**
 - ✅ **Dedicated payment pages** for each booster club
@@ -114,8 +115,17 @@ ewa_website/
 ### **Booster Club Features**
 - `POST /api/insurance` - Submit insurance form
 - `GET /api/insurance/:club` - Get club insurance submissions
+- `GET /api/insurance` - Get all insurance submissions (admin)
 - `POST /api/1099` - Submit 1099 information
 - `GET /api/1099/:club` - Get club 1099 submissions
+- `GET /api/1099` - Get all 1099 submissions (admin)
+
+### **File Storage (Vercel Blob)**
+- `POST /api/upload` - Upload simple file to blob storage
+- `POST /api/upload-document` - Upload document with metadata
+- `GET /api/documents/:boosterClub` - Get club documents
+- `GET /api/documents` - Get all documents (admin)
+- `DELETE /api/documents/:documentId` - Delete document
 
 ### **System**
 - `GET /api/health` - Health check endpoint
@@ -129,6 +139,7 @@ ewa_website/
 
 ### **Production (Vercel)**
 - **Vercel KV** for persistent data storage
+- **Vercel Blob** for file and document storage
 - **Automatic fallback** to in-memory if KV unavailable
 - **Environment-based** storage selection
 
@@ -187,6 +198,7 @@ NODE_ENV=production
 KV_URL=your-kv-url
 KV_REST_API_URL=your-kv-rest-url
 KV_REST_API_TOKEN=your-kv-token
+BLOB_READ_WRITE_TOKEN=your-blob-token
 ```
 
 ### **Local Development**
@@ -248,10 +260,15 @@ npm start
 ### **Latest Features**
 - ✅ **Simplified structure** - Removed original version, streamlined codebase
 - ✅ **Vercel deployment** - Production-ready with KV storage
+- ✅ **Vercel Blob integration** - File and document storage capabilities
 - ✅ **Analytics integration** - Vercel Analytics and Speed Insights
 - ✅ **Security enhancements** - Anti-scraping and contact protection
 - ✅ **Performance optimization** - Compression, caching, and monitoring
 - ✅ **Accessibility improvements** - WCAG compliance and user experience
+
+### **Testing**
+- **Blob Storage Test Page** - Visit `/blob-test.html` to test Vercel Blob functionality
+- **Health Check** - Use `/api/health` to verify server status and storage availability
 
 ### **Future Recommendations**
 1. **Database migration** - Consider PostgreSQL for complex queries
