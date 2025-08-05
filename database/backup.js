@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.local' });
 const { getSql } = require('./neon-functions');
 const fs = require('fs');
 const path = require('path');
@@ -223,4 +224,95 @@ class DatabaseBackup {
     }
 }
 
-module.exports = DatabaseBackup; 
+module.exports = DatabaseBackup;
+
+// Command-line interface
+if (require.main === module) {
+    const args = process.argv.slice(2);
+    const command = args[0];
+    
+    const backup = new DatabaseBackup();
+    
+    async function runCommand() {
+        try {
+            switch (command) {
+                case 'create':
+                case 'backup':
+                    console.log('🔄 Creating database backup...');
+                    const backupPath = await backup.createBackup();
+                    console.log(`✅ Backup completed: ${backupPath}`);
+                    break;
+                    
+                case 'list':
+                    console.log('📋 Available backups:');
+                    const backups = backup.listBackups();
+                    if (backups.length === 0) {
+                        console.log('   No backups found');
+                    } else {
+                        backups.forEach(b => {
+                            console.log(`   - ${b.filename} (${b.recordCount} records, ${b.size} bytes, ${new Date(b.timestamp).toLocaleString()})`);
+                        });
+                    }
+                    break;
+                    
+                case 'restore':
+                    const backupFile = args[1];
+                    if (!backupFile) {
+                        console.error('❌ Please specify a backup file to restore from');
+                        console.log('Usage: node database/backup.js restore <backup-file.json>');
+                        process.exit(1);
+                    }
+                    
+                    const backupPathToRestore = path.join(backup.backupDir, backupFile);
+                    console.log(`🔄 Restoring from backup: ${backupFile}`);
+                    console.log('⚠️  WARNING: This will overwrite current data!');
+                    console.log('   Press Ctrl+C to cancel, or wait 5 seconds to continue...');
+                    
+                    // Wait 5 seconds to give user time to cancel
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    
+                    await backup.restoreBackup(backupPathToRestore);
+                    console.log('✅ Restore completed successfully');
+                    break;
+                    
+                case 'delete':
+                    const fileToDelete = args[1];
+                    if (!fileToDelete) {
+                        console.error('❌ Please specify a backup file to delete');
+                        console.log('Usage: node database/backup.js delete <backup-file.json>');
+                        process.exit(1);
+                    }
+                    
+                    const deletePath = path.join(backup.backupDir, fileToDelete);
+                    const deleted = backup.deleteBackup(deletePath);
+                    if (deleted) {
+                        console.log('✅ Backup deleted successfully');
+                    } else {
+                        console.log('❌ Failed to delete backup');
+                    }
+                    break;
+                    
+                default:
+                    console.log('📚 EWA Database Backup Tool');
+                    console.log('');
+                    console.log('Usage:');
+                    console.log('  node database/backup.js create          - Create a new backup');
+                    console.log('  node database/backup.js list            - List available backups');
+                    console.log('  node database/backup.js restore <file>  - Restore from backup file');
+                    console.log('  node database/backup.js delete <file>   - Delete a backup file');
+                    console.log('');
+                    console.log('Examples:');
+                    console.log('  node database/backup.js create');
+                    console.log('  node database/backup.js list');
+                    console.log('  node database/backup.js restore ewa-backup-2025-08-05T20-24-39-517Z.json');
+                    console.log('  node database/backup.js delete old-backup.json');
+                    break;
+            }
+        } catch (error) {
+            console.error('❌ Error:', error.message);
+            process.exit(1);
+        }
+    }
+    
+    runCommand();
+} 
