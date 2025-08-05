@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1099 API Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .error { background-color: #ffebee; color: #c62828; }
+        .success { background-color: #e8f5e8; color: #2e7d32; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>1099 API Debug Test</h1>
+    
+    <button onclick="testAPI()">Test 1099 API</button>
+    <button onclick="testWithCredentials()">Test with Credentials</button>
+    <button onclick="checkPageLoad()">Check Page Load</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function log(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            resultDiv.appendChild(div);
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        async function testAPI() {
+            log('🔍 Testing 1099 API...', 'info');
+            
+            try {
+                const response = await fetch('/api/1099');
+                log(`📡 Response status: ${response.status}`, 'info');
+                log(`📡 Response headers: ${JSON.stringify([...response.headers.entries()])}`, 'info');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`❌ API Error: ${response.status} - ${errorText}`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`✅ API Success: ${JSON.stringify(data, null, 2)}`, 'success');
+                
+            } catch (error) {
+                log(`💥 Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testWithCredentials() {
+            log('🔍 Testing 1099 API with credentials...', 'info');
+            
+            try {
+                const response = await fetch('/api/1099', {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                log(`📡 Response status: ${response.status}`, 'info');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`❌ API Error: ${response.status} - ${errorText}`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`✅ API Success: ${JSON.stringify(data, null, 2)}`, 'success');
+                
+            } catch (error) {
+                log(`💥 Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        function checkPageLoad() {
+            log('🔍 Checking if page load functions exist...', 'info');
+            
+            if (typeof load1099Data === 'function') {
+                log('✅ load1099Data function exists', 'success');
+            } else {
+                log('❌ load1099Data function not found', 'error');
+            }
+            
+            if (typeof display1099Data === 'function') {
+                log('✅ display1099Data function exists', 'success');
+            } else {
+                log('❌ display1099Data function not found', 'error');
+            }
+            
+            // Check if table exists
+            const table = document.getElementById('1099Table');
+            if (table) {
+                log('✅ 1099Table element exists', 'success');
+                const tbody = table.querySelector('tbody');
+                if (tbody) {
+                    log('✅ tbody element exists', 'success');
+                } else {
+                    log('❌ tbody element not found', 'error');
+                }
+            } else {
+                log('❌ 1099Table element not found', 'error');
+            }
+        }
+
+        // Auto-run some checks on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Page loaded, running initial checks...', 'info');
+            checkPageLoad();
+        });
+    </script>
+</body>
+</html> 
