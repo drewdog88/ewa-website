@@ -337,7 +337,7 @@
 
     <script src="security.js"></script>
     <script>
-        // Load team members from API
+        // Load team members from API with fallback to static content
         async function loadTeamMembers() {
             try {
                 const response = await fetch('/api/officers');
@@ -361,59 +361,93 @@
                     Object.keys(clubOfficers).forEach(clubName => {
                         html += `<h2 style="margin-top: 30px; color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">${clubName}</h2>`;
                         
-                                                 clubOfficers[clubName].forEach(officer => {
-                             let contactHtml = '';
-                             
-                             if (officer.email) {
-                                 contactHtml += `Email: <a href="mailto:${officer.email}" data-email="${officer.email}" class="sensitive-data">Click to reveal</a><br>`;
-                             }
-                             
-                             if (officer.phone) {
-                                 contactHtml += `Phone: <span data-phone="${officer.phone}" class="sensitive-data">Click to reveal</span>`;
-                             }
-                             
-                             if (!contactHtml) {
-                                 contactHtml = '<p>Contact information available upon request.</p>';
-                             }
-                             
-                             html += `
-                                 <div class="team-member">
-                                     <h3>${officer.name}</h3>
-                                     <div class="position">${officer.position}</div>
-                                     <div class="contact">
-                                         ${contactHtml}
-                                     </div>
-                                 </div>
-                             `;
-                         });
+                        clubOfficers[clubName].forEach(officer => {
+                            let contactHtml = '';
+                            
+                            if (officer.email) {
+                                contactHtml += `Email: <a href="mailto:${officer.email}" data-email="${officer.email}" class="sensitive-data">Click to reveal</a><br>`;
+                            }
+                            
+                            if (officer.phone) {
+                                contactHtml += `Phone: <span data-phone="${officer.phone}" class="sensitive-data">Click to reveal</span>`;
+                            }
+                            
+                            if (!contactHtml) {
+                                contactHtml = '<p>Contact information available upon request.</p>';
+                            }
+                            
+                            html += `
+                                <div class="team-member">
+                                    <h3>${officer.name}</h3>
+                                    <div class="position">${officer.position}</div>
+                                    <div class="contact">
+                                        ${contactHtml}
+                                    </div>
+                                </div>
+                            `;
+                        });
                     });
                     
                     container.innerHTML = html;
                 } else {
-                    // Fallback to placeholder content if no officers found
-                    container.innerHTML = `
-                        <div class="team-member">
-                            <h3>Team Information</h3>
-                            <div class="position">Coming Soon</div>
-                            <div class="contact">
-                                <p>Our team information is being updated. Please check back soon or contact us for more information.</p>
-                            </div>
-                        </div>
-                    `;
+                    // Fallback to static content if no officers found
+                    showFallbackContent();
                 }
             } catch (error) {
                 console.error('Error loading team members:', error);
-                const container = document.getElementById('team-members-container');
-                container.innerHTML = `
-                    <div class="team-member">
-                        <h3>Team Information</h3>
-                        <div class="position">Temporarily Unavailable</div>
-                        <div class="contact">
-                            <p>Unable to load team information at this time. Please try again later or contact us directly.</p>
-                        </div>
-                    </div>
-                `;
+                // Always show fallback content if API fails
+                showFallbackContent();
             }
+        }
+
+        // Fallback content function - shows static team data
+        function showFallbackContent() {
+            const container = document.getElementById('team-members-container');
+            container.innerHTML = `
+                <h2 style="margin-top: 30px; color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">Eastlake Wolfpack Association</h2>
+                <div class="team-member">
+                    <h3>Doug Sargent</h3>
+                    <div class="position">President</div>
+                    <div class="contact">
+                        <p>Email: <a href="mailto:ewapresident@gmail.com">ewapresident@gmail.com</a></p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <h3>Sara Goldie</h3>
+                    <div class="position">Athletic Director</div>
+                    <div class="contact">
+                        <p>Email: <a href="mailto:sgoldie@lwsd.org">sgoldie@lwsd.org</a></p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <h3>Baxter Kent</h3>
+                    <div class="position">Secretary</div>
+                    <div class="contact">
+                        <p>Email: <a href="mailto:ewasecretary1@gmail.com">ewasecretary1@gmail.com</a></p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <h3>Shirley Brill</h3>
+                    <div class="position">Treasurer</div>
+                    <div class="contact">
+                        <p>Email: <a href="mailto:ewatreasurer@gmail.com">ewatreasurer@gmail.com</a></p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <h3>Andrew Brill</h3>
+                    <div class="position">Vice President / Insurance</div>
+                    <div class="contact">
+                        <p>Email: <a href="mailto:ewavpinsurance@gmail.com">ewavpinsurance@gmail.com</a></p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <h3>Todd Johnson</h3>
+                    <div class="position">Concessions / Merch</div>
+                    <div class="contact">
+                        <p>Contact information available upon request.</p>
+                    </div>
+                </div>
+            `;
         }
 
         // Load team members when page loads
