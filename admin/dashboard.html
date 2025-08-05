@@ -1483,34 +1483,48 @@
         // Load 1099 data
         function load1099Data() {
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            console.log('🔍 Loading 1099 data for user:', currentUser);
             
             let url = '/api/1099';
             if (currentUser.role === 'booster_admin' && currentUser.club) {
                 url = `/api/1099/${currentUser.club}`;
             }
             
+            console.log('🌐 Fetching from URL:', url);
+            
             fetch(url)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('📡 Response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('📊 Received data:', data);
                     if (data.success) {
+                        console.log('✅ Success, displaying', data.submissions.length, 'submissions');
                         display1099Data(data.submissions);
                     } else {
-                        console.error('Error loading 1099 data:', data.message);
+                        console.error('❌ Error loading 1099 data:', data.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('💥 Fetch error:', error);
                 });
         }
         
         // Display 1099 data
         function display1099Data(submissions) {
+            console.log('🎨 Displaying 1099 data:', submissions);
             const tbody = document.querySelector('#1099Table tbody');
-            if (!tbody) return;
+            if (!tbody) {
+                console.error('❌ Could not find #1099Table tbody element');
+                return;
+            }
             
+            console.log('📋 Found tbody, clearing and adding', submissions.length, 'rows');
             tbody.innerHTML = '';
             
-            submissions.forEach(submission => {
+            submissions.forEach((submission, index) => {
+                console.log(`📝 Processing submission ${index + 1}:`, submission);
                 const w9Link = submission.w9_blob_url ? 
                     `<a href="${submission.w9_blob_url}" target="_blank" class="file-link">View W9</a>` : 
                     '<span class="no-file">No W9 uploaded</span>';
@@ -1526,7 +1540,10 @@
                     <td><span class="status-${submission.status}">${submission.status}</span></td>
                 `;
                 tbody.appendChild(row);
+                console.log(`✅ Added row for ${submission.recipient_name}`);
             });
+            
+            console.log('🎉 Finished displaying 1099 data');
         }
         
         // Profile Management Functions
