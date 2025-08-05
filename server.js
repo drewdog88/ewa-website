@@ -7,6 +7,78 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 
+// Import logger
+const logger = require('./utils/logger');
+
+// Error handling utilities
+const ErrorHandler = {
+    // Log error with context
+    logError: (operation, error, req = null) => {
+        const requestInfo = req ? {
+            method: req.method,
+            url: req.url,
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
+        } : {};
+        
+        logger.error(`${operation} failed`, {
+            error: error.message,
+            stack: error.stack,
+            request: requestInfo,
+            operation
+        });
+    },
+
+    // Get user-friendly error message
+    getUserMessage: (operation, error) => {
+        const errorMessages = {
+            'database_connection': 'Database connection failed. Please try again later.',
+            'database_query': 'Unable to retrieve data. Please try again.',
+            'database_save': 'Unable to save data. Please try again.',
+            'authentication': 'Authentication failed. Please check your credentials.',
+            'authorization': 'You do not have permission to perform this action.',
+            'validation': 'Invalid data provided. Please check your input.',
+            'file_upload': 'File upload failed. Please try again.',
+            'file_not_found': 'The requested file was not found.',
+            'rate_limit': 'Too many requests. Please wait before trying again.',
+            'blob_storage': 'File storage is currently unavailable. Please try again later.',
+            'unknown': 'An unexpected error occurred. Please try again later.'
+        };
+
+        // Determine error type
+        let errorType = 'unknown';
+        if (error.message.includes('connection') || error.message.includes('DATABASE_URL')) {
+            errorType = 'database_connection';
+        } else if (error.message.includes('query') || error.message.includes('relation')) {
+            errorType = 'database_query';
+        } else if (error.message.includes('insert') || error.message.includes('update')) {
+            errorType = 'database_save';
+        } else if (error.message.includes('password') || error.message.includes('username')) {
+            errorType = 'authentication';
+        } else if (error.message.includes('permission') || error.message.includes('role')) {
+            errorType = 'authorization';
+        } else if (error.message.includes('validation') || error.message.includes('required')) {
+            errorType = 'validation';
+        } else if (error.message.includes('blob') || error.message.includes('BLOB_READ_WRITE_TOKEN')) {
+            errorType = 'blob_storage';
+        }
+
+        return errorMessages[errorType];
+    },
+
+    // Send error response
+    sendError: (res, operation, error, statusCode = 500, req = null) => {
+        this.logError(operation, error, req);
+        const userMessage = this.getUserMessage(operation, error);
+        
+        res.status(statusCode).json({
+            success: false,
+            message: userMessage,
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
 // Import Neon database functions
 const {
     getOfficers,
@@ -67,8 +139,9 @@ async function initializeDatabase() {
         console.log(`Database connected successfully with ${officers.length} officers`);
         
     } catch (error) {
-        console.error('Database initialization failed:', error.message);
-        console.log('Falling back to in-memory storage');
+        console.error('❌ Database initialization failed:', error.message);
+        console.log('⚠️ Falling back to in-memory storage');
+        console.log('💡 Check your DATABASE_URL environment variable');
     }
 }
         
@@ -386,11 +459,7 @@ app.post('/api/volunteers', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error submitting volunteer:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: `Internal server error: ${error.message}` 
-        });
+        ErrorHandler.sendError(res, 'submit_volunteer', error, 500, req);
     }
 });
 
@@ -400,11 +469,7 @@ app.get('/api/volunteers', async (req, res) => {
         const volunteers = await getVolunteers();
         res.json({ success: true, volunteers });
     } catch (error) {
-        console.error('Error getting volunteers:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
+        ErrorHandler.sendError(res, 'get_volunteers', error, 500, req);
     }
 });
 
@@ -510,11 +575,7 @@ app.post('/api/login', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
+        ErrorHandler.sendError(res, 'user_login', error, 500, req);
     }
 });
 
@@ -524,11 +585,7 @@ app.get('/api/users', async (req, res) => {
         const users = await getUsers();
         res.json({ success: true, users });
     } catch (error) {
-        console.error('Error getting users:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
+        ErrorHandler.sendError(res, 'get_users', error, 500, req);
     }
 });
 
@@ -585,11 +642,7 @@ app.post('/api/users', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
+        ErrorHandler.sendError(res, 'create_user', error, 500, req);
     }
 });
 
@@ -1607,15 +1660,61 @@ app.delete('/api/documents/:documentId', async (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'ok', 
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development',
-        databaseAvailable: !!process.env.DATABASE_URL,
-        blobAvailable: !!blob,
-        storage: 'Neon PostgreSQL'
-    });
+app.get('/api/health', async (req, res) => {
+    try {
+        // Test database connection
+        let databaseStatus = 'unknown';
+        let databaseDetails = {};
+        
+        if (process.env.DATABASE_URL) {
+            try {
+                const officers = await getOfficers();
+                databaseStatus = 'connected';
+                databaseDetails = {
+                    officersCount: officers.length,
+                    connectionType: 'Neon PostgreSQL'
+                };
+            } catch (error) {
+                databaseStatus = 'error';
+                databaseDetails = {
+                    error: error.message,
+                    connectionType: 'Neon PostgreSQL'
+                };
+            }
+        } else {
+            databaseStatus = 'not_configured';
+        }
+
+        // Test blob storage
+        let blobStatus = 'unknown';
+        if (blob) {
+            blobStatus = 'available';
+        } else if (process.env.BLOB_READ_WRITE_TOKEN) {
+            blobStatus = 'token_configured_but_not_initialized';
+        } else {
+            blobStatus = 'not_configured';
+        }
+
+        res.json({ 
+            status: 'ok', 
+            timestamp: new Date().toISOString(),
+            environment: process.env.NODE_ENV || 'development',
+            services: {
+                database: {
+                    status: databaseStatus,
+                    ...databaseDetails
+                },
+                blob: {
+                    status: blobStatus,
+                    configured: !!process.env.BLOB_READ_WRITE_TOKEN
+                }
+            },
+            version: '1.0.0',
+            uptime: process.uptime()
+        });
+    } catch (error) {
+        ErrorHandler.sendError(res, 'health_check', error, 500, req);
+    }
 });
 
 // Serve static files from the root directory with enhanced caching
@@ -1645,9 +1744,11 @@ app.get('*', (req, res) => {
 
 // Start server
 app.listen(PORT, async () => {
-    console.log(`EWA Website server running on http://localhost:${PORT}`);
-    console.log(`Storage: Neon PostgreSQL (production)`);
-    console.log(`Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
+    console.log('🚀 EWA Website server started successfully!');
+console.log(`📍 Server running on http://localhost:${PORT}`);
+console.log(`💾 Storage: Neon PostgreSQL (production)`);
+console.log(`🔐 Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
+console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
     
     // Initialize database connection
     await initializeDatabase();

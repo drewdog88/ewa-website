@@ -88,3 +88,4 @@ jspm_packages/
 
 # Database backups
 backups/
+logs/
