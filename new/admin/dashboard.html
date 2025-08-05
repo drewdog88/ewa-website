@@ -249,6 +249,22 @@
             background: #c82333;
         }
         
+        .status-active {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .status-inactive {
+            background: #6c757d;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
         .form-section {
             background: white;
             padding: 20px;
@@ -317,6 +333,7 @@
             <ul class="sidebar-nav">
                 <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
                 <li><a href="#officers" class="nav-link" data-section="officers">Officer Management</a></li>
+                <li><a href="#club-websites" class="nav-link" data-section="club-websites">Club Website Links</a></li>
                 <li><a href="#news" class="nav-link" data-section="news">News & Announcements</a></li>
                 <li><a href="#links" class="nav-link" data-section="links">Links & Resources</a></li>
                 <li><a href="#documents" class="nav-link" data-section="documents">Document Management</a></li>
@@ -478,6 +495,271 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            
+            <!-- Club Website Links Section -->
+            <div id="club-websites" class="content-section">
+                <div class="section-header">
+                    <h2>Club Website Links Management</h2>
+                    <p>Manage website links for each booster club. These links appear as "Visit Website" buttons on the main page.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Edit Club Website Links</h3>
+                    <div class="form-group">
+                        <label for="websiteClubSelect">Select Club</label>
+                        <select id="websiteClubSelect">
+                            <option value="">Select Booster Club</option>
+                            <option value="band">EHS Band Boosters</option>
+                            <option value="baseball">Eastlake Baseball Club</option>
+                            <option value="boys-basketball">Eastlake Boys Basketball Booster Club</option>
+                            <option value="girls-basketball">Eastlake Girls Basketball Booster Club</option>
+                            <option value="cheer">Eastlake Cheer Booster Club</option>
+                            <option value="choir">Eastlake Choir</option>
+                            <option value="cross-country">Eastlake Cross-Country Boosters</option>
+                            <option value="dance">Eastlake Dance Team Boosters</option>
+                            <option value="deca">EHS DECA Booster Club</option>
+                            <option value="drama">Eastlake Drama</option>
+                            <option value="fastpitch">Eastlake Fastpitch (Girls)</option>
+                            <option value="boys-golf">Eastlake Boys Golf Booster Club</option>
+                            <option value="girls-golf">Eastlake Girls Golf Booster Club</option>
+                            <option value="orchestra">EHS Orchestra Boosters Club</option>
+                            <option value="robotics">Eastlake Robotics Club</option>
+                            <option value="boys-soccer">Eastlake Boys Soccer</option>
+                            <option value="girls-soccer">Eastlake Girls Soccer</option>
+                            <option value="boys-swim">Eastlake Boys Swim & Dive Booster Club</option>
+                            <option value="girls-swim">Eastlake Girls Swim & Dive Booster Club</option>
+                            <option value="track">EHS Track and Field Booster Club</option>
+                            <option value="volleyball">Eastlake Volleyball Booster Club</option>
+                            <option value="wrestling">EHS Wrestling Booster Club</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="websiteUrl">Website URL</label>
+                        <input type="url" id="websiteUrl" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="websiteEnabled">
+                            <input type="checkbox" id="websiteEnabled" checked>
+                            Enable "Visit Website" button for this club
+                        </label>
+                    </div>
+                    <button class="action-btn">Update Website Link</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Current Website Links</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Club Name</th>
+                                <th>Website URL</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>EHS Band Boosters</td>
+                                <td><a href="https://ehsbandboosters.org" target="_blank">https://ehsbandboosters.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Baseball Club</td>
+                                <td><a href="https://eastlakebaseball.org" target="_blank">https://eastlakebaseball.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Boys Basketball Booster Club</td>
+                                <td><a href="https://eastlakeboysbasketball.org" target="_blank">https://eastlakeboysbasketball.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Girls Basketball Booster Club</td>
+                                <td><a href="https://eastlakegirlsbasketball.org" target="_blank">https://eastlakegirlsbasketball.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Cheer Booster Club</td>
+                                <td><a href="https://eastlakecheer.org" target="_blank">https://eastlakecheer.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Choir</td>
+                                <td><a href="https://eastlakechoir.org" target="_blank">https://eastlakechoir.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Cross-Country Boosters</td>
+                                <td><a href="https://eastlakecrosscountry.org" target="_blank">https://eastlakecrosscountry.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Dance Team Boosters</td>
+                                <td><a href="https://eastlakedanceteam.org" target="_blank">https://eastlakedanceteam.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EHS DECA Booster Club</td>
+                                <td><a href="https://ehsdeca.org" target="_blank">https://ehsdeca.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Drama</td>
+                                <td><a href="https://eastlakedrama.org" target="_blank">https://eastlakedrama.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Fastpitch (Girls)</td>
+                                <td><a href="https://eastlakefastpitch.org" target="_blank">https://eastlakefastpitch.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Boys Golf Booster Club</td>
+                                <td><a href="https://eastlakeboysgolf.org" target="_blank">https://eastlakeboysgolf.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Girls Golf Booster Club</td>
+                                <td><a href="https://eastlakegirlsgolf.org" target="_blank">https://eastlakegirlsgolf.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EHS Orchestra Boosters Club</td>
+                                <td><a href="https://ehsorchestra.org" target="_blank">https://ehsorchestra.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Robotics Club</td>
+                                <td><a href="https://eastlakerobotics.org" target="_blank">https://eastlakerobotics.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Boys Soccer</td>
+                                <td><a href="https://eastlakeboyssoccer.org" target="_blank">https://eastlakeboyssoccer.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Girls Soccer</td>
+                                <td><a href="https://eastlakegirlssoccer.org" target="_blank">https://eastlakegirlssoccer.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Boys Swim & Dive Booster Club</td>
+                                <td><a href="https://eastlakeboysswim.org" target="_blank">https://eastlakeboysswim.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Girls Swim & Dive Booster Club</td>
+                                <td><a href="https://eastlakegirlsswim.org" target="_blank">https://eastlakegirlsswim.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EHS Track and Field Booster Club</td>
+                                <td><a href="https://ehstrackandfield.org" target="_blank">https://ehstrackandfield.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eastlake Volleyball Booster Club</td>
+                                <td><a href="https://eastlakevolleyball.org" target="_blank">https://eastlakevolleyball.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EHS Wrestling Booster Club</td>
+                                <td><a href="https://ehswrestling.org" target="_blank">https://ehswrestling.org</a></td>
+                                <td><span class="status-active">Active</span></td>
+                                <td>
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Disable</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
             <!-- News Management Section -->
