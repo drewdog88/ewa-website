@@ -25,7 +25,12 @@ async function getOfficers() {
         const officers = await sql`SELECT * FROM officers ORDER BY created_at`;
         return officers;
     } catch (error) {
-        console.error('Error getting officers:', error);
+        console.error('❌ Database error getting officers:', {
+            error: error.message,
+            code: error.code,
+            detail: error.detail,
+            hint: error.hint
+        });
         return [];
     }
 }
@@ -42,7 +47,13 @@ async function addOfficer(officer) {
         `;
         return result[0];
     } catch (error) {
-        console.error('Error adding officer:', error);
+        console.error('❌ Database error adding officer:', {
+            error: error.message,
+            code: error.code,
+            detail: error.detail,
+            hint: error.hint,
+            officer: { name: officer.name, position: officer.position }
+        });
         throw error;
     }
 }
