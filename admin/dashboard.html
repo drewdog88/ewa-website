@@ -1099,7 +1099,7 @@
         // Set up role-based access control
         function setupRoleBasedAccess(userData) {
             if (userData.role === 'booster_admin') {
-                // Hide admin-only sections
+                // Hide admin-only sections for booster club admins
                 document.querySelectorAll('.admin-only').forEach(el => {
                     el.style.display = 'none';
                 });
@@ -1108,6 +1108,20 @@
                 const header = document.querySelector('.admin-header h1');
                 if (header && userData.clubName) {
                     header.textContent = `EWA Admin Dashboard - ${userData.clubName}`;
+                }
+                
+                // Filter volunteer data to only show their club's volunteers
+                // This is handled in the loadVolunteerData function
+            } else if (userData.role === 'admin') {
+                // Full admin - show all features
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'block';
+                });
+                
+                // Update header for full admin
+                const header = document.querySelector('.admin-header h1');
+                if (header) {
+                    header.textContent = 'EWA Admin Dashboard';
                 }
             }
         }
@@ -1212,20 +1226,23 @@
         function loadInsuranceData() {
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             
+            let url = '/api/insurance';
             if (currentUser.role === 'booster_admin' && currentUser.club) {
-                fetch(`/api/insurance/${currentUser.club}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            displayInsuranceData(data.submissions);
-                        } else {
-                            console.error('Error loading insurance data:', data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                url = `/api/insurance/${currentUser.club}`;
             }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayInsuranceData(data.submissions);
+                    } else {
+                        console.error('Error loading insurance data:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
         
         // Display insurance data
@@ -1253,20 +1270,23 @@
         function load1099Data() {
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             
+            let url = '/api/1099';
             if (currentUser.role === 'booster_admin' && currentUser.club) {
-                fetch(`/api/1099/${currentUser.club}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            display1099Data(data.submissions);
-                        } else {
-                            console.error('Error loading 1099 data:', data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                url = `/api/1099/${currentUser.club}`;
             }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        display1099Data(data.submissions);
+                    } else {
+                        console.error('Error loading 1099 data:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
         
         // Display 1099 data
