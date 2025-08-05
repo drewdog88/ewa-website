@@ -1,310 +1,284 @@
-# EWA Website
+# Eastlake Wolfpack Association Website
 
-Eastlake Wolfpack Association (EWA) website with dual version support - original replica and enhanced new version with comprehensive features.
+A modern, responsive website for the Eastlake Wolfpack Association, supporting Eastlake High School booster clubs and activities.
 
-## Overview
+## 🚀 Features
 
-This project contains two versions of the EWA website:
-- **Original Version** (`original/`): 1:1 replica of the original website at https://ewa-site.pages.dev/
-- **New Version** (`new/`): Enhanced version with modern features, SEO optimization, and comprehensive admin system
+### **UI/Design**
+- ✅ **Modern, responsive design** with mobile-first approach
+- ✅ **Consistent branding** with EWA wolf logo across all pages
+- ✅ **Professional styling** with improved typography and spacing
+- ✅ **Accessibility features** including skip links and ARIA attributes
+- ✅ **Interactive elements** with smooth animations and transitions
 
-## Features
+### **Security**
+- ✅ **Contact information protection** with obfuscation and anti-scraping measures
+- ✅ **Security headers** (XSS protection, content type options, frame options)
+- ✅ **Rate limiting** to prevent abuse
+- ✅ **Input validation and sanitization** for all user inputs
+- ✅ **Role-based access control** for admin functions
 
-### Original Version
-- Exact replica of the original EWA website
-- Booster club listings with donation popups and website links
-- EWA Team page with member information
-- Preserved for reference and comparison
+### **Performance/SEO**
+- ✅ **Optimized loading** with compression and caching
+- ✅ **SEO meta tags** including Open Graph and Twitter Cards
+- ✅ **Structured data** for better search engine understanding
+- ✅ **Performance monitoring** with Vercel Analytics and Speed Insights
+- ✅ **Accessibility compliance** with WCAG guidelines
 
-### New Version - Enhanced Features
+### **User Management**
+- ✅ **Multi-role system** (Admin, Booster Club Admin)
+- ✅ **User authentication** with secure login/logout
+- ✅ **Self-service features** (password change, forgot password)
+- ✅ **Account management** (locking, unlocking, profile setup)
+- ✅ **Secret question/answer** for password recovery
 
-#### 🎨 **User Interface & Design**
-- **Modern Design**: Clean, professional interface with consistent branding
-- **Responsive Layout**: Mobile-first design that works on all devices
-- **Wolf Logo Integration**: Consistent branding across all pages
-- **Enhanced Navigation**: Intuitive navigation with clear page structure
+### **Admin Dashboard**
+- ✅ **Comprehensive user management** (create, edit, delete, lock/unlock)
+- ✅ **Officer management** with CSV import/export functionality
+- ✅ **Volunteer management** with status tracking and filtering
+- ✅ **Insurance form submissions** for booster clubs
+- ✅ **1099 information management** for tax reporting
+- ✅ **Website link management** for external resources
 
-#### 🔐 **Security & Privacy**
-- **Contact Protection**: Email and phone obfuscation to prevent scraping
-- **Anti-Scraping Measures**: Right-click protection and copy prevention
-- **Secure Admin Panel**: Role-based access control
-- **Input Validation**: Server-side validation and sanitization
-- **Rate Limiting**: Protection against abuse
+### **Content Management**
+- ✅ **Dynamic content loading** with real-time updates
+- ✅ **CSV import/export** for bulk data management
+- ✅ **File upload/download** for templates and documents
+- ✅ **Status tracking** for submissions and approvals
+- ✅ **Filtering and search** capabilities
 
-#### 🚀 **Performance & SEO**
-- **SEO Optimized**: Comprehensive meta tags, Open Graph, Twitter Cards
-- **Structured Data**: JSON-LD markup for better search engine understanding
-- **Performance Optimized**: GPU acceleration, compression, caching
-- **Accessibility**: WCAG compliant with skip links, ARIA attributes, keyboard navigation
-- **Preload Resources**: Critical resources loaded with high priority
+### **Payment System**
+- ✅ **Dedicated payment pages** for each booster club
+- ✅ **Secure payment information** display
+- ✅ **Club-specific donation links** and instructions
+- ✅ **Professional payment presentation**
 
-#### 👥 **User Management System**
-- **Role-Based Access**: 
-  - **Admin**: Full access to all features
-  - **Booster Club Officers**: Limited access to their club's data only
-- **User Self-Service**: Password changes, forgot password with secret Q/A
-- **Account Management**: Lock/unlock users, password resets
-- **Profile Setup**: First-time login setup with security questions
-
-#### 📊 **Admin Dashboard**
-- **Volunteer Management**: View, filter, update status, export to CSV
-- **Officer Management**: Add, edit, delete, import from CSV
-- **Insurance Forms**: Submit and manage insurance information
-- **1099 Information**: Tax document management
-- **Website Links**: Manage booster club website links
-- **User Administration**: Complete user management system
-
-#### 📝 **Content Management**
-- **News System**: Structured news articles with dates and categories
-- **Photo Gallery**: Interactive gallery with keyboard navigation
-- **Resource Links**: Filterable links organized by category
-- **Volunteer Signup**: Comprehensive volunteer interest form
-
-#### 💳 **Payment System**
-- **Dedicated Payment Pages**: Individual pages for each booster club
-- **Payment Information**: Secure display of payment details
-- **Club-Specific Content**: Tailored information for each booster club
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-ewa-website/
-├── index.html                    # Version selector page
-├── original/                     # Original website replica
-│   ├── index.html
-│   ├── team.html
-│   └── payment.html
-├── new/                         # Enhanced website version
-│   ├── index.html              # Homepage with SEO optimization
-│   ├── team.html               # Team page with contact protection
-│   ├── news.html               # News and announcements
-│   ├── gallery.html            # Interactive photo gallery
-│   ├── links.html              # Filterable resource links
-│   ├── volunteers.html         # Volunteer signup form
-│   ├── payment.html            # Payment information pages
-│   ├── security.js             # Client-side security features
-│   └── admin/
-│       ├── login.html          # Admin login
-│       ├── dashboard.html      # Admin dashboard
-│       └── dashboard.css       # Admin styles
-├── assets/                     # Shared assets
-│   └── ewa-wolf.jpg           # Wolf logo
-├── data/                       # JSON data files
-│   ├── volunteers.json        # Volunteer submissions
-│   ├── users.json             # User accounts
-│   ├── officers.json          # Officer information
-│   ├── insurance.json         # Insurance forms
-│   ├── 1099.json              # Tax information
-│   └── officer_import_template.csv
-├── server.js                   # Node.js backend server
-├── package.json                # Node.js dependencies
-└── README.md
+ewa_website/
+├── assets/                 # Static assets (images, logos)
+│   └── ewa-wolf.jpg       # EWA logo
+├── data/                  # Data files (JSON, CSV)
+│   ├── users.json         # User authentication data
+│   ├── volunteers.json    # Volunteer submissions
+│   ├── officers.json      # Officer information
+│   └── officer_import_template.csv  # CSV template
+├── new/                   # Main website files
+│   ├── admin/            # Admin interface
+│   │   ├── dashboard.html # Main admin dashboard
+│   │   ├── dashboard.css  # Admin styles
+│   │   └── login.html    # Admin login
+│   ├── index.html        # Main homepage
+│   ├── team.html         # Team/officers page
+│   ├── volunteers.html   # Volunteer form
+│   ├── news.html         # News and updates
+│   ├── gallery.html      # Photo gallery
+│   ├── links.html        # Resources and links
+│   ├── payment.html      # Payment information
+│   └── security.js       # Security features
+├── index.html            # Main entry point (redirects to new/)
+├── server.js             # Node.js backend server
+├── package.json          # Dependencies and scripts
+├── vercel.json           # Vercel deployment config
+└── README.md             # Project documentation
 ```
 
-## Getting Started
+## 🛠️ API Endpoints
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm (comes with Node.js)
+### **Authentication**
+- `POST /api/login` - User authentication
+- `POST /api/users/change-password` - Self-service password change
+- `POST /api/users/setup-profile` - First-time profile setup
+- `POST /api/users/forgot-password` - Password recovery
 
-### Installation
+### **User Management**
+- `GET /api/users` - Get all users (admin)
+- `POST /api/users` - Create new user (admin)
+- `PUT /api/users/:username` - Update user (admin)
+- `DELETE /api/users/:username` - Delete user (admin)
+- `GET /api/users/:username/secret-question` - Get secret question
 
-1. Clone the repository:
-```bash
-git clone https://github.com/drewdog88/ewa-website.git
-cd ewa-website
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm start
-```
-
-4. Open your browser and navigate to `http://localhost:3000`
-
-## Usage
-
-### Version Selection
-- Visit the root page to choose between "Original" and "New" versions
-- Use the toggle buttons in the header/footer to switch between versions
-
-### Admin Access
-- Navigate to `/new/admin/login.html`
-- Default admin credentials:
-  - Username: `admin`
-  - Password: `ewa2025`
-
-### Booster Club Officer Access
-- Orchestra Booster credentials:
-  - Username: `orchestra_booster`
-  - Password: `ewa_orchestra_2025`
-
-### Volunteer Signup
-- Visit `/new/volunteers.html`
-- Fill out the form to express interest in volunteering
-- Data is stored in `data/volunteers.json`
-
-## API Endpoints
-
-### Volunteer Management
-- `POST /api/volunteers` - Submit new volunteer interest
-- `GET /api/volunteers` - Get all volunteer submissions (admin only)
+### **Volunteer Management**
+- `POST /api/volunteers` - Submit volunteer interest
+- `GET /api/volunteers` - Get all volunteers (admin)
+- `GET /api/volunteers/:club` - Get club volunteers (booster admin)
 - `PUT /api/volunteers/:id` - Update volunteer status
 
-### User Authentication & Management
-- `POST /api/login` - User login
-- `GET /api/users` - Get all users (admin only)
-- `POST /api/users` - Create new user (admin only)
-- `PUT /api/users/:username` - Update user (admin only)
-- `DELETE /api/users/:username` - Delete user (admin only)
-- `POST /api/users/change-password` - Change password (self-service)
-- `POST /api/users/setup-profile` - Setup profile (first login)
-- `POST /api/users/forgot-password` - Forgot password recovery
-
-### Officer Management
+### **Officer Management**
 - `GET /api/officers` - Get all officers
-- `GET /api/officers/:club` - Get officers for specific club
+- `GET /api/officers/:club` - Get club officers
 - `POST /api/officers` - Add new officer
 - `PUT /api/officers/:id` - Update officer
 - `DELETE /api/officers/:id` - Delete officer
 - `GET /api/officers/template` - Download CSV template
 
-### Insurance & Tax Forms
+### **Booster Club Features**
 - `POST /api/insurance` - Submit insurance form
-- `GET /api/insurance/:club` - Get insurance data for club
+- `GET /api/insurance/:club` - Get club insurance submissions
 - `POST /api/1099` - Submit 1099 information
-- `GET /api/1099/:club` - Get 1099 data for club
+- `GET /api/1099/:club` - Get club 1099 submissions
 
-## Data Storage
+### **System**
+- `GET /api/health` - Health check endpoint
 
-The application uses JSON files for data persistence:
-- `data/volunteers.json` - Volunteer submissions with status tracking
-- `data/users.json` - User accounts with role-based access
-- `data/officers.json` - Officer information for each club
-- `data/insurance.json` - Insurance form submissions
-- `data/1099.json` - Tax information submissions
+## 💾 Data Storage
 
-## Development
+### **Development**
+- **In-memory storage** for local development
+- **JSON files** for persistent data
+- **File-based templates** for CSV downloads
 
-### Adding New Features
-1. Work in the `new/` directory for enhancements
-2. Keep the `original/` directory unchanged for reference
-3. Update this README when adding new features
-4. Follow accessibility guidelines (WCAG 2.1)
+### **Production (Vercel)**
+- **Vercel KV** for persistent data storage
+- **Automatic fallback** to in-memory if KV unavailable
+- **Environment-based** storage selection
 
-### Backend Development
-- The server runs on port 3000 by default
-- API endpoints are RESTful
-- Data is stored in JSON files for simplicity
-- Security headers and rate limiting are implemented
+## 🚀 Frontend Development
 
-### Frontend Development
-- Semantic HTML5 structure
-- CSS with accessibility considerations
-- JavaScript with error handling
-- Mobile-first responsive design
+### **HTML Structure**
+- **Semantic HTML5** elements for accessibility
+- **Responsive design** with mobile-first approach
+- **SEO optimization** with proper meta tags
+- **Security features** with obfuscated contact information
 
-## Deployment
+### **CSS Styling**
+- **Modern CSS** with flexbox and grid layouts
+- **Consistent theming** across all pages
+- **Accessibility styles** for high contrast and reduced motion
+- **Performance optimization** with external stylesheets
 
-### Vercel Deployment (Recommended)
+### **JavaScript Functionality**
+- **Vanilla JavaScript** for maximum compatibility
+- **Fetch API** for asynchronous data loading
+- **Session management** with localStorage
+- **Role-based UI** with dynamic content loading
+- **Security features** with anti-scraping measures
 
-1. **Prepare for Vercel**:
-   - Ensure all files are committed to Git
-   - Vercel will automatically detect Node.js project
+## 🔧 Backend Development
 
-2. **Deploy to Vercel**:
-   ```bash
-   # Install Vercel CLI
-   npm i -g vercel
-   
-   # Deploy
-   vercel
-   ```
+### **Node.js Server**
+- **Express.js** framework for API endpoints
+- **Middleware** for security, compression, and validation
+- **Error handling** with proper HTTP status codes
+- **Logging** for debugging and monitoring
 
-3. **Environment Variables** (if needed):
-   - Set `NODE_ENV=production` for production optimizations
-   - Configure any API keys or secrets
+### **Security Features**
+- **Input validation** and sanitization
+- **Rate limiting** to prevent abuse
+- **Security headers** for protection
+- **CORS configuration** for cross-origin requests
 
-4. **Vercel Configuration**:
-   - Vercel will automatically build and deploy
-   - Serverless functions will handle API endpoints
-   - Static files will be served with CDN
+### **Performance Optimization**
+- **Gzip compression** for faster loading
+- **Static file caching** with appropriate headers
+- **Efficient routing** with proper fallbacks
+- **Memory management** for optimal performance
 
-### Other Deployment Options
+## 🚀 Deployment
 
-#### Static Hosting (Limited Functionality)
-For static hosting (GitHub Pages, Netlify, etc.):
-- Deploy only the HTML/CSS/JS files
-- Remove `server.js` and `package.json`
-- Note: Admin features will not work without the backend
+### **Vercel Deployment**
+1. **Connect repository** to Vercel
+2. **Set environment variables** for KV storage
+3. **Deploy from `vercel-kv-deployment` branch**
+4. **Configure custom domain** (optional)
 
-#### Full Stack Deployment
-For full functionality:
-- Deploy to a Node.js hosting service (Heroku, Railway, etc.)
-- Ensure `data/` directory is writable
-- Set up environment variables if needed
+### **Environment Variables**
+```bash
+NODE_ENV=production
+KV_URL=your-kv-url
+KV_REST_API_URL=your-kv-rest-url
+KV_REST_API_TOKEN=your-kv-token
+```
 
-## Security Features
+### **Local Development**
+```bash
+# Install dependencies
+npm install
 
-- **Input Validation**: All user inputs are validated and sanitized
-- **Rate Limiting**: Protection against abuse and DDoS
-- **Security Headers**: XSS protection, content type options, frame options
-- **Contact Protection**: Email and phone obfuscation
-- **Role-Based Access**: Proper authorization for all features
+# Start development server
+npm start
 
-## Performance Features
+# Server runs on http://localhost:3000
+```
 
-- **Compression**: Gzip compression for faster loading
-- **Caching**: Static file caching with etag and lastModified
-- **GPU Acceleration**: Hardware acceleration for animations
-- **Resource Optimization**: Preloading and DNS prefetch
-- **Image Optimization**: Proper image sizing and formats
+## 🔐 Security Features
 
-## Accessibility Features
+### **Client-Side Security**
+- **Email/phone obfuscation** to prevent scraping
+- **Anti-scraping measures** (disabled right-click, copy/paste)
+- **Interactive reveal** for contact information
+- **Session-based access control**
 
-- **WCAG 2.1 Compliance**: Full accessibility support
-- **Keyboard Navigation**: Complete keyboard accessibility
-- **Screen Reader Support**: Proper ARIA labels and semantic HTML
-- **High Contrast**: Support for high contrast mode
-- **Reduced Motion**: Respects user motion preferences
-- **Skip Links**: Quick navigation for keyboard users
+### **Server-Side Security**
+- **Input validation** and sanitization
+- **Rate limiting** to prevent abuse
+- **Security headers** (XSS, CSRF protection)
+- **Role-based access control**
 
-## Contributing
+## ⚡ Performance Features
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly (including accessibility)
-5. Submit a pull request
+### **Optimization**
+- **Gzip compression** for all responses
+- **Static file caching** with appropriate headers
+- **Image optimization** and lazy loading
+- **Minified CSS/JS** for faster loading
 
-## License
+### **Monitoring**
+- **Vercel Analytics** for user behavior tracking
+- **Speed Insights** for performance monitoring
+- **Error logging** for debugging
+- **Health check endpoints** for uptime monitoring
 
-This project is licensed under the MIT License.
+## ♿ Accessibility Features
 
-## Contact
+### **WCAG Compliance**
+- **Skip links** for keyboard navigation
+- **ARIA attributes** for screen readers
+- **High contrast** mode support
+- **Reduced motion** preferences
+- **Keyboard navigation** support
 
-For questions or support, contact the EWA team.
+### **User Experience**
+- **Responsive design** for all devices
+- **Clear navigation** with consistent structure
+- **Error handling** with helpful messages
+- **Loading states** for better feedback
+
+## 📈 Recent Updates
+
+### **Latest Features**
+- ✅ **Simplified structure** - Removed original version, streamlined codebase
+- ✅ **Vercel deployment** - Production-ready with KV storage
+- ✅ **Analytics integration** - Vercel Analytics and Speed Insights
+- ✅ **Security enhancements** - Anti-scraping and contact protection
+- ✅ **Performance optimization** - Compression, caching, and monitoring
+- ✅ **Accessibility improvements** - WCAG compliance and user experience
+
+### **Future Recommendations**
+1. **Database migration** - Consider PostgreSQL for complex queries
+2. **Email notifications** - Automated alerts for submissions
+3. **File uploads** - Support for document attachments
+4. **Advanced reporting** - Analytics dashboard for admins
+5. **Mobile app** - Native app for mobile users
+6. **API documentation** - Swagger/OpenAPI specification
+
+## 🤝 Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**
+3. **Make your changes**
+4. **Test thoroughly**
+5. **Submit a pull request**
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📞 Support
+
+For support or questions, please contact the EWA team or create an issue in the repository.
 
 ---
 
-**Note**: This is a development version. The original website remains at https://ewa-site.pages.dev/
-
-## Recent Updates
-
-### Version 2.0 (Latest)
-- ✅ Comprehensive SEO optimization
-- ✅ Performance improvements with compression and caching
-- ✅ Full accessibility compliance (WCAG 2.1)
-- ✅ Enhanced security features
-- ✅ Complete user management system
-- ✅ Officer management with CSV import/export
-- ✅ Volunteer management with status tracking
-- ✅ Insurance and 1099 form management
-- ✅ Payment system with dedicated pages
-- ✅ Modern responsive design
-- ✅ Contact protection and anti-scraping measures 
+**Eastlake Wolfpack Association** - Supporting Eastlake High School booster clubs and activities since 2025. 
