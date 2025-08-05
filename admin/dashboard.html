@@ -1538,9 +1538,25 @@
             console.log('🔍 Full API URL will be:', window.location.origin + url);
             
             // Show loading state - with better error handling
-            const tbody = document.querySelector('#1099Table tbody');
-            console.log('🔍 Looking for #1099Table tbody element...');
-            console.log('🔍 Found tbody element:', tbody);
+            let tbody = null;
+            try {
+                console.log('🔍 Looking for #1099Table tbody element...');
+                tbody = document.querySelector('#1099Table tbody');
+                console.log('🔍 Found tbody element:', tbody);
+            } catch (error) {
+                console.error('❌ Error with querySelector:', error);
+                // Try alternative approach
+                try {
+                    const table = document.getElementById('1099Table');
+                    console.log('🔍 Found table element:', table);
+                    if (table) {
+                        tbody = table.querySelector('tbody');
+                        console.log('🔍 Found tbody via table:', tbody);
+                    }
+                } catch (altError) {
+                    console.error('❌ Alternative approach also failed:', altError);
+                }
+            }
             
             if (tbody) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Loading 1099 submissions...</td></tr>';
@@ -1596,8 +1612,23 @@
             console.log('🎨 Starting to display 1099 data...');
             console.log('📋 Submissions to display:', submissions);
             
-            // Find the table body
-            const tbody = document.querySelector('#1099Table tbody');
+            // Find the table body with error handling
+            let tbody = null;
+            try {
+                tbody = document.querySelector('#1099Table tbody');
+            } catch (error) {
+                console.error('❌ Error with querySelector in display1099Data:', error);
+                // Try alternative approach
+                try {
+                    const table = document.getElementById('1099Table');
+                    if (table) {
+                        tbody = table.querySelector('tbody');
+                    }
+                } catch (altError) {
+                    console.error('❌ Alternative approach also failed in display1099Data:', altError);
+                }
+            }
+            
             if (!tbody) {
                 console.error('❌ Could not find #1099Table tbody element');
                 showErrorMessage('Could not find 1099 table element');
@@ -1663,8 +1694,23 @@
         function showErrorMessage(message) {
             console.error('🚨 Error:', message);
             
-            // Try to show error in the table
-            const tbody = document.querySelector('#1099Table tbody');
+            // Try to show error in the table with error handling
+            let tbody = null;
+            try {
+                tbody = document.querySelector('#1099Table tbody');
+            } catch (error) {
+                console.error('❌ Error with querySelector in showErrorMessage:', error);
+                // Try alternative approach
+                try {
+                    const table = document.getElementById('1099Table');
+                    if (table) {
+                        tbody = table.querySelector('tbody');
+                    }
+                } catch (altError) {
+                    console.error('❌ Alternative approach also failed in showErrorMessage:', altError);
+                }
+            }
+            
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px; color: red;">Error: ${message}</td></tr>`;
             }
