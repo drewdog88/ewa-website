@@ -630,7 +630,7 @@
                 <div class="form-section">
                     <h3>Your 1099 Submissions</h3>
                     <div style="margin-bottom: 15px;">
-                        <button class="action-btn" onclick="load1099Data()" style="background-color: #007bff;">
+                        <button class="action-btn" onclick="refresh1099Data()" id="refresh1099Btn" style="background-color: #007bff;">
                             🔄 Refresh Submissions
                         </button>
                         <span style="margin-left: 10px; font-size: 14px; color: #666;">
@@ -1489,6 +1489,32 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+        
+        // Refresh 1099 data with visual feedback
+        function refresh1099Data() {
+            console.log('🔄 Manual refresh requested...');
+            
+            // Get the refresh button
+            const refreshBtn = document.getElementById('refresh1099Btn');
+            if (refreshBtn) {
+                // Show loading state
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = '🔄 Loading...';
+                refreshBtn.style.backgroundColor = '#6c757d';
+            }
+            
+            // Call the main load function
+            load1099Data();
+            
+            // Re-enable button after a short delay
+            setTimeout(() => {
+                if (refreshBtn) {
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = '🔄 Refresh Submissions';
+                    refreshBtn.style.backgroundColor = '#007bff';
+                }
+            }, 2000);
         }
         
         // Load 1099 data - COMPLETELY REWRITTEN
@@ -2682,6 +2708,19 @@
         
         return true;
     }
+    
+    // Initialize page data when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Page loaded, initializing data...');
+        
+        // Load 1099 data automatically
+        load1099Data();
+        
+        // Load insurance data automatically
+        loadInsuranceData();
+        
+        console.log('✅ Page initialization complete');
+    });
 </script>
 </body>
 </html> 
