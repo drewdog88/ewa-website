@@ -177,8 +177,8 @@ async function addForm1099(form) {
     
     try {
         const result = await sql`
-            INSERT INTO form_1099 (recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status)
-            VALUES (${form.recipientName}, ${form.recipientTin}, ${form.amount}, ${form.description}, ${form.submittedBy}, ${form.taxYear}, ${form.status})
+            INSERT INTO form_1099 (recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, w9_filename, w9_blob_url, w9_file_size, w9_mime_type)
+            VALUES (${form.recipientName}, ${form.recipientTin}, ${form.amount}, ${form.description}, ${form.submittedBy}, ${form.taxYear}, ${form.status}, ${form.w9Filename || null}, ${form.w9BlobUrl || null}, ${form.w9FileSize || null}, ${form.w9MimeType || null})
             RETURNING *
         `;
         return result[0];
