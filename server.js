@@ -7,19 +7,23 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 
-// Import Vercel KV for production
-let kv;
+// Import Redis for production
+let redis;
 if (process.env.NODE_ENV === 'production') {
     try {
-        // Only try to import KV if we have the environment variables
-        if (process.env.KV_URL || process.env.KV_REST_API_URL) {
-            kv = require('@vercel/kv');
-            console.log('Vercel KV initialized successfully');
+        if (process.env.REDIS_URL) {
+            const { createClient } = require('redis');
+            redis = createClient({ url: process.env.REDIS_URL });
+            redis.connect().then(() => {
+                console.log('Redis initialized successfully');
+            }).catch((error) => {
+                console.log('Redis connection failed:', error.message);
+            });
         } else {
-            console.log('Vercel KV environment variables not found, using in-memory storage');
+            console.log('REDIS_URL not found, using in-memory storage');
         }
     } catch (error) {
-        console.log('Vercel KV not available, using in-memory storage:', error.message);
+        console.log('Redis not available, using in-memory storage:', error.message);
     }
 }
 
@@ -54,6 +58,57 @@ function loadInitialData() {
         console.error('Error loading initial data:', error);
     }
     return { officers: [] };
+}
+
+// Function to initialize Redis store with data from JSON files
+async function initializeRedisStore() {
+    if (!redis) {
+        console.log('Redis not available, skipping initialization');
+        return;
+    }
+    
+    try {
+        console.log('Initializing Redis store with data from JSON files...');
+        
+        // Check if officers data exists in Redis
+        const existingOfficers = await redis.get('officers');
+        if (!existingOfficers) {
+            // Load officers from JSON file and store in Redis
+            const officersPath = path.join(__dirname, 'data', 'officers.json');
+            if (fs.existsSync(officersPath)) {
+                const officersData = fs.readFileSync(officersPath, 'utf8');
+                const officers = JSON.parse(officersData);
+                await redis.set('officers', JSON.stringify(officers));
+                console.log(`Initialized Redis store with ${officers.length} officers`);
+            }
+        } else {
+            const officers = JSON.parse(existingOfficers);
+            console.log(`Redis store already contains ${officers.length} officers`);
+        }
+        
+        // Initialize other data types if needed
+        const existingVolunteers = await redis.get('volunteers');
+        if (!existingVolunteers) {
+            await redis.set('volunteers', JSON.stringify([]));
+            console.log('Initialized Redis store with empty volunteers array');
+        }
+        
+        const existingInsurance = await redis.get('insurance');
+        if (!existingInsurance) {
+            await redis.set('insurance', JSON.stringify([]));
+            console.log('Initialized Redis store with empty insurance array');
+        }
+        
+        const existingForm1099 = await redis.get('form1099');
+        if (!existingForm1099) {
+            await redis.set('form1099', JSON.stringify([]));
+            console.log('Initialized Redis store with empty form1099 array');
+        }
+        
+        console.log('Redis store initialization completed');
+    } catch (error) {
+        console.error('Error initializing Redis store:', error);
+    }
 }
 
 // In-memory storage for development fallback
@@ -190,14 +245,14 @@ app.use(compression({
     }
 }));
 
-// Helper functions for KV storage with fallback to in-memory
+// Helper functions for Redis storage with fallback to in-memory
 async function getVolunteers() {
-    if (kv) {
+    if (redis) {
         try {
-            const data = await kv.get('volunteers');
-            return data || [];
+            const data = await redis.get('volunteers');
+            return data ? JSON.parse(data) : [];
         } catch (error) {
-            console.error('Error getting volunteers from KV:', error);
+            console.error('Error getting volunteers from Redis:', error);
             return memoryStorage.volunteers;
         }
     }
@@ -205,14 +260,14 @@ async function getVolunteers() {
 }
 
 async function addVolunteer(volunteer) {
-    if (kv) {
+    if (redis) {
         try {
             const volunteers = await getVolunteers();
             volunteers.push(volunteer);
-            await kv.set('volunteers', volunteers);
+            await redis.set('volunteers', JSON.stringify(volunteers));
             return true;
         } catch (error) {
-            console.error('Error adding volunteer to KV:', error);
+            console.error('Error adding volunteer to Redis:', error);
             memoryStorage.volunteers.push(volunteer);
             return true;
         }
@@ -222,18 +277,18 @@ async function addVolunteer(volunteer) {
 }
 
 async function updateVolunteer(id, updates) {
-    if (kv) {
+    if (redis) {
         try {
             const volunteers = await getVolunteers();
             const index = volunteers.findIndex(v => v.id === id);
             if (index !== -1) {
                 volunteers[index] = { ...volunteers[index], ...updates };
-                await kv.set('volunteers', volunteers);
+                await redis.set('volunteers', JSON.stringify(volunteers));
                 return true;
             }
             return false;
         } catch (error) {
-            console.error('Error updating volunteer in KV:', error);
+            console.error('Error updating volunteer in Redis:', error);
             const index = memoryStorage.volunteers.findIndex(v => v.id === id);
             if (index !== -1) {
                 memoryStorage.volunteers[index] = { ...memoryStorage.volunteers[index], ...updates };
@@ -251,12 +306,12 @@ async function updateVolunteer(id, updates) {
 }
 
 async function getUsers() {
-    if (kv) {
+    if (redis) {
         try {
-            const data = await kv.get('users');
-            return data || memoryStorage.users;
+            const data = await redis.get('users');
+            return data ? JSON.parse(data) : memoryStorage.users;
         } catch (error) {
-            console.error('Error getting users from KV:', error);
+            console.error('Error getting users from Redis:', error);
             return memoryStorage.users;
         }
     }
@@ -264,17 +319,17 @@ async function getUsers() {
 }
 
 async function updateUser(username, updates) {
-    if (kv) {
+    if (redis) {
         try {
             const users = await getUsers();
             if (users[username]) {
                 users[username] = { ...users[username], ...updates };
-                await kv.set('users', users);
+                await redis.set('users', JSON.stringify(users));
                 return true;
             }
             return false;
         } catch (error) {
-            console.error('Error updating user in KV:', error);
+            console.error('Error updating user in Redis:', error);
             if (memoryStorage.users[username]) {
                 memoryStorage.users[username] = { ...memoryStorage.users[username], ...updates };
                 return true;
@@ -290,14 +345,14 @@ async function updateUser(username, updates) {
 }
 
 async function addUser(username, userData) {
-    if (kv) {
+    if (redis) {
         try {
             const users = await getUsers();
             users[username] = userData;
-            await kv.set('users', users);
+            await redis.set('users', JSON.stringify(users));
             return true;
         } catch (error) {
-            console.error('Error adding user to KV:', error);
+            console.error('Error adding user to Redis:', error);
             memoryStorage.users[username] = userData;
             return true;
         }
@@ -307,17 +362,17 @@ async function addUser(username, userData) {
 }
 
 async function deleteUser(username) {
-    if (kv) {
+    if (redis) {
         try {
             const users = await getUsers();
             if (users[username]) {
                 delete users[username];
-                await kv.set('users', users);
+                await redis.set('users', JSON.stringify(users));
                 return true;
             }
             return false;
         } catch (error) {
-            console.error('Error deleting user from KV:', error);
+            console.error('Error deleting user from Redis:', error);
             if (memoryStorage.users[username]) {
                 delete memoryStorage.users[username];
                 return true;
@@ -333,12 +388,12 @@ async function deleteUser(username) {
 }
 
 async function getOfficers() {
-    if (kv) {
+    if (redis) {
         try {
-            const data = await kv.get('officers');
-            return data || [];
+            const data = await redis.get('officers');
+            return data ? JSON.parse(data) : [];
         } catch (error) {
-            console.error('Error getting officers from KV:', error);
+            console.error('Error getting officers from Redis:', error);
             return memoryStorage.officers;
         }
     }
@@ -346,14 +401,14 @@ async function getOfficers() {
 }
 
 async function addOfficer(officer) {
-    if (kv) {
+    if (redis) {
         try {
             const officers = await getOfficers();
             officers.push(officer);
-            await kv.set('officers', officers);
+            await redis.set('officers', JSON.stringify(officers));
             return true;
         } catch (error) {
-            console.error('Error adding officer to KV:', error);
+            console.error('Error adding officer to Redis:', error);
             memoryStorage.officers.push(officer);
             return true;
         }
@@ -363,18 +418,18 @@ async function addOfficer(officer) {
 }
 
 async function updateOfficer(id, updates) {
-    if (kv) {
+    if (redis) {
         try {
             const officers = await getOfficers();
             const index = officers.findIndex(o => o.id === id);
             if (index !== -1) {
                 officers[index] = { ...officers[index], ...updates };
-                await kv.set('officers', officers);
+                await redis.set('officers', JSON.stringify(officers));
                 return true;
             }
             return false;
         } catch (error) {
-            console.error('Error updating officer in KV:', error);
+            console.error('Error updating officer in Redis:', error);
             const index = memoryStorage.officers.findIndex(o => o.id === id);
             if (index !== -1) {
                 memoryStorage.officers[index] = { ...memoryStorage.officers[index], ...updates };
@@ -392,18 +447,18 @@ async function updateOfficer(id, updates) {
 }
 
 async function deleteOfficer(id) {
-    if (kv) {
+    if (redis) {
         try {
             const officers = await getOfficers();
             const index = officers.findIndex(o => o.id === id);
             if (index !== -1) {
                 officers.splice(index, 1);
-                await kv.set('officers', officers);
+                await redis.set('officers', JSON.stringify(officers));
                 return true;
             }
             return false;
         } catch (error) {
-            console.error('Error deleting officer from KV:', error);
+            console.error('Error deleting officer from Redis:', error);
             const index = memoryStorage.officers.findIndex(o => o.id === id);
             if (index !== -1) {
                 memoryStorage.officers.splice(index, 1);
@@ -421,12 +476,12 @@ async function deleteOfficer(id) {
 }
 
 async function getInsurance() {
-    if (kv) {
+    if (redis) {
         try {
-            const data = await kv.get('insurance');
-            return data || [];
+            const data = await redis.get('insurance');
+            return data ? JSON.parse(data) : [];
         } catch (error) {
-            console.error('Error getting insurance from KV:', error);
+            console.error('Error getting insurance from Redis:', error);
             return memoryStorage.insurance;
         }
     }
@@ -434,14 +489,14 @@ async function getInsurance() {
 }
 
 async function addInsurance(insuranceData) {
-    if (kv) {
+    if (redis) {
         try {
             const insurance = await getInsurance();
             insurance.push(insuranceData);
-            await kv.set('insurance', insurance);
+            await redis.set('insurance', JSON.stringify(insurance));
             return true;
         } catch (error) {
-            console.error('Error adding insurance to KV:', error);
+            console.error('Error adding insurance to Redis:', error);
             memoryStorage.insurance.push(insuranceData);
             return true;
         }
@@ -451,12 +506,12 @@ async function addInsurance(insuranceData) {
 }
 
 async function getForm1099() {
-    if (kv) {
+    if (redis) {
         try {
-            const data = await kv.get('form1099');
-            return data || [];
+            const data = await redis.get('form1099');
+            return data ? JSON.parse(data) : [];
         } catch (error) {
-            console.error('Error getting form1099 from KV:', error);
+            console.error('Error getting form1099 from Redis:', error);
             return memoryStorage.form1099;
         }
     }
@@ -464,14 +519,14 @@ async function getForm1099() {
 }
 
 async function addForm1099(formData) {
-    if (kv) {
+    if (redis) {
         try {
             const form1099 = await getForm1099();
             form1099.push(formData);
-            await kv.set('form1099', form1099);
+            await redis.set('form1099', JSON.stringify(form1099));
             return true;
         } catch (error) {
-            console.error('Error adding form1099 to KV:', error);
+            console.error('Error adding form1099 to Redis:', error);
             memoryStorage.form1099.push(formData);
             return true;
         }
@@ -1644,9 +1699,12 @@ app.post('/api/upload-document', async (req, res) => {
             uploadedBy: req.body.uploadedBy || 'unknown'
         };
 
-        // Add to in-memory storage or KV
-        if (kv) {
-            await kv.hset('documents', documentRecord.id, JSON.stringify(documentRecord));
+        // Add to in-memory storage or Redis
+        if (redis) {
+            const documents = await redis.get('documents') || '[]';
+            const documentsArray = JSON.parse(documents);
+            documentsArray.push(documentRecord);
+            await redis.set('documents', JSON.stringify(documentsArray));
         } else {
             if (!memoryStorage.documents) {
                 memoryStorage.documents = [];
@@ -1676,11 +1734,10 @@ app.get('/api/documents/:boosterClub', async (req, res) => {
         
         let documents = [];
         
-        if (kv) {
-            const allDocuments = await kv.hgetall('documents');
-            documents = Object.values(allDocuments || {})
-                .map(doc => JSON.parse(doc))
-                .filter(doc => doc.boosterClub === boosterClub);
+        if (redis) {
+            const allDocuments = await redis.get('documents') || '[]';
+            const documentsArray = JSON.parse(allDocuments);
+            documents = documentsArray.filter(doc => doc.boosterClub === boosterClub);
         } else {
             documents = (memoryStorage.documents || [])
                 .filter(doc => doc.boosterClub === boosterClub);
@@ -1704,10 +1761,9 @@ app.get('/api/documents', async (req, res) => {
     try {
         let documents = [];
         
-        if (kv) {
-            const allDocuments = await kv.hgetall('documents');
-            documents = Object.values(allDocuments || {})
-                .map(doc => JSON.parse(doc));
+        if (redis) {
+            const allDocuments = await redis.get('documents') || '[]';
+            documents = JSON.parse(allDocuments);
         } else {
             documents = memoryStorage.documents || [];
         }
@@ -1732,11 +1788,14 @@ app.delete('/api/documents/:documentId', async (req, res) => {
         
         let document = null;
         
-        if (kv) {
-            const docData = await kv.hget('documents', documentId);
-            if (docData) {
-                document = JSON.parse(docData);
-                await kv.hdel('documents', documentId);
+        if (redis) {
+            const allDocuments = await redis.get('documents') || '[]';
+            const documentsArray = JSON.parse(allDocuments);
+            const docIndex = documentsArray.findIndex(doc => doc.id === documentId);
+            if (docIndex !== -1) {
+                document = documentsArray[docIndex];
+                documentsArray.splice(docIndex, 1);
+                await redis.set('documents', JSON.stringify(documentsArray));
             }
         } else {
             const docIndex = (memoryStorage.documents || []).findIndex(doc => doc.id === documentId);
@@ -1775,9 +1834,9 @@ app.get('/api/health', (req, res) => {
         status: 'ok', 
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development',
-        kvAvailable: !!kv,
+        redisAvailable: !!redis,
         blobAvailable: !!blob,
-        storage: kv ? 'Vercel KV' : 'In-memory'
+        storage: redis ? 'Redis' : 'In-memory'
     });
 });
 
@@ -1807,8 +1866,13 @@ app.get('*', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`EWA Website server running on http://localhost:${PORT}`);
-    console.log(`Storage: ${kv ? 'Vercel KV (production)' : 'In-memory (development)'}`);
+    console.log(`Storage: ${redis ? 'Redis (production)' : 'In-memory (development)'}`);
     console.log(`Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
+    
+    // Initialize Redis store with data from JSON files
+    if (redis) {
+        await initializeRedisStore();
+    }
 }); 
