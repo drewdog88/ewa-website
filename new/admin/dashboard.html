@@ -1224,9 +1224,100 @@
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('selectstart', e => e.preventDefault());
         
+        // Load volunteer data
+        function loadVolunteerData() {
+            // Get current user to determine what data to load
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            let url = '/api/volunteers';
+            if (currentUser.role === 'booster_officer' && currentUser.club) {
+                url = `/api/volunteers/${currentUser.club}`;
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayVolunteerData(data.volunteers);
+                    } else {
+                        console.error('Error loading volunteers:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+        
+        // Display volunteer data in table
+        function displayVolunteerData(volunteers) {
+            const tbody = document.querySelector('#volunteers .data-table tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            volunteers.forEach(volunteer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(volunteer.submittedAt).toLocaleDateString()}</td>
+                    <td>${getClubDisplayName(volunteer.boosterClub)}</td>
+                    <td>${volunteer.volunteerName}</td>
+                    <td>${volunteer.childName || ''}</td>
+                    <td>${volunteer.email}</td>
+                    <td>${volunteer.phone || ''}</td>
+                    <td><span class="status-active">${volunteer.status}</span></td>
+                    <td>
+                        <button class="btn-small">Contact</button>
+                        <button class="btn-small">Confirm</button>
+                        <button class="btn-small">Decline</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Helper function to get club display name
+        function getClubDisplayName(clubCode) {
+            const clubNames = {
+                'band': 'EHS Band Boosters',
+                'baseball': 'Eastlake Baseball Club',
+                'boys-basketball': 'Eastlake Boys Basketball Booster Club',
+                'girls-basketball': 'Eastlake Girls Basketball Booster Club',
+                'cheer': 'Eastlake Cheer Booster Club',
+                'choir': 'Eastlake Choir',
+                'cross-country': 'Eastlake Cross-Country Boosters',
+                'dance': 'Eastlake Dance Team Boosters',
+                'deca': 'EHS DECA Booster Club',
+                'drama': 'Eastlake Drama',
+                'fastpitch': 'Eastlake Fastpitch (Girls)',
+                'boys-golf': 'Eastlake Boys Golf Booster Club',
+                'girls-golf': 'Eastlake Girls Golf Booster Club',
+                'orchestra': 'EHS Orchestra Boosters Club',
+                'robotics': 'Eastlake Robotics Club',
+                'boys-soccer': 'Eastlake Boys Soccer',
+                'girls-soccer': 'Eastlake Girls Soccer',
+                'boys-swim': 'Eastlake Boys Swim & Dive Booster Club',
+                'girls-swim': 'Eastlake Girls Swim & Dive Booster Club',
+                'track': 'EHS Track and Field Booster Club',
+                'volleyball': 'Eastlake Volleyball Booster Club',
+                'wrestling': 'EHS Wrestling Booster Club'
+            };
+            return clubNames[clubCode] || clubCode;
+        }
+        
         // Demo data loading
         document.addEventListener('DOMContentLoaded', function() {
-            // Simulate loading data
+            // Check if user is logged in
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Load volunteer data when volunteers section is shown
+            document.querySelector('[data-section="volunteers"]').addEventListener('click', function() {
+                setTimeout(loadVolunteerData, 100);
+            });
+            
             console.log('Admin dashboard loaded');
         });
     </script>
