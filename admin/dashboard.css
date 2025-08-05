@@ -29,7 +29,7 @@ body {
 .logo {
     width: 40px;
     height: 40px;
-    background: url('../../assets/ewa-wolf.jpg') no-repeat center;
+    background: url('../assets/ewa-wolf.jpg') no-repeat center;
     background-size: contain;
     margin-right: 15px;
 }
@@ -284,4 +284,64 @@ tr:hover {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Additional styles from embedded CSS */
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.section-header p {
+    color: #6c757d;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.activity-text {
+    margin-top: 5px;
+}
+
+.form-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 } 
