@@ -25,5 +25,8 @@
     "booster-clubs"
   ],
   "author": "EWA Team",
-  "license": "MIT"
+  "license": "MIT",
+  "config": {
+    "fund": false
+  }
 }

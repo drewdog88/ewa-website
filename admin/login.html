@@ -187,6 +187,8 @@
                 if (data.success) {
                     // Store user info in session storage
                     sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    // Set login time for session timeout
+                    sessionStorage.setItem('loginTime', new Date().getTime().toString());
                     showMessage('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';

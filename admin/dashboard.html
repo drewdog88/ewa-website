@@ -18,7 +18,10 @@
 <body>
     <div class="admin-header">
         <h1><div class="logo"></div>EWA Admin Dashboard</h1>
-        <a href="login.html" class="logout-btn">Logout</a>
+        <div class="header-buttons">
+            <a href="../index.html" class="home-btn">Home</a>
+            <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+        </div>
     </div>
     
     <div class="admin-container">
@@ -1052,6 +1055,41 @@
             alert(`Exported ${filteredVolunteers.length} volunteer records to CSV.`);
         }
         
+        // Session management with timeout
+        const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in milliseconds
+        
+        function checkSessionTimeout() {
+            const loginTime = sessionStorage.getItem('loginTime');
+            if (!loginTime) {
+                // No login time found, redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const currentTime = new Date().getTime();
+            const timeSinceLogin = currentTime - parseInt(loginTime);
+            
+            if (timeSinceLogin > SESSION_TIMEOUT) {
+                // Session expired, clear storage and redirect
+                sessionStorage.clear();
+                alert('Your session has expired. Please login again.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update login time to extend session
+            sessionStorage.setItem('loginTime', currentTime.toString());
+        }
+        
+        // Check session timeout every 5 minutes
+        setInterval(checkSessionTimeout, 5 * 60 * 1000);
+        
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+        
         // Demo data loading
         document.addEventListener('DOMContentLoaded', function() {
             // Check if user is logged in
@@ -1060,6 +1098,9 @@
                 window.location.href = 'login.html';
                 return;
             }
+            
+            // Check session timeout
+            checkSessionTimeout();
             
             // Parse user data
             const userData = JSON.parse(currentUser);
