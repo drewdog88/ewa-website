@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources & Links - Eastlake Wolfpack Association</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Resources, links, and external websites for Eastlake High School athletics and booster clubs">
+    <meta name="keywords" content="Eastlake High School, Wolfpack, resources, links, athletics, booster clubs, LWSD">
+    <meta name="author" content="Eastlake Wolfpack Association">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="noai, noimageai, nosnippet">
+    
+    <!-- Prevent AI Training -->
+    <meta name="robots" content="noai, noimageai, nosnippet">
+    <meta name="googlebot" content="noai, noimageai, nosnippet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 80px;
+            padding: 20px 0;
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .header-left a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-right: 20px;
+        }
+        
+        .header-right {
+            color: #dc3545;
+            font-size: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .version-toggle {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .version-toggle:hover {
+            background-color: #c82333;
+        }
+        
+        .admin-link {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .admin-link:hover {
+            background-color: #218838;
+        }
+        
+        /* Main Content */
+        .links-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .links-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .links-header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .links-header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Search and Filter */
+        .search-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #dc3545;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .filter-btn:hover {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        /* Links Grid */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .link-category {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        .category-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .link-list {
+            list-style: none;
+        }
+        
+        .link-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.3s ease;
+        }
+        
+        .link-item:last-child {
+            border-bottom: none;
+        }
+        
+        .link-item:hover {
+            background: #f8f9fa;
+            margin: 0 -15px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .link-title {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .link-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .link-clicks {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .link-url {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .link-url:hover {
+            text-decoration: underline;
+        }
+        
+        .link-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+        
+        .external-indicator {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        /* Popular Links Section */
+        .popular-links {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .popular-links h2 {
+            color: #dc3545;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .popular-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            transition: transform 0.3s ease;
+        }
+        
+        .popular-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .popular-title {
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .popular-clicks {
+            color: #dc3545;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        /* Footer Banner */
+        .footer-banner {
+            margin-top: 50px;
+        }
+        
+        .footer-main {
+            background-color: #dc3545;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left .association-name {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-copyright {
+            background-color: #c82333;
+            padding: 8px 50px;
+            text-align: center;
+        }
+        
+        .footer-copyright span {
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .links-header h1 {
+                font-size: 2rem;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .header-right {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html">Home</a>
+            <a href="team.html">EWA Team</a>
+            <a href="news.html">News</a>
+            <a href="gallery.html">Photo Gallery</a>
+            <a href="links.html">Resources</a>
+        </div>
+        <div class="header-right">
+            <a href="team.html" style="color: #dc3545; text-decoration: none;">EWA Team</a>
+            <a href="../original/index.html" class="version-toggle">Revert to Original</a>
+            <a href="admin/login.html" class="admin-link">Admin</a>
+        </div>
+    </div>
+
+    <div class="links-container">
+        <div class="links-header">
+            <h1>Resources & Links</h1>
+            <p>Find useful resources, external websites, and tools for Eastlake High School athletics and booster clubs.</p>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search resources..." id="searchInput">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="athletics">Athletics</button>
+                <button class="filter-btn" data-category="calendar">Calendar</button>
+                <button class="filter-btn" data-category="resources">Resources</button>
+                <button class="filter-btn" data-category="other">Other</button>
+            </div>
+        </div>
+
+        <!-- Popular Links -->
+        <div class="popular-links">
+            <h2>Most Popular Links</h2>
+            <div class="popular-grid">
+                <div class="popular-item">
+                    <div class="popular-title">Eastlake Athletics Schedule</div>
+                    <div class="popular-clicks">156 clicks</div>
+                </div>
+                <div class="popular-item">
+                    <div class="popular-title">LWSD Athletics</div>
+                    <div class="popular-clicks">89 clicks</div>
+                </div>
+                <div class="popular-item">
+                    <div class="popular-title">Photo Gallery</div>
+                    <div class="popular-clicks">67 clicks</div>
+                </div>
+                <div class="popular-item">
+                    <div class="popular-title">Admin Portal</div>
+                    <div class="popular-clicks">45 clicks</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links Grid -->
+        <div class="links-grid">
+            <!-- Athletics Category -->
+            <div class="link-category" data-category="athletics">
+                <div class="category-header">
+                    <div class="category-icon">🏈</div>
+                    <div class="category-title">Athletics</div>
+                </div>
+                <ul class="link-list">
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">Eastlake Athletics Schedule</div>
+                                <a href="https://www.lwsd.org/schools/eastlake/athletics" target="_blank" class="link-url">
+                                    lwsd.org/schools/eastlake/athletics
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">156 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Official athletics schedule and information for Eastlake High School sports teams.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">LWSD Athletics</div>
+                                <a href="https://www.lwsd.org/athletics" target="_blank" class="link-url">
+                                    lwsd.org/athletics
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">89 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Lake Washington School District athletics information and policies.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">WIAA Website</div>
+                                <a href="https://www.wiaa.com" target="_blank" class="link-url">
+                                    wiaa.com
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">34 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Washington Interscholastic Activities Association - governing body for high school sports.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Calendar Category -->
+            <div class="link-category" data-category="calendar">
+                <div class="category-header">
+                    <div class="category-icon">📅</div>
+                    <div class="category-title">Calendars</div>
+                </div>
+                <ul class="link-list">
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">Eastlake School Calendar</div>
+                                <a href="https://www.lwsd.org/schools/eastlake" target="_blank" class="link-url">
+                                    lwsd.org/schools/eastlake
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">78 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Academic calendar and important dates for Eastlake High School.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">EWA Events Calendar</div>
+                                <a href="#" class="link-url">Internal Calendar</a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">45 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">EWA events, meetings, and important dates for booster clubs.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Resources Category -->
+            <div class="link-category" data-category="resources">
+                <div class="category-header">
+                    <div class="category-icon">📚</div>
+                    <div class="category-title">Resources</div>
+                </div>
+                <ul class="link-list">
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">EWA Photo Gallery</div>
+                                <a href="gallery.html" class="link-url">gallery.html</a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">67 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Photo gallery showcasing Eastlake High School athletics and events.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">EWA Admin Portal</div>
+                                <a href="admin/login.html" class="link-url">admin/login.html</a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">45 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Secure login for booster club management and administrative functions.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">EWA News</div>
+                                <a href="news.html" class="link-url">news.html</a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">38 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Latest news, announcements, and meeting minutes from EWA.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">EWA Team</div>
+                                <a href="team.html" class="link-url">team.html</a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">29 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Contact information for EWA board members and team.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Other Category -->
+            <div class="link-category" data-category="other">
+                <div class="category-header">
+                    <div class="category-icon">🔗</div>
+                    <div class="category-title">Other Links</div>
+                </div>
+                <ul class="link-list">
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">Eastlake High School</div>
+                                <a href="https://www.lwsd.org/schools/eastlake" target="_blank" class="link-url">
+                                    lwsd.org/schools/eastlake
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">23 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Official Eastlake High School website and information.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">Lake Washington School District</div>
+                                <a href="https://www.lwsd.org" target="_blank" class="link-url">
+                                    lwsd.org
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">19 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">Lake Washington School District official website.</div>
+                    </li>
+                    <li class="link-item">
+                        <div class="link-header">
+                            <div>
+                                <div class="link-title">KingCo Conference</div>
+                                <a href="https://www.kingcoathletics.com" target="_blank" class="link-url">
+                                    kingcoathletics.com
+                                    <span class="external-indicator">↗</span>
+                                </a>
+                            </div>
+                            <div class="link-stats">
+                                <span class="link-clicks">12 clicks</span>
+                            </div>
+                        </div>
+                        <div class="link-description">KingCo Conference athletics information and standings.</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Banner -->
+    <div class="footer-banner">
+        <div class="footer-main">
+            <div class="footer-left">
+                <span class="association-name">Eastlake Wolfpack Association</span>
+            </div>
+            <div class="footer-right">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="team.html" class="footer-link">EWA Team</a>
+                <a href="../original/index.html" class="footer-link">Original Version</a>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <span>© 2025 Eastlake Wolfpack Association</span>
+        </div>
+    </div>
+
+    <script>
+        // Search and filter functionality
+        const searchInput = document.getElementById('searchInput');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const linkCategories = document.querySelectorAll('.link-category');
+        const linkItems = document.querySelectorAll('.link-item');
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            linkItems.forEach(item => {
+                const title = item.querySelector('.link-title').textContent.toLowerCase();
+                const description = item.querySelector('.link-description').textContent.toLowerCase();
+                const url = item.querySelector('.link-url').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || url.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter functionality
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const category = this.getAttribute('data-category');
+                
+                linkCategories.forEach(cat => {
+                    if (category === 'all' || cat.getAttribute('data-category') === category) {
+                        cat.style.display = 'block';
+                    } else {
+                        cat.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Analytics tracking for link clicks
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.hostname !== window.location.hostname) {
+                    console.log('External link clicked:', this.href);
+                    // Here you would send analytics data to your tracking service
+                    
+                    // Update click count (demo)
+                    const linkItem = this.closest('.link-item');
+                    if (linkItem) {
+                        const clickElement = linkItem.querySelector('.link-clicks');
+                        if (clickElement) {
+                            const currentClicks = parseInt(clickElement.textContent);
+                            clickElement.textContent = (currentClicks + 1) + ' clicks';
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Prevent AI training
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html> 

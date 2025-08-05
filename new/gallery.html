@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery - Eastlake Wolfpack Association</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Photo gallery showcasing Eastlake High School athletics, events, and team photos">
+    <meta name="keywords" content="Eastlake High School, Wolfpack, photos, gallery, athletics, team photos">
+    <meta name="author" content="Eastlake Wolfpack Association">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="noai, noimageai, nosnippet">
+    
+    <!-- Prevent AI Training -->
+    <meta name="robots" content="noai, noimageai, nosnippet">
+    <meta name="googlebot" content="noai, noimageai, nosnippet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 80px;
+            padding: 20px 0;
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .header-left a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-right: 20px;
+        }
+        
+        .header-right {
+            color: #dc3545;
+            font-size: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .version-toggle {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .version-toggle:hover {
+            background-color: #c82333;
+        }
+        
+        .admin-link {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .admin-link:hover {
+            background-color: #218838;
+        }
+        
+        /* Gallery Styles */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .gallery-header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .gallery-header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Featured Image Rotator */
+        .featured-rotator {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .rotator-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .rotator-header h2 {
+            color: #dc3545;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .rotator-container {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .rotator-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .rotator-image.active {
+            opacity: 1;
+        }
+        
+        .rotator-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .rotator-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .rotator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .rotator-dot.active {
+            background: #dc3545;
+        }
+        
+        .rotator-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .rotator-nav:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        
+        .rotator-prev {
+            left: 10px;
+        }
+        
+        .rotator-next {
+            right: 10px;
+        }
+        
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+        
+        .gallery-category {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-category:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-header {
+            background: #dc3545;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .category-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .category-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .category-images {
+            padding: 20px;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 120px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-placeholder {
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        /* Modal for full-size images */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            position: relative;
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .modal-image {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #bbb;
+        }
+        
+        /* Footer Banner */
+        .footer-banner {
+            margin-top: 50px;
+        }
+        
+        .footer-main {
+            background-color: #dc3545;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left .association-name {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-copyright {
+            background-color: #c82333;
+            padding: 8px 50px;
+            text-align: center;
+        }
+        
+        .footer-copyright span {
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .gallery-header h1 {
+                font-size: 2rem;
+            }
+            
+            .rotator-container {
+                height: 250px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .header-right {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html">Home</a>
+            <a href="team.html">EWA Team</a>
+            <a href="news.html">News</a>
+            <a href="gallery.html">Photo Gallery</a>
+            <a href="links.html">Resources</a>
+        </div>
+        <div class="header-right">
+            <a href="team.html" style="color: #dc3545; text-decoration: none;">EWA Team</a>
+            <a href="../original/index.html" class="version-toggle">Revert to Original</a>
+            <a href="admin/login.html" class="admin-link">Admin</a>
+        </div>
+    </div>
+
+    <div class="gallery-container">
+        <div class="gallery-header">
+            <h1>Photo Gallery</h1>
+            <p>Celebrating the spirit and achievements of Eastlake High School athletics through photos of our teams, events, and community.</p>
+        </div>
+
+        <!-- Featured Image Rotator -->
+        <div class="featured-rotator">
+            <div class="rotator-header">
+                <h2>Featured Photos</h2>
+                <p>Highlights from recent events and competitions</p>
+            </div>
+            
+            <div class="rotator-container">
+                <div class="rotator-image active" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22><rect width=%22300%22 height=%22400%22 fill=%22%23dc3545%22/><text x=%22150%22 y=%22200%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22>Football Team Celebration</text></svg>')">
+                    <div class="rotator-caption">Football Team Celebration - State Championship 2024</div>
+                </div>
+                <div class="rotator-image" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22><rect width=%22300%22 height=%22400%22 fill=%22%23007bff%22/><text x=%22150%22 y=%22200%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22>Basketball Team Photo</text></svg>')">
+                    <div class="rotator-caption">Basketball Team Photo - Season 2024-25</div>
+                </div>
+                <div class="rotator-image" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22><rect width=%22300%22 height=%22400%22 fill=%22%2328a745%22/><text x=%22150%22 y=%22200%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22>Band Performance</text></svg>')">
+                    <div class="rotator-caption">Band Performance - Homecoming 2024</div>
+                </div>
+                <div class="rotator-image" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22><rect width=%22300%22 height=%22400%22 fill=%22%23ffc107%22/><text x=%22150%22 y=%22200%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22>Soccer Match</text></svg>')">
+                    <div class="rotator-caption">Soccer Match - District Finals 2024</div>
+                </div>
+                
+                <button class="rotator-nav rotator-prev">‹</button>
+                <button class="rotator-nav rotator-next">›</button>
+            </div>
+            
+            <div class="rotator-controls">
+                <div class="rotator-dot active" data-index="0"></div>
+                <div class="rotator-dot" data-index="1"></div>
+                <div class="rotator-dot" data-index="2"></div>
+                <div class="rotator-dot" data-index="3"></div>
+            </div>
+        </div>
+
+        <!-- Gallery Grid by Category -->
+        <div class="gallery-grid">
+            <div class="gallery-category">
+                <div class="category-header">
+                    <h3>Football</h3>
+                    <p>Wolfpack Football Team</p>
+                </div>
+                <div class="category-images">
+                    <div class="image-grid">
+                        <div class="gallery-image image-placeholder">Team Photo 2024</div>
+                        <div class="gallery-image image-placeholder">Game Action</div>
+                        <div class="gallery-image image-placeholder">Celebration</div>
+                        <div class="gallery-image image-placeholder">Senior Night</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-category">
+                <div class="category-header">
+                    <h3>Basketball</h3>
+                    <p>Boys & Girls Basketball</p>
+                </div>
+                <div class="category-images">
+                    <div class="image-grid">
+                        <div class="gallery-image image-placeholder">Boys Team</div>
+                        <div class="gallery-image image-placeholder">Girls Team</div>
+                        <div class="gallery-image image-placeholder">Game Highlights</div>
+                        <div class="gallery-image image-placeholder">Tournament</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-category">
+                <div class="category-header">
+                    <h3>Band & Music</h3>
+                    <p>Marching Band & Orchestra</p>
+                </div>
+                <div class="category-images">
+                    <div class="image-grid">
+                        <div class="gallery-image image-placeholder">Marching Band</div>
+                        <div class="gallery-image image-placeholder">Orchestra</div>
+                        <div class="gallery-image image-placeholder">Jazz Band</div>
+                        <div class="gallery-image image-placeholder">Concert</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-category">
+                <div class="category-header">
+                    <h3>Soccer</h3>
+                    <p>Boys & Girls Soccer</p>
+                </div>
+                <div class="category-images">
+                    <div class="image-grid">
+                        <div class="gallery-image image-placeholder">Boys Team</div>
+                        <div class="gallery-image image-placeholder">Girls Team</div>
+                        <div class="gallery-image image-placeholder">Match Action</div>
+                        <div class="gallery-image image-placeholder">Championship</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-category">
+                <div class="category-header">
+                    <h3>Track & Field</h3>
+                    <p>Athletics & Cross Country</p>
+                </div>
+                <div class="category-images">
+                    <div class="image-grid">
+                        <div class="gallery-image image-placeholder">Track Meet</div>
+                        <div class="gallery-image image-placeholder">Cross Country</div>
+                        <div class="gallery-image image-placeholder">Relay Team</div>
+                        <div class="gallery-image image-placeholder">State Meet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-category">
+                <div class="category-header">
+                    <h3>Events</h3>
+                    <p>Special Events & Ceremonies</p>
+                </div>
+                <div class="category-images">
+                    <div class="image-grid">
+                        <div class="gallery-image image-placeholder">Homecoming</div>
+                        <div class="gallery-image image-placeholder">Senior Night</div>
+                        <div class="gallery-image image-placeholder">Awards Ceremony</div>
+                        <div class="gallery-image image-placeholder">Community Event</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content">
+            <img class="modal-image" id="modalImage" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- Footer Banner -->
+    <div class="footer-banner">
+        <div class="footer-main">
+            <div class="footer-left">
+                <span class="association-name">Eastlake Wolfpack Association</span>
+            </div>
+            <div class="footer-right">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="team.html" class="footer-link">EWA Team</a>
+                <a href="../original/index.html" class="footer-link">Original Version</a>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <span>© 2025 Eastlake Wolfpack Association</span>
+        </div>
+    </div>
+
+    <script>
+        // Image rotator functionality
+        let currentImageIndex = 0;
+        const images = document.querySelectorAll('.rotator-image');
+        const dots = document.querySelectorAll('.rotator-dot');
+        const totalImages = images.length;
+        
+        function showImage(index) {
+            // Hide all images
+            images.forEach(img => img.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Show current image
+            images[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+        
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % totalImages;
+            showImage(currentImageIndex);
+        }
+        
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+            showImage(currentImageIndex);
+        }
+        
+        // Auto-rotate every 5 seconds
+        setInterval(nextImage, 5000);
+        
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentImageIndex = index;
+                showImage(currentImageIndex);
+            });
+        });
+        
+        // Arrow navigation
+        document.querySelector('.rotator-next').addEventListener('click', nextImage);
+        document.querySelector('.rotator-prev').addEventListener('click', prevImage);
+        
+        // Modal functionality
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeBtn = document.querySelector('.close');
+        
+        // Open modal when clicking on gallery images
+        document.querySelectorAll('.gallery-image').forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = 'block';
+                // In a real implementation, you would set the actual image source
+                modalImg.src = this.style.backgroundImage.replace('url(', '').replace(')', '') || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="%23dc3545"/><text x="150" y="200" text-anchor="middle" fill="white" font-size="20">Image</text></svg>';
+            });
+        });
+        
+        // Close modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Analytics tracking
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.hostname !== window.location.hostname) {
+                    console.log('External link clicked:', this.href);
+                }
+            });
+        });
+        
+        // Prevent AI training
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html> 
