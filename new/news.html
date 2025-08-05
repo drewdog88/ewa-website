@@ -3,20 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News & Announcements - Eastlake Wolfpack Association</title>
+    <title>News - Eastlake Wolfpack Association</title>
     
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Latest news, announcements, and meeting minutes from the Eastlake Wolfpack Association">
-    <meta name="keywords" content="Eastlake High School, Wolfpack, news, announcements, meeting minutes, EWA">
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="description" content="Stay updated with the latest news from the Eastlake Wolfpack Association. Get information about events, achievements, and updates from Eastlake High School athletics and booster clubs.">
+    <meta name="keywords" content="Eastlake High School, Wolfpack, news, events, athletics, booster clubs, Kirkland, WA, EWA updates">
     <meta name="author" content="Eastlake Wolfpack Association">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="googlebot" content="noai, noimageai, nosnippet">
+    <meta name="bingbot" content="noai, noimageai, nosnippet">
+    
+    <!-- Enhanced Open Graph Tags -->
+    <meta property="og:title" content="News - Eastlake Wolfpack Association">
+    <meta property="og:description" content="Stay updated with the latest news from the Eastlake Wolfpack Association. Get information about events, achievements, and updates.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ewa-website.com/new/news.html">
+    <meta property="og:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
+    <meta property="og:image:alt" content="Eastlake Wolfpack Association Logo">
+    <meta property="og:site_name" content="Eastlake Wolfpack Association">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="News - Eastlake Wolfpack Association">
+    <meta name="twitter:description" content="Stay updated with the latest news from the Eastlake Wolfpack Association">
+    <meta name="twitter:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
+    <meta name="twitter:image:alt" content="Eastlake Wolfpack Association Logo">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ewa-website.com/new/news.html">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="../assets/ewa-wolf.jpg">
+    <link rel="apple-touch-icon" href="../assets/ewa-wolf.jpg">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Eastlake Wolfpack Association",
+        "description": "Supporting Eastlake High School athletics and booster clubs",
+        "url": "https://ewa-website.com",
+        "logo": "https://ewa-website.com/assets/ewa-wolf.jpg",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Kirkland",
+            "addressRegion": "WA",
+            "addressCountry": "US"
+        },
+        "sameAs": [
+            "https://ewa-site.pages.dev/"
+        ]
+    }
+    </script>
     
     <!-- Prevent AI Training -->
     <meta name="robots" content="noai, noimageai, nosnippet">
     <meta name="googlebot" content="noai, noimageai, nosnippet">
     
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="../assets/ewa-wolf.jpg" as="image">
+    <link rel="preload" href="index.html" as="document">
+    <link rel="preload" href="team.html" as="document">
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//ewa-website.com">
+    
     <style>
+        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -31,6 +86,49 @@
             line-height: 1.6;
         }
         
+        /* Accessibility Styles */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #000;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1000;
+            border-radius: 4px;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        /* Focus styles for accessibility */
+        a:focus, button:focus, [tabindex]:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            body {
+                background-color: #000;
+                color: #fff;
+            }
+            .header {
+                border-bottom-color: #fff;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
         /* Header Styles */
         .header {
             display: flex;
@@ -41,11 +139,28 @@
             border-bottom: 2px solid #dc3545;
         }
         
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
         .header-left a {
             color: #007bff;
             text-decoration: none;
             font-size: 16px;
             margin-right: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: url('../assets/ewa-wolf.jpg') no-repeat center;
+            background-size: contain;
+            margin-right: 20px;
+            /* Performance optimization: will-change for GPU acceleration */
+            will-change: transform;
+            /* Optimize for animations */
+            transform: translateZ(0);
         }
         
         .header-right {
@@ -86,529 +201,148 @@
         }
         
         /* Main Content */
-        .news-container {
+        .main-content {
             max-width: 1200px;
             margin: 0 auto;
         }
         
-        .news-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
-        .news-header h1 {
-            font-size: 3rem;
+        .main-content h1 {
+            font-size: 4rem;
             color: #2c3e50;
             margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: normal;
         }
         
-        .news-header p {
-            font-size: 1.1rem;
+        .main-content .subtitle {
+            font-size: 1.2rem;
             color: #6c757d;
-            max-width: 600px;
-            margin: 0 auto;
+            margin-bottom: 60px;
         }
         
-        /* News Grid */
-        .news-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-        
-        .news-main {
+        /* News Article Styles */
+        .news-article {
             background: white;
-            border-radius: 10px;
             padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .news-main h2 {
-            color: #dc3545;
-            font-size: 2rem;
             margin-bottom: 30px;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #dc3545;
         }
         
-        .news-item {
-            border-bottom: 1px solid #e9ecef;
-            padding: 25px 0;
-        }
-        
-        .news-item:last-child {
-            border-bottom: none;
-        }
-        
-        .news-date {
-            color: #6c757d;
-            font-size: 0.9rem;
-            font-weight: bold;
+        .news-article h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
             margin-bottom: 10px;
         }
         
-        .news-title {
-            color: #2c3e50;
-            font-size: 1.4rem;
+        .news-article .date {
+            color: #6c757d;
+            font-size: 0.9rem;
             margin-bottom: 15px;
-            font-weight: bold;
         }
         
-        .news-content {
-            color: #6c757d;
+        .news-article .content {
+            color: #2c3e50;
             line-height: 1.8;
+        }
+        
+        .news-article .content p {
             margin-bottom: 15px;
-        }
-        
-        .news-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-        
-        .news-category {
-            background: #dc3545;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-        
-        /* Sidebar */
-        .news-sidebar {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            height: fit-content;
-        }
-        
-        .sidebar-section {
-            margin-bottom: 30px;
-        }
-        
-        .sidebar-section:last-child {
-            margin-bottom: 0;
-        }
-        
-        .sidebar-section h3 {
-            color: #dc3545;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 10px;
-        }
-        
-        .upcoming-events {
-            list-style: none;
-        }
-        
-        .upcoming-events li {
-            padding: 10px 0;
-            border-bottom: 1px solid #f8f9fa;
-        }
-        
-        .upcoming-events li:last-child {
-            border-bottom: none;
-        }
-        
-        .event-date {
-            font-weight: bold;
-            color: #2c3e50;
-            font-size: 0.9rem;
-        }
-        
-        .event-title {
-            color: #6c757d;
-            margin-top: 5px;
-        }
-        
-        .quick-links {
-            list-style: none;
-        }
-        
-        .quick-links li {
-            margin-bottom: 10px;
-        }
-        
-        .quick-links a {
-            color: #007bff;
-            text-decoration: none;
-            display: block;
-            padding: 8px 0;
-            transition: color 0.3s ease;
-        }
-        
-        .quick-links a:hover {
-            color: #dc3545;
-        }
-        
-        /* Meeting Minutes Section */
-        .meeting-minutes {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 50px;
-        }
-        
-        .meeting-minutes h2 {
-            color: #dc3545;
-            font-size: 2rem;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 15px;
-        }
-        
-        .minutes-item {
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px 0;
-        }
-        
-        .minutes-item:last-child {
-            border-bottom: none;
-        }
-        
-        .minutes-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .minutes-title {
-            color: #2c3e50;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        
-        .minutes-date {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .minutes-summary {
-            color: #6c757d;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .minutes-download {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .minutes-download:hover {
-            background: #c82333;
-        }
-        
-        /* Footer Banner */
-        .footer-banner {
-            margin-top: 50px;
-        }
-        
-        .footer-main {
-            background-color: #dc3545;
-            padding: 15px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .footer-left .association-name {
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .footer-right {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .footer-link {
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-        }
-        
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-        
-        .footer-copyright {
-            background-color: #c82333;
-            padding: 8px 50px;
-            text-align: center;
-        }
-        
-        .footer-copyright span {
-            color: white;
-            font-size: 0.9rem;
         }
         
         /* Responsive Design */
         @media (max-width: 768px) {
-            .news-header h1 {
-                font-size: 2rem;
-            }
-            
-            .news-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+            body {
+                padding: 20px;
             }
             
             .header {
                 flex-direction: column;
                 gap: 20px;
+                text-align: center;
             }
             
-            .header-right {
-                flex-wrap: wrap;
-                justify-content: center;
+            .main-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .news-article {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header class="header" role="banner">
+        <nav class="header-left" role="navigation" aria-label="Main navigation">
+            <div class="logo" role="img" aria-label="Eastlake Wolfpack Association Logo"></div>
             <a href="index.html">Home</a>
             <a href="team.html">EWA Team</a>
-            <a href="news.html">News</a>
             <a href="gallery.html">Photo Gallery</a>
+            <a href="news.html" aria-current="page">News</a>
+            <a href="volunteers.html">Volunteer</a>
             <a href="links.html">Resources</a>
-        </div>
-        <div class="header-right">
-            <a href="team.html" style="color: #dc3545; text-decoration: none;">EWA Team</a>
-            <a href="../original/index.html" class="version-toggle">Revert to Original</a>
+        </nav>
+        <div class="header-right" role="navigation" aria-label="Secondary navigation">
+            <a href="../original/news.html" class="version-toggle">Revert to Original</a>
             <a href="admin/login.html" class="admin-link">Admin</a>
         </div>
-    </div>
+    </header>
 
-    <div class="news-container">
-        <div class="news-header">
-            <h1>News & Announcements</h1>
-            <p>Stay updated with the latest news, announcements, and meeting minutes from the Eastlake Wolfpack Association.</p>
-        </div>
-
-        <div class="news-grid">
-            <div class="news-main">
-                <h2>Latest News</h2>
-                
-                <div class="news-item">
-                    <div class="news-date">January 15, 2025</div>
-                    <div class="news-title">Next Board Meeting - January 20th</div>
-                    <div class="news-content">
-                        Join us for our monthly board meeting on Monday, January 20th at 7:00 PM in the Eastlake High School Library. All booster club representatives are encouraged to attend. We'll be discussing upcoming events, budget allocations, and strategic planning for the spring semester.
-                    </div>
-                    <div class="news-meta">
-                        <span class="news-category">Meeting</span>
-                        <span>Posted by EWA Admin</span>
-                    </div>
-                </div>
-                
-                <div class="news-item">
-                    <div class="news-date">January 10, 2025</div>
-                    <div class="news-title">Tax Season Reminder</div>
-                    <div class="news-content">
-                        All booster clubs should submit their 1099 forms and insurance information through the secure portal by January 31st. This is crucial for maintaining our tax-exempt status and ensuring proper documentation. Contact admin@ewa-website.com for access to the secure submission portal.
-                    </div>
-                    <div class="news-meta">
-                        <span class="news-category">Important</span>
-                        <span>Posted by EWA Admin</span>
-                    </div>
-                </div>
-                
-                <div class="news-item">
-                    <div class="news-date">January 5, 2025</div>
-                    <div class="news-title">Spring Sports Registration Open</div>
-                    <div class="news-content">
-                        Registration for spring sports is now open. Visit the LWSD athletics page for more information and registration deadlines. Don't forget to check with your respective booster clubs for any additional requirements or team-specific information.
-                    </div>
-                    <div class="news-meta">
-                        <span class="news-category">Sports</span>
-                        <span>Posted by EWA Admin</span>
-                    </div>
-                </div>
-                
-                <div class="news-item">
-                    <div class="news-date">December 20, 2024</div>
-                    <div class="news-title">Holiday Break Schedule</div>
-                    <div class="news-content">
-                        The EWA office will be closed during the winter break from December 23rd through January 3rd. We'll resume normal operations on January 6th, 2025. Have a wonderful holiday season!
-                    </div>
-                    <div class="news-meta">
-                        <span class="news-category">General</span>
-                        <span>Posted by EWA Admin</span>
-                    </div>
-                </div>
-                
-                <div class="news-item">
-                    <div class="news-date">December 15, 2024</div>
-                    <div class="news-title">Fall Sports Recognition Ceremony</div>
-                    <div class="news-content">
-                        Congratulations to all our fall sports athletes! The recognition ceremony will be held on December 18th at 6:00 PM in the Eastlake High School gymnasium. All athletes, families, and supporters are welcome to attend this celebration of our student-athletes' achievements.
-                    </div>
-                    <div class="news-meta">
-                        <span class="news-category">Event</span>
-                        <span>Posted by EWA Admin</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="news-sidebar">
-                <div class="sidebar-section">
-                    <h3>Upcoming Events</h3>
-                    <ul class="upcoming-events">
-                        <li>
-                            <div class="event-date">January 20, 2025</div>
-                            <div class="event-title">EWA Board Meeting</div>
-                        </li>
-                        <li>
-                            <div class="event-date">January 31, 2025</div>
-                            <div class="event-title">Tax Document Deadline</div>
-                        </li>
-                        <li>
-                            <div class="event-date">February 15, 2025</div>
-                            <div class="event-title">Spring Sports Meeting</div>
-                        </li>
-                        <li>
-                            <div class="event-date">March 1, 2025</div>
-                            <div class="event-title">Annual Fundraiser</div>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3>Quick Links</h3>
-                    <ul class="quick-links">
-                        <li><a href="admin/login.html">Admin Portal</a></li>
-                        <li><a href="links.html">Resources & Links</a></li>
-                        <li><a href="gallery.html">Photo Gallery</a></li>
-                        <li><a href="team.html">EWA Team</a></li>
-                        <li><a href="https://www.lwsd.org/schools/eastlake/athletics" target="_blank">Eastlake Athletics</a></li>
-                        <li><a href="https://www.lwsd.org/athletics" target="_blank">LWSD Athletics</a></li>
-                    </ul>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3>Contact Information</h3>
-                    <p style="color: #6c757d; font-size: 0.9rem;">
-                        <strong>Email:</strong> admin@ewa-website.com<br>
-                        <strong>Phone:</strong> (425) 555-0123<br>
-                        <strong>Office Hours:</strong> Mon-Fri 9AM-3PM
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Meeting Minutes Section -->
-        <div class="meeting-minutes">
-            <h2>Meeting Minutes</h2>
-            
-            <div class="minutes-item">
-                <div class="minutes-header">
-                    <div class="minutes-title">December 2024 Board Meeting</div>
-                    <div class="minutes-date">December 15, 2024</div>
-                </div>
-                <div class="minutes-summary">
-                    Discussion topics included budget review for Q4, planning for spring sports season, and updates on tax filing requirements. Key decisions were made regarding equipment purchases and event scheduling for the upcoming semester.
-                </div>
-                <a href="#" class="minutes-download">Download Minutes (PDF)</a>
-            </div>
-            
-            <div class="minutes-item">
-                <div class="minutes-header">
-                    <div class="minutes-title">November 2024 Board Meeting</div>
-                    <div class="minutes-date">November 20, 2024</div>
-                </div>
-                <div class="minutes-summary">
-                    Focus on fall sports wrap-up, fundraising results, and preparation for winter sports season. New policies were approved regarding volunteer coordination and safety protocols.
-                </div>
-                <a href="#" class="minutes-download">Download Minutes (PDF)</a>
-            </div>
-            
-            <div class="minutes-item">
-                <div class="minutes-header">
-                    <div class="minutes-title">October 2024 Board Meeting</div>
-                    <div class="minutes-date">October 18, 2024</div>
-                </div>
-                <div class="minutes-summary">
-                    Quarterly financial review, discussion of new booster club applications, and planning for the annual recognition ceremony. Updates on insurance coverage and compliance requirements.
-                </div>
-                <a href="#" class="minutes-download">Download Minutes (PDF)</a>
-            </div>
-            
-            <div class="minutes-item">
-                <div class="minutes-header">
-                    <div class="minutes-title">September 2024 Board Meeting</div>
-                    <div class="minutes-date">September 16, 2024</div>
-                </div>
-                <div class="minutes-summary">
-                    Annual meeting with election of new board members, approval of annual budget, and strategic planning for the 2024-25 school year. Discussion of new initiatives and community partnerships.
-                </div>
-                <a href="#" class="minutes-download">Download Minutes (PDF)</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer Banner -->
-    <div class="footer-banner">
-        <div class="footer-main">
-            <div class="footer-left">
-                <span class="association-name">Eastlake Wolfpack Association</span>
-            </div>
-            <div class="footer-right">
-                <a href="index.html" class="footer-link">Home</a>
-                <a href="team.html" class="footer-link">EWA Team</a>
-                <a href="../original/index.html" class="footer-link">Original Version</a>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            <span>© 2025 Eastlake Wolfpack Association</span>
-        </div>
-    </div>
-
-    <script>
-        // Analytics tracking for link clicks
-        document.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (this.hostname !== window.location.hostname) {
-                    console.log('External link clicked:', this.href);
-                    // Here you would send analytics data to your tracking service
-                }
-            });
-        });
+    <main id="main-content" class="main-content" role="main">
+        <h1>News</h1>
+        <p class="subtitle">Stay updated with the latest news and events from the Eastlake Wolfpack Association.</p>
         
-        // Prevent AI training
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('selectstart', e => e.preventDefault());
+        <article class="news-article">
+            <h2>Welcome to the 2024-2025 School Year</h2>
+            <div class="date">September 1, 2024</div>
+            <div class="content">
+                <p>Welcome back to another exciting year of Eastlake High School athletics! The Eastlake Wolfpack Association is ready to support our student athletes and booster clubs throughout the 2024-2025 school year.</p>
+                <p>We have many exciting events planned, including fundraisers, volunteer opportunities, and community building activities. Stay tuned for updates on how you can get involved and support our programs.</p>
+            </div>
+        </article>
         
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
-                e.preventDefault();
-            }
-        });
+        <article class="news-article">
+            <h2>Fall Sports Season Begins</h2>
+            <div class="date">August 15, 2024</div>
+            <div class="content">
+                <p>The fall sports season is officially underway! Our football, soccer, volleyball, cross-country, and swimming teams are all in action. Come out and support our Wolfpack athletes as they compete this season.</p>
+                <p>Check our Resources page for game schedules and booster club information. We encourage all families to get involved with their respective booster clubs to help support our programs.</p>
+            </div>
+        </article>
         
-        // Demo functionality for download buttons
-        document.querySelectorAll('.minutes-download').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('In a real implementation, this would download the meeting minutes PDF.');
-            });
-        });
-    </script>
+        <article class="news-article">
+            <h2>Volunteer Opportunities Available</h2>
+            <div class="date">August 10, 2024</div>
+            <div class="content">
+                <p>We're always looking for dedicated volunteers to help support our programs. Whether you can spare a few hours or want to take on a more involved role, there are opportunities for everyone.</p>
+                <p>Visit our Volunteer page to express your interest in helping with concessions, fundraising, event planning, or other areas where we need support. Every volunteer makes a difference!</p>
+            </div>
+        </article>
+        
+        <article class="news-article">
+            <h2>Spring Sports Success</h2>
+            <div class="date">June 15, 2024</div>
+            <div class="content">
+                <p>Congratulations to all our spring sports teams on another successful season! Our baseball, softball, track & field, tennis, and golf teams all had outstanding performances this year.</p>
+                <p>Special recognition goes to our state qualifiers and championship participants. Your hard work and dedication inspire us all. Thank you to the coaches, parents, and booster clubs for your support throughout the season.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer-banner" role="contentinfo">
+        <div class="footer-content">
+            <p>&copy; 2024 Eastlake Wolfpack Association. All rights reserved.</p>
+        </div>
+        <nav class="footer-right" role="navigation" aria-label="Footer navigation">
+            <a href="index.html">Home</a>
+            <a href="team.html">Team</a>
+            <a href="volunteers.html">Volunteer</a>
+        </nav>
+    </footer>
 </body>
 </html> 

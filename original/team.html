@@ -16,13 +16,30 @@
         .header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 80px;
+            padding: 20px 0;
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
         }
         
         .header-left a {
             color: #007bff;
             text-decoration: none;
             font-size: 16px;
+            margin-right: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: url('../assets/ewa-wolf.jpg') no-repeat center;
+            background-size: contain;
+            margin-right: 20px;
         }
         
         .header-right {
@@ -165,6 +182,7 @@
 <body>
     <div class="header">
         <div class="header-left">
+            <div class="logo"></div>
             <a href="index.html">Eastlake Wolfpack Association</a>
         </div>
         <div class="header-right">
@@ -182,7 +200,7 @@
                 <h2>Doug Sargent</h2>
                 <div class="title">PRESIDENT</div>
                 <div class="email">
-                    <a href="mailto:ewapresident@gmail.com">ewapresident@gmail.com</a>
+                    <a href="mailto:ewapresident@gmail.com" data-email="ewapresident@gmail.com" class="sensitive-data">e***t@gmail.com</a>
                 </div>
             </div>
             
@@ -190,7 +208,7 @@
                 <h2>Sara Goldie</h2>
                 <div class="title">ATHLETIC DIRECTOR</div>
                 <div class="email">
-                    <a href="mailto:sgoldie@lwsd.org">sgoldie@lwsd.org</a>
+                    <a href="mailto:sgoldie@lwsd.org" data-email="sgoldie@lwsd.org" class="sensitive-data">s***e@lwsd.org</a>
                 </div>
             </div>
             
@@ -198,7 +216,7 @@
                 <h2>Baxter Kent</h2>
                 <div class="title">SECRETARY</div>
                 <div class="email">
-                    <a href="mailto:ewasecretary1@gmail.com">ewasecretary1@gmail.com</a>
+                    <a href="mailto:ewasecretary1@gmail.com" data-email="ewasecretary1@gmail.com" class="sensitive-data">e***1@gmail.com</a>
                 </div>
             </div>
             
@@ -206,7 +224,7 @@
                 <h2>Shirley Brill</h2>
                 <div class="title">TREASURER</div>
                 <div class="email">
-                    <a href="mailto:ewatreasurer@gmail.com">ewatreasurer@gmail.com</a>
+                    <a href="mailto:ewatreasurer@gmail.com" data-email="ewatreasurer@gmail.com" class="sensitive-data">e***r@gmail.com</a>
                 </div>
             </div>
             
@@ -214,7 +232,7 @@
                 <h2>Todd Johnson</h2>
                 <div class="title">CONCESSIONS/MERCH</div>
                 <div class="email">
-                    <a href="mailto:ewaconcessions@gmail.com">ewaconcessions@gmail.com</a>
+                    <a href="mailto:ewaconcessions@gmail.com" data-email="ewaconcessions@gmail.com" class="sensitive-data">e***s@gmail.com</a>
                 </div>
             </div>
         </div>
@@ -236,5 +254,8 @@
             <span>© 2025 Eastlake Wolfpack Association</span>
         </div>
     </div>
+    
+    <!-- Security Script -->
+    <script src="security.js"></script>
 </body>
 </html>

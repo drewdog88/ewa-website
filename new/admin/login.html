@@ -38,6 +38,17 @@
             color: #2c3e50;
             font-size: 2rem;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: url('../../assets/ewa-wolf.jpg') no-repeat center;
+            background-size: contain;
+            margin-right: 15px;
         }
         
         .login-header p {
@@ -123,7 +134,7 @@
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>EWA Admin</h1>
+            <h1><div class="logo"></div>EWA Admin</h1>
             <p>Secure Login for Booster Club Management</p>
         </div>
         

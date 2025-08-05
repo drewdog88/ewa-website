@@ -4,98 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EWA Admin Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Georgia, "Times New Roman", serif;
-            background-color: #f8f9fa;
-            color: #2c3e50;
-        }
-        
-        .admin-header {
-            background: #dc3545;
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .admin-header h1 {
-            font-size: 1.5rem;
-        }
-        
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .admin-container {
-            display: flex;
-            min-height: calc(100vh - 80px);
-        }
-        
-        .sidebar {
-            width: 250px;
-            background: white;
-            border-right: 1px solid #e9ecef;
-            padding: 20px 0;
-        }
-        
-        .sidebar-nav {
-            list-style: none;
-        }
-        
-        .sidebar-nav li {
-            margin-bottom: 5px;
-        }
-        
-        .sidebar-nav a {
-            display: block;
-            padding: 12px 20px;
-            color: #2c3e50;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-        
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 30px;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .dashboard-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+    <link rel="stylesheet" href="dashboard.css">
         
         .dashboard-card h3 {
             color: #dc3545;
@@ -248,6 +157,46 @@
         .btn-small:hover {
             background: #c82333;
         }
+
+        .status-active {
+            background: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .status-warning {
+            background: #ffc107;
+            color: #212529;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .status-success {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .status-inactive {
+            background: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
         
         .status-active {
             background: #28a745;
@@ -324,23 +273,25 @@
 </head>
 <body>
     <div class="admin-header">
-        <h1>EWA Admin Dashboard</h1>
+        <h1><div class="logo"></div>EWA Admin Dashboard</h1>
         <a href="login.html" class="logout-btn">Logout</a>
     </div>
     
     <div class="admin-container">
         <div class="sidebar">
-            <ul class="sidebar-nav">
+            <ul class="sidebar-nav" id="sidebarNav">
                 <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
-                <li><a href="#officers" class="nav-link" data-section="officers">Officer Management</a></li>
-                <li><a href="#club-websites" class="nav-link" data-section="club-websites">Club Website Links</a></li>
+                <li class="admin-only"><a href="#officers" class="nav-link" data-section="officers">Officer Management</a></li>
+                <li class="admin-only"><a href="#club-websites" class="nav-link" data-section="club-websites">Club Website Links</a></li>
                 <li><a href="#volunteers" class="nav-link" data-section="volunteers">Volunteer Signup Management</a></li>
-                <li><a href="#news" class="nav-link" data-section="news">News & Announcements</a></li>
-                <li><a href="#links" class="nav-link" data-section="links">Links & Resources</a></li>
-                <li><a href="#documents" class="nav-link" data-section="documents">Document Management</a></li>
-                <li><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
-                <li><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
-                <li><a href="#users" class="nav-link" data-section="users">User Management</a></li>
+                <li class="admin-only"><a href="#news" class="nav-link" data-section="news">News & Announcements</a></li>
+                <li class="admin-only"><a href="#links" class="nav-link" data-section="links">Links & Resources</a></li>
+                <li><a href="#insurance" class="nav-link" data-section="insurance">Insurance Forms</a></li>
+                            <li><a href="#1099" class="nav-link" data-section="1099">1099 Information</a></li>
+            <li><a href="#profile" class="nav-link" data-section="profile">Profile Management</a></li>
+            <li class="admin-only"><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
+            <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
+            <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
             </ul>
         </div>
         
@@ -422,7 +373,10 @@
                         <label for="spreadsheet">Upload Spreadsheet (CSV/Excel)</label>
                         <input type="file" id="spreadsheet" accept=".csv,.xlsx,.xls">
                     </div>
-                    <button class="action-btn">Import Data</button>
+                    <div class="form-row">
+                        <button class="action-btn" onclick="importOfficerData()">Import Data</button>
+                        <button class="action-btn" onclick="downloadOfficerTemplate()" style="background-color: #28a745;">Download Template</button>
+                    </div>
                 </div>
                 
                 <div class="form-section">
@@ -452,50 +406,52 @@
                         <select id="boosterClub">
                             <option value="">Select Booster Club</option>
                             <option value="band">EHS Band Boosters</option>
-                            <option value="football">EHS Football Boosters</option>
-                            <option value="basketball">EHS Basketball Boosters</option>
-                            <!-- Add all clubs -->
+                            <option value="baseball">Eastlake Baseball Club</option>
+                            <option value="boys-basketball">Eastlake Boys Basketball Booster Club</option>
+                            <option value="girls-basketball">Eastlake Girls Basketball Booster Club</option>
+                            <option value="cheer">Eastlake Cheer Booster Club</option>
+                            <option value="choir">Eastlake Choir</option>
+                            <option value="cross-country">Eastlake Cross-Country Boosters</option>
+                            <option value="dance">Eastlake Dance Team Boosters</option>
+                            <option value="deca">EHS DECA Booster Club</option>
+                            <option value="drama">Eastlake Drama</option>
+                            <option value="fastpitch">Eastlake Fastpitch (Girls)</option>
+                            <option value="boys-golf">Eastlake Boys Golf Booster Club</option>
+                            <option value="girls-golf">Eastlake Girls Golf Booster Club</option>
+                            <option value="orchestra">EHS Orchestra Boosters Club</option>
+                            <option value="robotics">Eastlake Robotics Club</option>
+                            <option value="boys-soccer">Eastlake Boys Soccer</option>
+                            <option value="girls-soccer">Eastlake Girls Soccer</option>
+                            <option value="boys-swim">Eastlake Boys Swim & Dive Booster Club</option>
+                            <option value="girls-swim">Eastlake Girls Swim & Dive Booster Club</option>
+                            <option value="track">EHS Track and Field Booster Club</option>
+                            <option value="volleyball">Eastlake Volleyball Booster Club</option>
+                            <option value="wrestling">EHS Wrestling Booster Club</option>
                         </select>
                     </div>
-                    <button class="action-btn">Add Officer</button>
+                    <button class="action-btn" onclick="addOfficer()">Add Officer</button>
                 </div>
                 
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Club</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sarah Johnson</td>
-                            <td>President</td>
-                            <td>EHS Band Boosters</td>
-                            <td>sarah.johnson@example.com</td>
-                            <td>(425) 555-0101</td>
-                            <td>
-                                <button class="btn-small">Edit</button>
-                                <button class="btn-small">Delete</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Mike Chen</td>
-                            <td>Treasurer</td>
-                            <td>EHS Band Boosters</td>
-                            <td>mike.chen@example.com</td>
-                            <td>(425) 555-0102</td>
-                            <td>
-                                <button class="btn-small">Edit</button>
-                                <button class="btn-small">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="form-section">
+                    <h3>Current Officers</h3>
+                    <div id="officersTableContainer">
+                        <table class="data-table" id="officersTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Club</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="officersTableBody">
+                                <!-- Officers will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             
             <!-- Club Website Links Section -->
@@ -545,7 +501,7 @@
                             Enable "Visit Website" button for this club
                         </label>
                     </div>
-                    <button class="action-btn">Update Website Link</button>
+                    <button class="action-btn" onclick="updateWebsiteLink()">Update Website Link</button>
                 </div>
                 
                 <div class="form-section">
@@ -559,205 +515,8 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>EHS Band Boosters</td>
-                                <td><a href="https://ehsbandboosters.org" target="_blank">https://ehsbandboosters.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Baseball Club</td>
-                                <td><a href="https://eastlakebaseball.org" target="_blank">https://eastlakebaseball.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Boys Basketball Booster Club</td>
-                                <td><a href="https://eastlakeboysbasketball.org" target="_blank">https://eastlakeboysbasketball.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Girls Basketball Booster Club</td>
-                                <td><a href="https://eastlakegirlsbasketball.org" target="_blank">https://eastlakegirlsbasketball.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Cheer Booster Club</td>
-                                <td><a href="https://eastlakecheer.org" target="_blank">https://eastlakecheer.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Choir</td>
-                                <td><a href="https://eastlakechoir.org" target="_blank">https://eastlakechoir.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Cross-Country Boosters</td>
-                                <td><a href="https://eastlakecrosscountry.org" target="_blank">https://eastlakecrosscountry.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Dance Team Boosters</td>
-                                <td><a href="https://eastlakedanceteam.org" target="_blank">https://eastlakedanceteam.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>EHS DECA Booster Club</td>
-                                <td><a href="https://ehsdeca.org" target="_blank">https://ehsdeca.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Drama</td>
-                                <td><a href="https://eastlakedrama.org" target="_blank">https://eastlakedrama.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Fastpitch (Girls)</td>
-                                <td><a href="https://eastlakefastpitch.org" target="_blank">https://eastlakefastpitch.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Boys Golf Booster Club</td>
-                                <td><a href="https://eastlakeboysgolf.org" target="_blank">https://eastlakeboysgolf.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Girls Golf Booster Club</td>
-                                <td><a href="https://eastlakegirlsgolf.org" target="_blank">https://eastlakegirlsgolf.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>EHS Orchestra Boosters Club</td>
-                                <td><a href="https://ehsorchestra.org" target="_blank">https://ehsorchestra.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Robotics Club</td>
-                                <td><a href="https://eastlakerobotics.org" target="_blank">https://eastlakerobotics.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Boys Soccer</td>
-                                <td><a href="https://eastlakeboyssoccer.org" target="_blank">https://eastlakeboyssoccer.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Girls Soccer</td>
-                                <td><a href="https://eastlakegirlssoccer.org" target="_blank">https://eastlakegirlssoccer.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Boys Swim & Dive Booster Club</td>
-                                <td><a href="https://eastlakeboysswim.org" target="_blank">https://eastlakeboysswim.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Girls Swim & Dive Booster Club</td>
-                                <td><a href="https://eastlakegirlsswim.org" target="_blank">https://eastlakegirlsswim.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>EHS Track and Field Booster Club</td>
-                                <td><a href="https://ehstrackandfield.org" target="_blank">https://ehstrackandfield.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Eastlake Volleyball Booster Club</td>
-                                <td><a href="https://eastlakevolleyball.org" target="_blank">https://eastlakevolleyball.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>EHS Wrestling Booster Club</td>
-                                <td><a href="https://ehswrestling.org" target="_blank">https://ehswrestling.org</a></td>
-                                <td><span class="status-active">Active</span></td>
-                                <td>
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Disable</button>
-                                </td>
-                            </tr>
+                        <tbody id="websiteLinksTableBody">
+                            <!-- Website links will be dynamically added here -->
                         </tbody>
                     </table>
                 </div>
@@ -804,7 +563,7 @@
                         <label for="volunteerStatusFilter">Filter by Status</label>
                         <select id="volunteerStatusFilter">
                             <option value="">All Statuses</option>
-                            <option value="new">New</option>
+                            <option value="pending">Pending</option>
                             <option value="contacted">Contacted</option>
                             <option value="confirmed">Confirmed</option>
                             <option value="declined">Declined</option>
@@ -827,66 +586,16 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>2025-01-15</td>
-                                <td>EHS Band Boosters</td>
-                                <td>Sarah Johnson</td>
-                                <td>Michael Johnson</td>
-                                <td>sarah.johnson@email.com</td>
-                                <td>(555) 123-4567</td>
-                                <td><span class="status-active">New</span></td>
-                                <td>
-                                    <button class="btn-small">Contact</button>
-                                    <button class="btn-small">Confirm</button>
-                                    <button class="btn-small">Decline</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2025-01-14</td>
-                                <td>Eastlake Baseball Club</td>
-                                <td>David Chen</td>
-                                <td>Alex Chen</td>
-                                <td>david.chen@email.com</td>
-                                <td>(555) 987-6543</td>
-                                <td><span class="status-active">Contacted</span></td>
-                                <td>
-                                    <button class="btn-small">Confirm</button>
-                                    <button class="btn-small">Decline</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2025-01-13</td>
-                                <td>Eastlake Girls Basketball Booster Club</td>
-                                <td>Maria Rodriguez</td>
-                                <td>Isabella Rodriguez</td>
-                                <td>maria.rodriguez@email.com</td>
-                                <td>(555) 456-7890</td>
-                                <td><span class="status-active">Confirmed</span></td>
-                                <td>
-                                    <button class="btn-small">View Details</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2025-01-12</td>
-                                <td>EHS Wrestling Booster Club</td>
-                                <td>Robert Wilson</td>
-                                <td></td>
-                                <td>robert.wilson@email.com</td>
-                                <td>(555) 321-0987</td>
-                                <td><span class="status-inactive">Declined</span></td>
-                                <td>
-                                    <button class="btn-small">View Details</button>
-                                </td>
-                            </tr>
-                        </tbody>
+                                            <tbody>
+                        <!-- Volunteer data will be loaded dynamically -->
+                    </tbody>
                     </table>
                 </div>
                 
                 <div class="form-section">
                     <h3>Export Volunteer Data</h3>
                     <p>Download volunteer submissions for your club in CSV format.</p>
-                    <button class="action-btn">Export to CSV</button>
+                    <button class="action-btn" onclick="exportVolunteerData()">Export to CSV</button>
                 </div>
             </div>
             
@@ -991,64 +700,115 @@
                 </table>
             </div>
             
-            <!-- Document Management Section -->
-            <div id="documents" class="content-section">
+            <!-- Insurance Forms Section -->
+            <div id="insurance" class="content-section">
                 <div class="section-header">
-                    <h2>Document Management</h2>
-                    <p>Manage 1099 forms and insurance information submissions.</p>
-                </div>
-                
-                <div class="form-section">
-                    <h3>1099 Form Submission</h3>
-                    <p>Booster clubs can submit their 1099 forms here. This area will be accessible only to logged-in users.</p>
-                    <div class="form-group">
-                        <label for="boosterClub1099">Booster Club</label>
-                        <select id="boosterClub1099">
-                            <option value="">Select Booster Club</option>
-                            <option value="band">EHS Band Boosters</option>
-                            <option value="football">EHS Football Boosters</option>
-                            <!-- Add all clubs -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="vendorName">Vendor/Contractor Name</label>
-                        <input type="text" id="vendorName" placeholder="Vendor Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="vendorTaxId">Tax ID (SSN or EIN)</label>
-                        <input type="text" id="vendorTaxId" placeholder="123-45-6789 or 12-3456789">
-                    </div>
-                    <div class="form-group">
-                        <label for="paymentAmount">Payment Amount</label>
-                        <input type="number" id="paymentAmount" placeholder="0.00" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="1099File">Upload 1099 Form</label>
-                        <input type="file" id="1099File" accept=".pdf,.jpg,.png">
-                    </div>
-                    <button class="action-btn">Submit 1099</button>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Insurance Information</h3>
+                    <h2>Insurance Forms</h2>
                     <p>Submit event and activity information for insurance purposes.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Submit Insurance Form</h3>
                     <div class="form-group">
-                        <label for="eventName">Event/Activity Name</label>
-                        <input type="text" id="eventName" placeholder="Event Name">
+                        <label for="insuranceEventName">Event/Activity Name</label>
+                        <input type="text" id="insuranceEventName" placeholder="Event Name">
                     </div>
                     <div class="form-group">
-                        <label for="eventDate">Event Date</label>
-                        <input type="date" id="eventDate">
+                        <label for="insuranceEventDate">Event Date</label>
+                        <input type="date" id="insuranceEventDate">
                     </div>
                     <div class="form-group">
-                        <label for="eventDescription">Event Description</label>
-                        <textarea id="eventDescription" placeholder="Describe the event, activities, and any special requirements..."></textarea>
+                        <label for="insuranceEventDescription">Event Description</label>
+                        <textarea id="insuranceEventDescription" placeholder="Describe the event, activities, and any special requirements..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="participantCount">Expected Participants</label>
-                        <input type="number" id="participantCount" placeholder="Number of participants">
+                        <label for="insuranceParticipantCount">Expected Participants</label>
+                        <input type="number" id="insuranceParticipantCount" placeholder="Number of participants">
                     </div>
-                    <button class="action-btn">Submit Insurance Info</button>
+                    <button class="action-btn" onclick="submitInsuranceForm()">Submit Insurance Form</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Your Insurance Submissions</h3>
+                    <table class="data-table" id="insuranceTable">
+                        <thead>
+                            <tr>
+                                <th>Date Submitted</th>
+                                <th>Event Name</th>
+                                <th>Event Date</th>
+                                <th>Description</th>
+                                <th>Participants</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 1099 Information Section -->
+            <div id="1099" class="content-section">
+                <div class="section-header">
+                    <h2>1099 Information</h2>
+                    <p>Submit 1099 information for vendors and contractors.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Submit 1099 Information</h3>
+                    <div class="form-group">
+                        <label for="1099VendorName">Vendor/Contractor Name</label>
+                        <input type="text" id="1099VendorName" placeholder="Vendor Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="1099VendorTaxId">Tax ID (SSN or EIN)</label>
+                        <input type="text" id="1099VendorTaxId" placeholder="123-45-6789 or 12-3456789">
+                    </div>
+                    <div class="form-group">
+                        <label for="1099PaymentAmount">Payment Amount</label>
+                        <input type="number" id="1099PaymentAmount" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="1099VendorAddress">Vendor Address</label>
+                            <input type="text" id="1099VendorAddress" placeholder="Street Address">
+                        </div>
+                        <div class="form-group">
+                            <label for="1099VendorCity">City</label>
+                            <input type="text" id="1099VendorCity" placeholder="City">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="1099VendorState">State</label>
+                            <input type="text" id="1099VendorState" placeholder="State" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="1099VendorZip">ZIP Code</label>
+                            <input type="text" id="1099VendorZip" placeholder="ZIP Code">
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="submit1099Form()">Submit 1099 Information</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Your 1099 Submissions</h3>
+                    <table class="data-table" id="1099Table">
+                        <thead>
+                            <tr>
+                                <th>Date Submitted</th>
+                                <th>Vendor Name</th>
+                                <th>Tax ID</th>
+                                <th>Payment Amount</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -1138,11 +898,88 @@
                 </div>
             </div>
             
+            <!-- Profile Management Section -->
+            <div id="profile" class="content-section">
+                <div class="section-header">
+                    <h2>Profile Management</h2>
+                    <p>Manage your account settings and security.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Change Password</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" placeholder="Current Password">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPasswordProfile">New Password</label>
+                            <input type="password" id="newPasswordProfile" placeholder="New Password">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="changePassword()">Change Password</button>
+                </div>
+                
+                <div class="form-section" id="firstLoginSetup" style="display: none;">
+                    <h3>First Login Setup</h3>
+                    <p>Please set up your secret question and answer for password recovery.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="secretQuestion">Secret Question</label>
+                            <input type="text" id="secretQuestion" placeholder="e.g., What was your first pet's name?">
+                        </div>
+                        <div class="form-group">
+                            <label for="secretAnswer">Secret Answer</label>
+                            <input type="text" id="secretAnswer" placeholder="Your answer">
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="setupProfile()">Complete Setup</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Forgot Password</h3>
+                    <p>Reset your password using your secret question and answer.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="forgotUsername">Username</label>
+                            <input type="text" id="forgotUsername" placeholder="Your username">
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="getSecretQuestion()">Get Secret Question</button>
+                    
+                    <div id="secretQuestionSection" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label id="secretQuestionLabel">Secret Question</label>
+                                <input type="text" id="secretQuestionAnswer" placeholder="Your answer">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newPasswordForgot">New Password</label>
+                                <input type="password" id="newPasswordForgot" placeholder="New Password">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPasswordForgot">Confirm New Password</label>
+                                <input type="password" id="confirmPasswordForgot" placeholder="Confirm New Password">
+                            </div>
+                        </div>
+                        <button class="action-btn" onclick="resetPassword()">Reset Password</button>
+                    </div>
+                </div>
+            </div>
+            
             <!-- User Management Section -->
             <div id="users" class="content-section">
                 <div class="section-header">
                     <h2>User Management</h2>
-                    <p>Manage admin users and permissions.</p>
+                    <p>Manage admin users and Booster Club Admin accounts.</p>
                 </div>
                 
                 <div class="form-section">
@@ -1153,50 +990,96 @@
                             <input type="text" id="newUsername" placeholder="Username">
                         </div>
                         <div class="form-group">
-                            <label for="newEmail">Email</label>
-                            <input type="email" id="newEmail" placeholder="user@example.com">
+                            <label for="newPassword">Password</label>
+                            <input type="password" id="newPassword" placeholder="Password">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="newPassword">Password</label>
-                            <input type="password" id="newPassword" placeholder="Password">
-                        </div>
-                        <div class="form-group">
                             <label for="userRole">Role</label>
                             <select id="userRole">
                                 <option value="admin">Admin</option>
-                                <option value="editor">Editor</option>
-                                <option value="viewer">Viewer</option>
+                                <option value="booster_admin">Booster Club Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="userClub">Club (for Booster Admin)</label>
+                            <select id="userClub">
+                                <option value="">Select Club</option>
+                                <option value="band">EHS Band Boosters</option>
+                                <option value="orchestra">EHS Orchestra Boosters Club</option>
+                                <option value="choir">EHS Choir Boosters</option>
+                                <option value="drama">EHS Drama Boosters</option>
+                                <option value="art">EHS Art Boosters</option>
+                                <option value="debate">EHS Debate Boosters</option>
+                                <option value="robotics">EHS Robotics Boosters</option>
+                                <option value="soccer">EHS Soccer Boosters</option>
+                                <option value="basketball">EHS Basketball Boosters</option>
+                                <option value="volleyball">EHS Volleyball Boosters</option>
+                                <option value="track">EHS Track Boosters</option>
+                                <option value="swimming">EHS Swimming Boosters</option>
+                                <option value="tennis">EHS Tennis Boosters</option>
+                                <option value="golf">EHS Golf Boosters</option>
+                                <option value="baseball">EHS Baseball Boosters</option>
+                                <option value="softball">EHS Softball Boosters</option>
+                                <option value="football">EHS Football Boosters</option>
+                                <option value="wrestling">EHS Wrestling Boosters</option>
+                                <option value="cheerleading">EHS Cheerleading Boosters</option>
+                                <option value="dance">EHS Dance Boosters</option>
+                                <option value="yearbook">EHS Yearbook Boosters</option>
+                                <option value="newspaper">EHS Newspaper Boosters</option>
+                                <option value="photography">EHS Photography Boosters</option>
+                                <option value="video">EHS Video Boosters</option>
+                                <option value="band_parents">EHS Band Parents</option>
+                                <option value="orchestra_parents">EHS Orchestra Parents</option>
+                                <option value="choir_parents">EHS Choir Parents</option>
+                                <option value="drama_parents">EHS Drama Parents</option>
+                                <option value="art_parents">EHS Art Parents</option>
+                                <option value="debate_parents">EHS Debate Parents</option>
+                                <option value="robotics_parents">EHS Robotics Parents</option>
+                                <option value="soccer_parents">EHS Soccer Parents</option>
+                                <option value="basketball_parents">EHS Basketball Parents</option>
+                                <option value="volleyball_parents">EHS Volleyball Parents</option>
+                                <option value="track_parents">EHS Track Parents</option>
+                                <option value="swimming_parents">EHS Swimming Parents</option>
+                                <option value="tennis_parents">EHS Tennis Parents</option>
+                                <option value="golf_parents">EHS Golf Parents</option>
+                                <option value="baseball_parents">EHS Baseball Parents</option>
+                                <option value="softball_parents">EHS Softball Parents</option>
+                                <option value="football_parents">EHS Football Parents</option>
+                                <option value="wrestling_parents">EHS Wrestling Parents</option>
+                                <option value="cheerleading_parents">EHS Cheerleading Parents</option>
+                                <option value="dance_parents">EHS Dance Parents</option>
+                                <option value="yearbook_parents">EHS Yearbook Parents</option>
+                                <option value="newspaper_parents">EHS Newspaper Parents</option>
+                                <option value="photography_parents">EHS Photography Parents</option>
+                                <option value="video_parents">EHS Video Parents</option>
                             </select>
                         </div>
                     </div>
-                    <button class="action-btn">Add User</button>
+                    <button class="action-btn" onclick="addUser()">Add User</button>
                 </div>
                 
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Last Login</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>admin</td>
-                            <td>admin@ewa-website.com</td>
-                            <td>Admin</td>
-                            <td>2025-01-15 14:30</td>
-                            <td>
-                                <button class="btn-small">Edit</button>
-                                <button class="btn-small">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="form-section">
+                    <h3>User List</h3>
+                    <div id="usersTableContainer">
+                        <table class="data-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Club</th>
+                                    <th>Status</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Users will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1224,13 +1107,16 @@
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('selectstart', e => e.preventDefault());
         
+        // Store volunteer data globally for filtering
+        let allVolunteerData = [];
+        
         // Load volunteer data
         function loadVolunteerData() {
             // Get current user to determine what data to load
             const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             
             let url = '/api/volunteers';
-            if (currentUser.role === 'booster_officer' && currentUser.club) {
+            if ((currentUser.role === 'booster_admin' || currentUser.role === 'booster_officer') && currentUser.club) {
                 url = `/api/volunteers/${currentUser.club}`;
             }
             
@@ -1238,7 +1124,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        displayVolunteerData(data.volunteers);
+                        allVolunteerData = data.volunteers; // Store all data
+                        displayVolunteerData(allVolunteerData);
                     } else {
                         console.error('Error loading volunteers:', data.message);
                     }
@@ -1253,9 +1140,20 @@
             const tbody = document.querySelector('#volunteers .data-table tbody');
             if (!tbody) return;
             
+            // Get filter values
+            const clubFilter = document.getElementById('volunteerClubFilter').value;
+            const statusFilter = document.getElementById('volunteerStatusFilter').value;
+            
+            // Filter volunteers based on selected criteria
+            let filteredVolunteers = volunteers.filter(volunteer => {
+                const clubMatch = !clubFilter || volunteer.boosterClub === clubFilter;
+                const statusMatch = !statusFilter || volunteer.status === statusFilter;
+                return clubMatch && statusMatch;
+            });
+            
             tbody.innerHTML = '';
             
-            volunteers.forEach(volunteer => {
+            filteredVolunteers.forEach(volunteer => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${new Date(volunteer.submittedAt).toLocaleDateString()}</td>
@@ -1264,11 +1162,18 @@
                     <td>${volunteer.childName || ''}</td>
                     <td>${volunteer.email}</td>
                     <td>${volunteer.phone || ''}</td>
-                    <td><span class="status-active">${volunteer.status}</span></td>
+                    <td><span class="status-${volunteer.status === 'pending' ? 'active' : volunteer.status === 'contacted' ? 'warning' : volunteer.status === 'confirmed' ? 'success' : 'inactive'}">${volunteer.status}</span></td>
                     <td>
-                        <button class="btn-small">Contact</button>
-                        <button class="btn-small">Confirm</button>
-                        <button class="btn-small">Decline</button>
+                        ${volunteer.status === 'pending' ? `
+                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'contacted')">Contact</button>
+                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'confirmed')">Confirm</button>
+                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'declined')">Decline</button>
+                        ` : volunteer.status === 'contacted' ? `
+                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'confirmed')">Confirm</button>
+                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'declined')">Decline</button>
+                        ` : `
+                            <button class="btn-small" onclick="viewVolunteerDetails('${volunteer.id}')">View Details</button>
+                        `}
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -1303,6 +1208,105 @@
             };
             return clubNames[clubCode] || clubCode;
         }
+
+        // Update volunteer status
+        function updateVolunteerStatus(volunteerId, newStatus) {
+            const statusMessages = {
+                'contacted': 'Contacted',
+                'confirmed': 'Confirmed',
+                'declined': 'Declined'
+            };
+
+            if (!confirm(`Are you sure you want to mark this volunteer as ${statusMessages[newStatus]}?`)) {
+                return;
+            }
+
+            fetch(`/api/volunteers/${volunteerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+                                .then(data => {
+                        if (data.success) {
+                            alert(`Volunteer status updated to ${statusMessages[newStatus]}`);
+                            // Update the stored data and re-display
+                            const volunteerIndex = allVolunteerData.findIndex(v => v.id === volunteerId);
+                            if (volunteerIndex !== -1) {
+                                allVolunteerData[volunteerIndex].status = newStatus;
+                                allVolunteerData[volunteerIndex].updatedAt = new Date().toISOString();
+                            }
+                            displayVolunteerData(allVolunteerData); // Re-display with current filters
+                        } else {
+                            alert('Error updating volunteer status: ' + data.message);
+                        }
+                    })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating volunteer status. Please try again.');
+            });
+        }
+
+        // View volunteer details
+        function viewVolunteerDetails(volunteerId) {
+            // For now, just show a simple alert with the volunteer ID
+            // In a real application, this would open a modal or navigate to a details page
+            alert(`Viewing details for volunteer ID: ${volunteerId}\n\nThis would show detailed information about the volunteer including contact history, notes, etc.`);
+        }
+
+        // Export volunteer data to CSV
+        function exportVolunteerData() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            // Get current filter values
+            const clubFilter = document.getElementById('volunteerClubFilter').value;
+            const statusFilter = document.getElementById('volunteerStatusFilter').value;
+            
+            // Filter volunteers based on current selections
+            let filteredVolunteers = allVolunteerData.filter(volunteer => {
+                const clubMatch = !clubFilter || volunteer.boosterClub === clubFilter;
+                const statusMatch = !statusFilter || volunteer.status === statusFilter;
+                return clubMatch && statusMatch;
+            });
+            
+            if (filteredVolunteers.length === 0) {
+                alert('No volunteer data to export. Please check your filters or add some volunteer data first.');
+                return;
+            }
+            
+            // Create CSV content
+            const headers = ['Name', 'Child Name', 'Email', 'Phone', 'Booster Club', 'Status', 'Submitted Date', 'Notes'];
+            const csvContent = [
+                headers.join(','),
+                ...filteredVolunteers.map(volunteer => [
+                    `"${volunteer.name || ''}"`,
+                    `"${volunteer.childName || ''}"`,
+                    `"${volunteer.email || ''}"`,
+                    `"${volunteer.phone || ''}"`,
+                    `"${volunteer.boosterClub || ''}"`,
+                    `"${volunteer.status || ''}"`,
+                    `"${volunteer.submittedAt || ''}"`,
+                    `"${volunteer.notes || ''}"`
+                ].join(','))
+            ].join('\n');
+            
+            // Create and download the file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `volunteer_data_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`Exported ${filteredVolunteers.length} volunteer records to CSV.`);
+        }
         
         // Demo data loading
         document.addEventListener('DOMContentLoaded', function() {
@@ -1313,12 +1317,1031 @@
                 return;
             }
             
+            // Parse user data
+            const userData = JSON.parse(currentUser);
+            
+            // Set up role-based access control
+            setupRoleBasedAccess(userData);
+            
             // Load volunteer data when volunteers section is shown
             document.querySelector('[data-section="volunteers"]').addEventListener('click', function() {
                 setTimeout(loadVolunteerData, 100);
             });
             
+            // Add event listeners for volunteer filters
+            document.getElementById('volunteerClubFilter').addEventListener('change', function() {
+                // Re-display current volunteer data with new filter
+                displayVolunteerData(allVolunteerData);
+            });
+            
+            document.getElementById('volunteerStatusFilter').addEventListener('change', function() {
+                // Re-display current volunteer data with new filter
+                displayVolunteerData(allVolunteerData);
+            });
+            
+            // Load insurance data when insurance section is shown
+            document.querySelector('[data-section="insurance"]').addEventListener('click', function() {
+                setTimeout(loadInsuranceData, 100);
+            });
+            
+            // Load 1099 data when 1099 section is shown
+            document.querySelector('[data-section="1099"]').addEventListener('click', function() {
+                setTimeout(load1099Data, 100);
+            });
+            
             console.log('Admin dashboard loaded');
+        });
+        
+        // Set up role-based access control
+        function setupRoleBasedAccess(userData) {
+            if (userData.role === 'booster_admin') {
+                // Hide admin-only sections
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Update header to show club name
+                const header = document.querySelector('.admin-header h1');
+                if (header && userData.clubName) {
+                    header.textContent = `EWA Admin Dashboard - ${userData.clubName}`;
+                }
+            }
+        }
+        
+        // Submit insurance form
+        function submitInsuranceForm() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            const formData = {
+                club: currentUser.club,
+                eventName: document.getElementById('insuranceEventName').value,
+                eventDate: document.getElementById('insuranceEventDate').value,
+                eventDescription: document.getElementById('insuranceEventDescription').value,
+                participantCount: document.getElementById('insuranceParticipantCount').value
+            };
+            
+            if (!formData.eventName || !formData.eventDate || !formData.eventDescription) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            fetch('/api/insurance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Insurance form submitted successfully!');
+                    // Clear form
+                    document.getElementById('insuranceEventName').value = '';
+                    document.getElementById('insuranceEventDate').value = '';
+                    document.getElementById('insuranceEventDescription').value = '';
+                    document.getElementById('insuranceParticipantCount').value = '';
+                    // Reload data
+                    loadInsuranceData();
+                } else {
+                    alert('Error submitting form: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting form. Please try again.');
+            });
+        }
+        
+        // Submit 1099 form
+        function submit1099Form() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            const formData = {
+                club: currentUser.club,
+                vendorName: document.getElementById('1099VendorName').value,
+                vendorTaxId: document.getElementById('1099VendorTaxId').value,
+                paymentAmount: document.getElementById('1099PaymentAmount').value,
+                vendorAddress: document.getElementById('1099VendorAddress').value,
+                vendorCity: document.getElementById('1099VendorCity').value,
+                vendorState: document.getElementById('1099VendorState').value,
+                vendorZip: document.getElementById('1099VendorZip').value
+            };
+            
+            if (!formData.vendorName || !formData.vendorTaxId || !formData.paymentAmount) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            fetch('/api/1099', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('1099 information submitted successfully!');
+                    // Clear form
+                    document.getElementById('1099VendorName').value = '';
+                    document.getElementById('1099VendorTaxId').value = '';
+                    document.getElementById('1099PaymentAmount').value = '';
+                    document.getElementById('1099VendorAddress').value = '';
+                    document.getElementById('1099VendorCity').value = '';
+                    document.getElementById('1099VendorState').value = '';
+                    document.getElementById('1099VendorZip').value = '';
+                    // Reload data
+                    load1099Data();
+                } else {
+                    alert('Error submitting form: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting form. Please try again.');
+            });
+        }
+        
+        // Load insurance data
+        function loadInsuranceData() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            if (currentUser.role === 'booster_admin' && currentUser.club) {
+                fetch(`/api/insurance/${currentUser.club}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displayInsuranceData(data.submissions);
+                        } else {
+                            console.error('Error loading insurance data:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        }
+        
+        // Display insurance data
+        function displayInsuranceData(submissions) {
+            const tbody = document.querySelector('#insuranceTable tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            submissions.forEach(submission => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(submission.submittedAt).toLocaleDateString()}</td>
+                    <td>${submission.eventName}</td>
+                    <td>${submission.eventDate}</td>
+                    <td>${submission.eventDescription}</td>
+                    <td>${submission.participantCount}</td>
+                    <td><span class="status-active">${submission.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Load 1099 data
+        function load1099Data() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            if (currentUser.role === 'booster_admin' && currentUser.club) {
+                fetch(`/api/1099/${currentUser.club}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            display1099Data(data.submissions);
+                        } else {
+                            console.error('Error loading 1099 data:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        }
+        
+        // Display 1099 data
+        function display1099Data(submissions) {
+            const tbody = document.querySelector('#1099Table tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            submissions.forEach(submission => {
+                const address = `${submission.vendorAddress}, ${submission.vendorCity}, ${submission.vendorState} ${submission.vendorZip}`.replace(/^,\s*/, '');
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(submission.submittedAt).toLocaleDateString()}</td>
+                    <td>${submission.vendorName}</td>
+                    <td>${submission.vendorTaxId}</td>
+                    <td>$${submission.paymentAmount.toFixed(2)}</td>
+                    <td>${address}</td>
+                    <td><span class="status-active">${submission.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Profile Management Functions
+        
+        // Check if user needs first login setup
+        function checkFirstLogin() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (currentUser.isFirstLogin) {
+                document.getElementById('firstLoginSetup').style.display = 'block';
+            }
+        }
+        
+        // Change password
+        function changePassword() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPasswordProfile').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+            
+            fetch('/api/users/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: currentUser.username,
+                    currentPassword,
+                    newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password changed successfully');
+                    // Clear form
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordProfile').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    alert('Error changing password: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error changing password. Please try again.');
+            });
+        }
+        
+        // Setup profile (first login)
+        function setupProfile() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const secretQuestion = document.getElementById('secretQuestion').value.trim();
+            const secretAnswer = document.getElementById('secretAnswer').value.trim();
+            
+            if (!secretQuestion || !secretAnswer) {
+                alert('Please fill in both secret question and answer');
+                return;
+            }
+            
+            fetch('/api/users/setup-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: currentUser.username,
+                    secretQuestion,
+                    secretAnswer
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Profile setup completed successfully');
+                    document.getElementById('firstLoginSetup').style.display = 'none';
+                    // Update session storage
+                    currentUser.isFirstLogin = false;
+                    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                } else {
+                    alert('Error setting up profile: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error setting up profile. Please try again.');
+            });
+        }
+        
+        // Get secret question for forgot password
+        function getSecretQuestion() {
+            const username = document.getElementById('forgotUsername').value.trim();
+            
+            if (!username) {
+                alert('Please enter your username');
+                return;
+            }
+            
+            fetch(`/api/users/${username}/secret-question`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('secretQuestionLabel').textContent = data.secretQuestion;
+                        document.getElementById('secretQuestionSection').style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error getting secret question. Please try again.');
+                });
+        }
+        
+        // Reset password using secret answer
+        function resetPassword() {
+            const username = document.getElementById('forgotUsername').value.trim();
+            const secretAnswer = document.getElementById('secretQuestionAnswer').value.trim();
+            const newPassword = document.getElementById('newPasswordForgot').value;
+            const confirmPassword = document.getElementById('confirmPasswordForgot').value;
+            
+            if (!username || !secretAnswer || !newPassword || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+            
+            fetch('/api/users/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    secretAnswer,
+                    newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password reset successfully');
+                    // Clear form
+                    document.getElementById('forgotUsername').value = '';
+                    document.getElementById('secretQuestionAnswer').value = '';
+                    document.getElementById('newPasswordForgot').value = '';
+                    document.getElementById('confirmPasswordForgot').value = '';
+                    document.getElementById('secretQuestionSection').style.display = 'none';
+                } else {
+                    alert('Error resetting password: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error resetting password. Please try again.');
+            });
+        }
+        
+        // User Management Functions
+        
+        // Load users data
+        function loadUsersData() {
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayUsersData(data.users);
+                    } else {
+                        console.error('Error loading users:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+        
+        // Display users data
+        function displayUsersData(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            Object.values(users).forEach(user => {
+                const row = document.createElement('tr');
+                const status = user.isLocked ? 'Locked' : 'Active';
+                const statusClass = user.isLocked ? 'status-inactive' : 'status-active';
+                const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never';
+                
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.role === 'admin' ? 'Admin' : 'Booster Club Admin'}</td>
+                    <td>${user.clubName || '-'}</td>
+                    <td><span class="${statusClass}">${status}</span></td>
+                    <td>${lastLogin}</td>
+                    <td>
+                        <button class="btn-small" onclick="editUser('${user.username}')">Edit</button>
+                        <button class="btn-small" onclick="toggleUserLock('${user.username}', ${user.isLocked})">${user.isLocked ? 'Unlock' : 'Lock'}</button>
+                        <button class="btn-small" onclick="resetUserPassword('${user.username}')">Reset Password</button>
+                        <button class="btn-small btn-danger" onclick="deleteUser('${user.username}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Add new user
+        function addUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('userRole').value;
+            const club = document.getElementById('userClub').value;
+            
+            if (!username || !password || !role) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (role === 'booster_admin' && !club) {
+                alert('Please select a club for Booster Club Admin');
+                return;
+            }
+            
+            const clubName = role === 'booster_admin' ? document.getElementById('userClub').options[document.getElementById('userClub').selectedIndex].text : '';
+            
+            fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    role,
+                    club,
+                    clubName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User created successfully');
+                    // Clear form
+                    document.getElementById('newUsername').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('userRole').value = 'admin';
+                    document.getElementById('userClub').value = '';
+                    // Reload users
+                    loadUsersData();
+                } else {
+                    alert('Error creating user: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating user. Please try again.');
+            });
+        }
+        
+        // Edit user
+        function editUser(username) {
+            const newUsername = prompt('Enter new username (leave empty to keep current):');
+            if (newUsername === null) return;
+            
+            const newPassword = prompt('Enter new password (leave empty to keep current):');
+            if (newPassword === null) return;
+            
+            const updateData = {};
+            if (newUsername) updateData.newUsername = newUsername;
+            if (newPassword) updateData.password = newPassword;
+            
+            if (Object.keys(updateData).length === 0) {
+                alert('No changes made');
+                return;
+            }
+            
+            fetch(`/api/users/${username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User updated successfully');
+                    loadUsersData();
+                } else {
+                    alert('Error updating user: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating user. Please try again.');
+            });
+        }
+        
+        // Toggle user lock
+        function toggleUserLock(username, currentLocked) {
+            const action = currentLocked ? 'unlock' : 'lock';
+            if (!confirm(`Are you sure you want to ${action} user "${username}"?`)) return;
+            
+            fetch(`/api/users/${username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    isLocked: !currentLocked
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`User ${action}ed successfully`);
+                    loadUsersData();
+                } else {
+                    alert('Error updating user: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating user. Please try again.');
+            });
+        }
+        
+        // Reset user password
+        function resetUserPassword(username) {
+            const newPassword = prompt('Enter new password:');
+            if (!newPassword) return;
+            
+            fetch(`/api/users/${username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    password: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Password reset successfully');
+                    loadUsersData();
+                } else {
+                    alert('Error resetting password: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error resetting password. Please try again.');
+            });
+        }
+        
+        // Delete user
+        function deleteUser(username) {
+            if (!confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) return;
+            
+            fetch(`/api/users/${username}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User deleted successfully');
+                    loadUsersData();
+                } else {
+                    alert('Error deleting user: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting user. Please try again.');
+            });
+        }
+        
+        // Officer Management Functions
+        
+        // Load officers data
+        function loadOfficersData() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            let url = '/api/officers';
+            
+            // If user is booster_admin, only show their club's officers
+            if (currentUser.role === 'booster_admin' && currentUser.club) {
+                url = `/api/officers/${currentUser.club}`;
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayOfficersData(data.officers);
+                    } else {
+                        console.error('Error loading officers:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+        
+        // Display officers data in table
+        function displayOfficersData(officers) {
+            const tbody = document.getElementById('officersTableBody');
+            tbody.innerHTML = '';
+            
+            if (officers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No officers found</td></tr>';
+                return;
+            }
+            
+            officers.forEach(officer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${officer.name}</td>
+                    <td>${officer.position}</td>
+                    <td>${officer.clubName}</td>
+                    <td>${officer.email}</td>
+                    <td>${officer.phone}</td>
+                    <td>
+                        <button class="btn-small" onclick="editOfficer('${officer.id}')">Edit</button>
+                        <button class="btn-small btn-danger" onclick="deleteOfficer('${officer.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Add new officer
+        function addOfficer() {
+            const name = document.getElementById('officerName').value.trim();
+            const position = document.getElementById('officerPosition').value.trim();
+            const email = document.getElementById('officerEmail').value.trim();
+            const phone = document.getElementById('officerPhone').value.trim();
+            const clubSelect = document.getElementById('boosterClub');
+            const booster_club = clubSelect.options[clubSelect.selectedIndex].text;
+            
+            if (!name || !position || !email || !phone || !booster_club) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            fetch('/api/officers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    position,
+                    email,
+                    phone,
+                    booster_club
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Officer added successfully');
+                    // Clear form
+                    document.getElementById('officerName').value = '';
+                    document.getElementById('officerPosition').value = '';
+                    document.getElementById('officerEmail').value = '';
+                    document.getElementById('officerPhone').value = '';
+                    document.getElementById('boosterClub').value = '';
+                    loadOfficersData();
+                } else {
+                    alert('Error adding officer: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding officer. Please try again.');
+            });
+        }
+        
+        // Edit officer
+        function editOfficer(id) {
+            // For now, we'll use a simple prompt-based edit
+            // In a real application, you might want a modal or form
+            const newName = prompt('Enter new name:');
+            if (!newName) return;
+            
+            const newPosition = prompt('Enter new position:');
+            if (!newPosition) return;
+            
+            const newEmail = prompt('Enter new email:');
+            if (!newEmail) return;
+            
+            const newPhone = prompt('Enter new phone:');
+            if (!newPhone) return;
+            
+            const clubSelect = document.getElementById('boosterClub');
+            const newBoosterClub = clubSelect.options[clubSelect.selectedIndex].text;
+            
+            fetch(`/api/officers/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: newName,
+                    position: newPosition,
+                    email: newEmail,
+                    phone: newPhone,
+                    booster_club: newBoosterClub
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Officer updated successfully');
+                    loadOfficersData();
+                } else {
+                    alert('Error updating officer: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating officer. Please try again.');
+            });
+        }
+        
+        // Delete officer
+        function deleteOfficer(id) {
+            if (!confirm('Are you sure you want to delete this officer? This action cannot be undone.')) return;
+            
+            fetch(`/api/officers/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Officer deleted successfully');
+                    loadOfficersData();
+                } else {
+                    alert('Error deleting officer: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting officer. Please try again.');
+            });
+        }
+        
+        // Download officer import template
+        function downloadOfficerTemplate() {
+            window.open('/api/officers/template', '_blank');
+        }
+        
+        // Import officer data from CSV
+        function importOfficerData() {
+            const fileInput = document.getElementById('spreadsheet');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file to import.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                
+                // Validate headers
+                const requiredHeaders = ['name', 'position', 'email', 'phone', 'booster_club'];
+                const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+                
+                if (missingHeaders.length > 0) {
+                    alert('Invalid CSV format. Missing headers: ' + missingHeaders.join(', '));
+                    return;
+                }
+                
+                let successCount = 0;
+                let errorCount = 0;
+                
+                // Process each line (skip header)
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+                    
+                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                    const officerData = {
+                        name: values[0],
+                        position: values[1],
+                        email: values[2],
+                        phone: values[3],
+                        booster_club: values[4]
+                    };
+                    
+                    // Validate required fields
+                    if (!officerData.name || !officerData.position || !officerData.email || !officerData.phone || !officerData.booster_club) {
+                        errorCount++;
+                        continue;
+                    }
+                    
+                    // Submit officer data
+                    fetch('/api/officers', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(officerData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                        
+                        // If this is the last line, show results
+                        if (i === lines.length - 1) {
+                            alert(`Import completed. Success: ${successCount}, Errors: ${errorCount}`);
+                            loadOfficersData();
+                            fileInput.value = '';
+                        }
+                    })
+                    .catch(error => {
+                        errorCount++;
+                        console.error('Error importing officer:', error);
+                    });
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Website link management
+        const websiteLinks = [
+            { club: 'EHS Band Boosters', url: 'https://ehsbandboosters.org', enabled: true },
+            { club: 'Eastlake Baseball Club', url: 'https://eastlakebaseball.org', enabled: true },
+            { club: 'Eastlake Boys Basketball Booster Club', url: 'https://eastlakeboysbasketball.org', enabled: true },
+            { club: 'Eastlake Girls Basketball Booster Club', url: 'https://eastlakegirlsbasketball.org', enabled: true },
+            { club: 'Eastlake Cheer Booster Club', url: 'https://eastlakecheer.org', enabled: true },
+            { club: 'Eastlake Choir', url: 'https://eastlakechoir.org', enabled: true },
+            { club: 'Eastlake Cross-Country Boosters', url: 'https://eastlakecrosscountry.org', enabled: true },
+            { club: 'Eastlake Dance Team Boosters', url: 'https://eastlakedanceteam.org', enabled: true },
+            { club: 'EHS DECA Booster Club', url: 'https://ehsdeca.org', enabled: true },
+            { club: 'Eastlake Drama', url: 'https://eastlakedrama.org', enabled: true },
+            { club: 'Eastlake Fastpitch (Girls)', url: 'https://eastlakefastpitch.org', enabled: true },
+            { club: 'Eastlake Boys Golf Booster Club', url: 'https://eastlakeboysgolf.org', enabled: true },
+            { club: 'Eastlake Girls Golf Booster Club', url: 'https://eastlakegirlsgolf.org', enabled: true },
+            { club: 'EHS Orchestra Boosters Club', url: 'https://ehsorchestra.org', enabled: true },
+            { club: 'Eastlake Robotics Club', url: 'https://eastlakerobotics.org', enabled: true },
+            { club: 'Eastlake Boys Soccer', url: 'https://eastlakeboyssoccer.org', enabled: true },
+            { club: 'Eastlake Girls Soccer', url: 'https://eastlakegirlssoccer.org', enabled: true },
+            { club: 'Eastlake Boys Swim & Dive Booster Club', url: 'https://eastlakeboysswim.org', enabled: true },
+            { club: 'Eastlake Girls Swim & Dive Booster Club', url: 'https://eastlakegirlsswim.org', enabled: true },
+            { club: 'EHS Track and Field Booster Club', url: 'https://ehstrackandfield.org', enabled: true },
+            { club: 'Eastlake Volleyball Booster Club', url: 'https://eastlakevolleyball.org', enabled: true },
+            { club: 'EHS Wrestling Booster Club', url: 'https://ehswrestling.org', enabled: true }
+        ];
+        
+        function updateWebsiteLink() {
+            const clubSelect = document.getElementById('websiteClubSelect');
+            const urlInput = document.getElementById('websiteUrl');
+            const enabledCheckbox = document.getElementById('websiteEnabled');
+            
+            const selectedClub = clubSelect.value;
+            const newUrl = urlInput.value.trim();
+            const enabled = enabledCheckbox.checked;
+            
+            if (!selectedClub) {
+                alert('Please select a club.');
+                return;
+            }
+            
+            if (!newUrl) {
+                alert('Please enter a website URL.');
+                return;
+            }
+            
+            // Update the website links array
+            const linkIndex = websiteLinks.findIndex(link => link.club === selectedClub);
+            if (linkIndex !== -1) {
+                websiteLinks[linkIndex].url = newUrl;
+                websiteLinks[linkIndex].enabled = enabled;
+            } else {
+                websiteLinks.push({
+                    club: selectedClub,
+                    url: newUrl,
+                    enabled: enabled
+                });
+            }
+            
+            // Update the display
+            displayWebsiteLinks();
+            
+            alert('Website link updated successfully!');
+            
+            // Clear form
+            urlInput.value = '';
+            enabledCheckbox.checked = true;
+        }
+        
+        function displayWebsiteLinks() {
+            const tbody = document.getElementById('websiteLinksTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = websiteLinks.map(link => `
+                <tr>
+                    <td>${link.club}</td>
+                    <td><a href="${link.url}" target="_blank">${link.url}</a></td>
+                    <td><span class="status-${link.enabled ? 'active' : 'inactive'}">${link.enabled ? 'Active' : 'Disabled'}</span></td>
+                    <td>
+                        <button class="btn-small" onclick="editWebsiteLink('${link.club}')">Edit</button>
+                        <button class="btn-small" onclick="toggleWebsiteLink('${link.club}', ${link.enabled})">${link.enabled ? 'Disable' : 'Enable'}</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function editWebsiteLink(clubName) {
+            const link = websiteLinks.find(l => l.club === clubName);
+            if (!link) return;
+            
+            const clubSelect = document.getElementById('websiteClubSelect');
+            const urlInput = document.getElementById('websiteUrl');
+            const enabledCheckbox = document.getElementById('websiteEnabled');
+            
+            clubSelect.value = clubName;
+            urlInput.value = link.url;
+            enabledCheckbox.checked = link.enabled;
+            
+            // Scroll to the form
+            document.getElementById('club-websites').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function toggleWebsiteLink(clubName, currentStatus) {
+            const link = websiteLinks.find(l => l.club === clubName);
+            if (!link) return;
+            
+            link.enabled = !currentStatus;
+            displayWebsiteLinks();
+            
+            alert(`Website link for ${clubName} has been ${link.enabled ? 'enabled' : 'disabled'}.`);
+        }
+        
+        // Add event listener for users section
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... existing code ...
+            
+            // Check for first login setup
+            checkFirstLogin();
+            
+            // Add event listener for users section
+            const usersLink = document.querySelector('a[data-section="users"]');
+            if (usersLink) {
+                usersLink.addEventListener('click', function() {
+                    loadUsersData();
+                });
+            }
+            
+            // Add event listener for profile section
+            const profileLink = document.querySelector('a[data-section="profile"]');
+            if (profileLink) {
+                profileLink.addEventListener('click', function() {
+                    checkFirstLogin();
+                });
+            }
+            
+            // Add event listener for officers section
+            const officersLink = document.querySelector('a[data-section="officers"]');
+            if (officersLink) {
+                officersLink.addEventListener('click', function() {
+                    loadOfficersData();
+                });
+            }
+            
+            // Add event listener for website links section
+            const websiteLinksLink = document.querySelector('a[data-section="club-websites"]');
+            if (websiteLinksLink) {
+                websiteLinksLink.addEventListener('click', function() {
+                    displayWebsiteLinks();
+                });
+            }
+            
+            // Initialize website links display
+            displayWebsiteLinks();
         });
     </script>
 </body>
