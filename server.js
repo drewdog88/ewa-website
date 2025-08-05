@@ -7,6 +7,42 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// In-memory storage for Vercel serverless environment
+const memoryStorage = {
+    volunteers: [],
+    users: {
+        "admin": {
+            "username": "admin",
+            "password": "ewa2025",
+            "role": "admin",
+            "club": "",
+            "clubName": "",
+            "createdAt": new Date().toISOString(),
+            "isLocked": false,
+            "isFirstLogin": false,
+            "secretQuestion": "",
+            "secretAnswer": "",
+            "lastLogin": null
+        },
+        "orchestra_booster": {
+            "username": "orchestra_booster",
+            "password": "ewa_orchestra_2025",
+            "role": "booster_admin",
+            "club": "orchestra",
+            "clubName": "EHS Orchestra Boosters Club",
+            "createdAt": new Date().toISOString(),
+            "isLocked": false,
+            "isFirstLogin": false,
+            "secretQuestion": "",
+            "secretAnswer": "",
+            "lastLogin": null
+        }
+    },
+    officers: [],
+    insurance: [],
+    form1099: []
+};
+
 // Security middleware
 app.use((req, res, next) => {
     // Security headers
@@ -112,93 +148,93 @@ app.use(compression({
     }
 }));
 
-// Data file paths
-const VOLUNTEERS_FILE = 'data/volunteers.json';
-const USERS_FILE = 'data/users.json';
-const OFFICERS_FILE = 'data/officers.json';
-
-// Ensure data directory exists
-if (!fs.existsSync('data')) {
-    fs.mkdirSync('data');
+// Helper functions for in-memory storage
+function getVolunteers() {
+    return memoryStorage.volunteers;
 }
 
-// Initialize JSON files if they don't exist
-if (!fs.existsSync(VOLUNTEERS_FILE)) {
-    fs.writeFileSync(VOLUNTEERS_FILE, JSON.stringify([], null, 2));
+function addVolunteer(volunteer) {
+    memoryStorage.volunteers.push(volunteer);
+    return true;
 }
 
-// Initialize insurance data file
-const INSURANCE_FILE = 'data/insurance.json';
-if (!fs.existsSync(INSURANCE_FILE)) {
-    fs.writeFileSync(INSURANCE_FILE, JSON.stringify([], null, 2));
-}
-
-// Initialize 1099 data file
-const FORM1099_FILE = 'data/1099.json';
-if (!fs.existsSync(FORM1099_FILE)) {
-    fs.writeFileSync(FORM1099_FILE, JSON.stringify([], null, 2));
-}
-
-// Initialize officers data file
-if (!fs.existsSync(OFFICERS_FILE)) {
-    fs.writeFileSync(OFFICERS_FILE, JSON.stringify([], null, 2));
-}
-
-if (!fs.existsSync(USERS_FILE)) {
-    // Create initial users data with Orchestra Booster account and admin
-    const initialUsers = {
-        "admin": {
-            "username": "admin",
-            "password": "ewa2025",
-            "role": "admin",
-            "club": "",
-            "clubName": "",
-            "createdAt": new Date().toISOString()
-        },
-        "orchestra_booster": {
-            "username": "orchestra_booster",
-            "password": "ewa_orchestra_2025",
-            "role": "booster_admin",
-            "club": "orchestra",
-            "clubName": "EHS Orchestra Boosters Club",
-            "createdAt": new Date().toISOString()
-        }
-    };
-    fs.writeFileSync(USERS_FILE, JSON.stringify(initialUsers, null, 2));
-}
-
-// Helper function to read JSON file
-function readJsonFile(filePath) {
-    try {
-        console.log(`Reading file: ${filePath}`);
-        if (!fs.existsSync(filePath)) {
-            console.log(`File does not exist: ${filePath}`);
-            return [];
-        }
-        const data = fs.readFileSync(filePath, 'utf8');
-        const parsed = JSON.parse(data);
-        console.log(`Successfully read file: ${filePath}, data type: ${typeof parsed}`);
-        return parsed;
-    } catch (error) {
-        console.error(`Error reading ${filePath}:`, error);
-        console.error(`Error details: ${error.message}`);
-        return [];
-    }
-}
-
-// Helper function to write JSON file
-function writeJsonFile(filePath, data) {
-    try {
-        console.log(`Writing file: ${filePath}`);
-        console.log(`Data to write:`, data);
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-        console.log(`Successfully wrote file: ${filePath}`);
+function updateVolunteer(id, updates) {
+    const index = memoryStorage.volunteers.findIndex(v => v.id === id);
+    if (index !== -1) {
+        memoryStorage.volunteers[index] = { ...memoryStorage.volunteers[index], ...updates };
         return true;
-    } catch (error) {
-        console.error(`Error writing ${filePath}:`, error);
-        console.error(`Error details: ${error.message}`);
-        return false;
     }
+    return false;
+}
+
+function getUsers() {
+    return memoryStorage.users;
+}
+
+function updateUser(username, updates) {
+    if (memoryStorage.users[username]) {
+        memoryStorage.users[username] = { ...memoryStorage.users[username], ...updates };
+        return true;
+    }
+    return false;
+}
+
+function addUser(username, userData) {
+    memoryStorage.users[username] = userData;
+    return true;
+}
+
+function deleteUser(username) {
+    if (memoryStorage.users[username]) {
+        delete memoryStorage.users[username];
+        return true;
+    }
+    return false;
+}
+
+function getOfficers() {
+    return memoryStorage.officers;
+}
+
+function addOfficer(officer) {
+    memoryStorage.officers.push(officer);
+    return true;
+}
+
+function updateOfficer(id, updates) {
+    const index = memoryStorage.officers.findIndex(o => o.id === id);
+    if (index !== -1) {
+        memoryStorage.officers[index] = { ...memoryStorage.officers[index], ...updates };
+        return true;
+    }
+    return false;
+}
+
+function deleteOfficer(id) {
+    const index = memoryStorage.officers.findIndex(o => o.id === id);
+    if (index !== -1) {
+        memoryStorage.officers.splice(index, 1);
+        return true;
+    }
+    return false;
+}
+
+function getInsurance() {
+    return memoryStorage.insurance;
+}
+
+function addInsurance(insuranceData) {
+    memoryStorage.insurance.push(insuranceData);
+    return true;
+}
+
+function getForm1099() {
+    return memoryStorage.form1099;
+}
+
+function addForm1099(formData) {
+    memoryStorage.form1099.push(formData);
+    return true;
 }
 
 // API Routes
@@ -246,10 +282,6 @@ app.post('/api/volunteers', (req, res) => {
             });
         }
 
-        console.log('Reading volunteers file...');
-        const volunteers = readJsonFile(VOLUNTEERS_FILE);
-        console.log('Current volunteers count:', volunteers.length);
-        
         const newVolunteer = {
             id: Date.now().toString(),
             boosterClub: sanitizedBoosterClub,
@@ -262,10 +294,8 @@ app.post('/api/volunteers', (req, res) => {
         };
 
         console.log('Adding new volunteer:', newVolunteer);
-        volunteers.push(newVolunteer);
         
-        console.log('Writing volunteers file...');
-        if (writeJsonFile(VOLUNTEERS_FILE, volunteers)) {
+        if (addVolunteer(newVolunteer)) {
             console.log('Volunteer saved successfully');
             res.json({ 
                 success: true, 
@@ -273,10 +303,10 @@ app.post('/api/volunteers', (req, res) => {
                 volunteer: newVolunteer
             });
         } else {
-            console.error('Failed to write volunteer data to file');
+            console.error('Failed to save volunteer data');
             res.status(500).json({ 
                 success: false, 
-                message: 'Failed to save volunteer data - file write error' 
+                message: 'Failed to save volunteer data' 
             });
         }
     } catch (error) {
@@ -291,7 +321,7 @@ app.post('/api/volunteers', (req, res) => {
 // Get all volunteers (for admin)
 app.get('/api/volunteers', (req, res) => {
     try {
-        const volunteers = readJsonFile(VOLUNTEERS_FILE);
+        const volunteers = getVolunteers();
         res.json({ success: true, volunteers });
     } catch (error) {
         console.error('Error getting volunteers:', error);
@@ -306,7 +336,7 @@ app.get('/api/volunteers', (req, res) => {
 app.get('/api/volunteers/:club', (req, res) => {
     try {
         const { club } = req.params;
-        const volunteers = readJsonFile(VOLUNTEERS_FILE);
+        const volunteers = getVolunteers();
         const clubVolunteers = volunteers.filter(v => v.boosterClub === club);
         res.json({ success: true, volunteers: clubVolunteers });
     } catch (error) {
@@ -331,33 +361,23 @@ app.put('/api/volunteers/:id', (req, res) => {
             });
         }
 
-        const volunteers = readJsonFile(VOLUNTEERS_FILE);
-        const volunteerIndex = volunteers.findIndex(v => v.id === id);
-        
-        if (volunteerIndex === -1) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Volunteer not found' 
-            });
-        }
-
-        // Update the volunteer status
-        volunteers[volunteerIndex].status = status;
+        const updates = { status, updatedAt: new Date().toISOString() };
         if (notes) {
-            volunteers[volunteerIndex].notes = notes;
+            updates.notes = notes;
         }
-        volunteers[volunteerIndex].updatedAt = new Date().toISOString();
 
-        if (writeJsonFile(VOLUNTEERS_FILE, volunteers)) {
+        if (updateVolunteer(id, updates)) {
+            const volunteers = getVolunteers();
+            const volunteer = volunteers.find(v => v.id === id);
             res.json({ 
                 success: true, 
                 message: 'Volunteer status updated successfully',
-                volunteer: volunteers[volunteerIndex]
+                volunteer
             });
         } else {
-            res.status(500).json({ 
+            res.status(404).json({ 
                 success: false, 
-                message: 'Failed to update volunteer status' 
+                message: 'Volunteer not found' 
             });
         }
     } catch (error) {
@@ -381,7 +401,7 @@ app.post('/api/login', (req, res) => {
             });
         }
 
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         const user = users[username];
 
         if (!user || user.password !== password) {
@@ -400,8 +420,7 @@ app.post('/api/login', (req, res) => {
         }
 
         // Update last login time
-        user.lastLogin = new Date().toISOString();
-        writeJsonFile(USERS_FILE, users);
+        updateUser(username, { lastLogin: new Date().toISOString() });
 
         res.json({ 
             success: true, 
@@ -426,7 +445,7 @@ app.post('/api/login', (req, res) => {
 // Get users (for admin)
 app.get('/api/users', (req, res) => {
     try {
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         res.json({ success: true, users });
     } catch (error) {
         console.error('Error getting users:', error);
@@ -449,7 +468,7 @@ app.post('/api/users', (req, res) => {
             });
         }
 
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         
         if (users[username]) {
             return res.status(400).json({ 
@@ -458,7 +477,7 @@ app.post('/api/users', (req, res) => {
             });
         }
 
-        users[username] = {
+        const newUser = {
             username,
             password,
             role,
@@ -472,7 +491,7 @@ app.post('/api/users', (req, res) => {
             lastLogin: null
         };
 
-        if (writeJsonFile(USERS_FILE, users)) {
+        if (addUser(username, newUser)) {
             res.json({ 
                 success: true, 
                 message: 'User created successfully',
@@ -523,12 +542,7 @@ app.post('/api/insurance', (req, res) => {
             status: 'pending'
         };
 
-        // Store in insurance.json file
-        const INSURANCE_FILE = 'data/insurance.json';
-        const insuranceSubmissions = readJsonFile(INSURANCE_FILE);
-        insuranceSubmissions.push(insuranceData);
-        
-        if (writeJsonFile(INSURANCE_FILE, insuranceSubmissions)) {
+        if (addInsurance(insuranceData)) {
             res.json({ 
                 success: true, 
                 message: 'Insurance form submitted successfully',
@@ -553,8 +567,7 @@ app.post('/api/insurance', (req, res) => {
 app.get('/api/insurance/:club', (req, res) => {
     try {
         const { club } = req.params;
-        const INSURANCE_FILE = 'data/insurance.json';
-        const insuranceSubmissions = readJsonFile(INSURANCE_FILE);
+        const insuranceSubmissions = getInsurance();
         const clubSubmissions = insuranceSubmissions.filter(sub => sub.club === club);
         res.json({ success: true, submissions: clubSubmissions });
     } catch (error) {
@@ -592,12 +605,7 @@ app.post('/api/1099', (req, res) => {
             status: 'pending'
         };
 
-        // Store in 1099.json file
-        const FORM1099_FILE = 'data/1099.json';
-        const form1099Submissions = readJsonFile(FORM1099_FILE);
-        form1099Submissions.push(form1099Data);
-        
-        if (writeJsonFile(FORM1099_FILE, form1099Submissions)) {
+        if (addForm1099(form1099Data)) {
             res.json({ 
                 success: true, 
                 message: '1099 information submitted successfully',
@@ -622,8 +630,7 @@ app.post('/api/1099', (req, res) => {
 app.get('/api/1099/:club', (req, res) => {
     try {
         const { club } = req.params;
-        const FORM1099_FILE = 'data/1099.json';
-        const form1099Submissions = readJsonFile(FORM1099_FILE);
+        const form1099Submissions = getForm1099();
         const clubSubmissions = form1099Submissions.filter(sub => sub.club === club);
         res.json({ success: true, submissions: clubSubmissions });
     } catch (error) {
@@ -643,7 +650,7 @@ app.put('/api/users/:username', (req, res) => {
         const { username } = req.params;
         const { newUsername, password, role, club, clubName, isLocked } = req.body;
         
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         
         if (!users[username]) {
             return res.status(404).json({ 
@@ -660,28 +667,24 @@ app.put('/api/users/:username', (req, res) => {
                     message: 'New username already exists' 
                 });
             }
-            users[newUsername] = { ...users[username], username: newUsername };
-            delete users[username];
+            const userData = { ...users[username], username: newUsername };
+            addUser(newUsername, userData);
+            deleteUser(username);
         } else {
-            if (password) users[username].password = password;
-            if (role) users[username].role = role;
-            if (club !== undefined) users[username].club = club;
-            if (clubName !== undefined) users[username].clubName = clubName;
-            if (isLocked !== undefined) users[username].isLocked = isLocked;
+            const updates = {};
+            if (password) updates.password = password;
+            if (role) updates.role = role;
+            if (club !== undefined) updates.club = club;
+            if (clubName !== undefined) updates.clubName = clubName;
+            if (isLocked !== undefined) updates.isLocked = isLocked;
+            updateUser(username, updates);
         }
 
-        if (writeJsonFile(USERS_FILE, users)) {
-            res.json({ 
-                success: true, 
-                message: 'User updated successfully',
-                user: users[newUsername || username]
-            });
-        } else {
-            res.status(500).json({ 
-                success: false, 
-                message: 'Failed to save user data' 
-            });
-        }
+        res.json({ 
+            success: true, 
+            message: 'User updated successfully',
+            user: users[newUsername || username]
+        });
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({ 
@@ -696,26 +699,15 @@ app.delete('/api/users/:username', (req, res) => {
     try {
         const { username } = req.params;
         
-        const users = readJsonFile(USERS_FILE);
-        
-        if (!users[username]) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'User not found' 
-            });
-        }
-
-        delete users[username];
-
-        if (writeJsonFile(USERS_FILE, users)) {
+        if (deleteUser(username)) {
             res.json({ 
                 success: true, 
                 message: 'User deleted successfully'
             });
         } else {
-            res.status(500).json({ 
+            res.status(404).json({ 
                 success: false, 
-                message: 'Failed to save user data' 
+                message: 'User not found' 
             });
         }
     } catch (error) {
@@ -739,7 +731,7 @@ app.post('/api/users/change-password', (req, res) => {
             });
         }
 
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         
         if (!users[username]) {
             return res.status(404).json({ 
@@ -755,9 +747,7 @@ app.post('/api/users/change-password', (req, res) => {
             });
         }
 
-        users[username].password = newPassword;
-
-        if (writeJsonFile(USERS_FILE, users)) {
+        if (updateUser(username, { password: newPassword })) {
             res.json({ 
                 success: true, 
                 message: 'Password changed successfully'
@@ -789,28 +779,21 @@ app.post('/api/users/setup-profile', (req, res) => {
             });
         }
 
-        const users = readJsonFile(USERS_FILE);
-        
-        if (!users[username]) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'User not found' 
-            });
-        }
+        const updates = {
+            secretQuestion,
+            secretAnswer,
+            isFirstLogin: false
+        };
 
-        users[username].secretQuestion = secretQuestion;
-        users[username].secretAnswer = secretAnswer;
-        users[username].isFirstLogin = false;
-
-        if (writeJsonFile(USERS_FILE, users)) {
+        if (updateUser(username, updates)) {
             res.json({ 
                 success: true, 
                 message: 'Profile setup completed successfully'
             });
         } else {
-            res.status(500).json({ 
+            res.status(404).json({ 
                 success: false, 
-                message: 'Failed to save user data' 
+                message: 'User not found' 
             });
         }
     } catch (error) {
@@ -834,7 +817,7 @@ app.post('/api/users/forgot-password', (req, res) => {
             });
         }
 
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         
         if (!users[username]) {
             return res.status(404).json({ 
@@ -850,9 +833,7 @@ app.post('/api/users/forgot-password', (req, res) => {
             });
         }
 
-        users[username].password = newPassword;
-
-        if (writeJsonFile(USERS_FILE, users)) {
+        if (updateUser(username, { password: newPassword })) {
             res.json({ 
                 success: true, 
                 message: 'Password reset successfully'
@@ -877,7 +858,7 @@ app.get('/api/users/:username/secret-question', (req, res) => {
     try {
         const { username } = req.params;
         
-        const users = readJsonFile(USERS_FILE);
+        const users = getUsers();
         
         if (!users[username]) {
             return res.status(404).json({ 
@@ -911,7 +892,7 @@ app.get('/api/users/:username/secret-question', (req, res) => {
 // Get all officers
 app.get('/api/officers', (req, res) => {
     try {
-        const officers = readJsonFile(OFFICERS_FILE);
+        const officers = getOfficers();
         res.json({ success: true, officers });
     } catch (error) {
         console.error('Error getting officers:', error);
@@ -923,7 +904,7 @@ app.get('/api/officers', (req, res) => {
 app.get('/api/officers/:club', (req, res) => {
     try {
         const { club } = req.params;
-        const officers = readJsonFile(OFFICERS_FILE);
+        const officers = getOfficers();
         const clubOfficers = officers.filter(officer => officer.club === club);
         res.json({ success: true, officers: clubOfficers });
     } catch (error) {
@@ -980,8 +961,6 @@ app.post('/api/officers', (req, res) => {
             });
         }
 
-        const officers = readJsonFile(OFFICERS_FILE);
-        
         const newOfficer = {
             id: Date.now().toString(),
             name,
@@ -993,9 +972,7 @@ app.post('/api/officers', (req, res) => {
             createdAt: new Date().toISOString()
         };
 
-        officers.push(newOfficer);
-
-        if (writeJsonFile(OFFICERS_FILE, officers)) {
+        if (addOfficer(newOfficer)) {
             res.json({ 
                 success: true, 
                 message: 'Officer added successfully',
@@ -1065,18 +1042,7 @@ app.put('/api/officers/:id', (req, res) => {
             });
         }
 
-        const officers = readJsonFile(OFFICERS_FILE);
-        const officerIndex = officers.findIndex(officer => officer.id === id);
-        
-        if (officerIndex === -1) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Officer not found' 
-            });
-        }
-
-        officers[officerIndex] = {
-            ...officers[officerIndex],
+        const updates = {
             name,
             position,
             email,
@@ -1086,16 +1052,18 @@ app.put('/api/officers/:id', (req, res) => {
             updatedAt: new Date().toISOString()
         };
 
-        if (writeJsonFile(OFFICERS_FILE, officers)) {
+        if (updateOfficer(id, updates)) {
+            const officers = getOfficers();
+            const officer = officers.find(o => o.id === id);
             res.json({ 
                 success: true, 
                 message: 'Officer updated successfully',
-                officer: officers[officerIndex]
+                officer
             });
         } else {
-            res.status(500).json({ 
+            res.status(404).json({ 
                 success: false, 
-                message: 'Failed to save officer data' 
+                message: 'Officer not found' 
             });
         }
     } catch (error) {
@@ -1112,28 +1080,15 @@ app.delete('/api/officers/:id', (req, res) => {
     try {
         const { id } = req.params;
         
-        const officers = readJsonFile(OFFICERS_FILE);
-        const officerIndex = officers.findIndex(officer => officer.id === id);
-        
-        if (officerIndex === -1) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Officer not found' 
-            });
-        }
-
-        const deletedOfficer = officers.splice(officerIndex, 1)[0];
-
-        if (writeJsonFile(OFFICERS_FILE, officers)) {
+        if (deleteOfficer(id)) {
             res.json({ 
                 success: true, 
-                message: 'Officer deleted successfully',
-                officer: deletedOfficer
+                message: 'Officer deleted successfully'
             });
         } else {
-            res.status(500).json({ 
+            res.status(404).json({ 
                 success: false, 
-                message: 'Failed to save officer data' 
+                message: 'Officer not found' 
             });
         }
     } catch (error) {
@@ -1179,7 +1134,6 @@ app.get('/', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`EWA Website server running on http://localhost:${PORT}`);
-    console.log(`Volunteer data will be stored in: ${VOLUNTEERS_FILE}`);
-    console.log(`User data will be stored in: ${USERS_FILE}`);
+    console.log(`Using in-memory storage for Vercel deployment`);
     console.log(`Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
 }); 
