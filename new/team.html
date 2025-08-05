@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EWA Team - Eastlake Wolfpack Association</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 80px;
+        }
+        
+        .header-left a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .header-right {
+            color: #dc3545;
+            font-size: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .version-toggle {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .version-toggle:hover {
+            background-color: #c82333;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+        }
+        
+        .main-content h1 {
+            font-size: 4rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+        
+        .main-content .subtitle {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 60px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px 80px;
+            margin-top: 60px;
+        }
+        
+        .team-member {
+            margin-bottom: 40px;
+            background-color: #faf5f5;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        
+        .team-member h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        
+        .team-member .title {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .team-member .email {
+            margin-top: 10px;
+        }
+        
+        .team-member .email a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .team-member .email a:hover {
+            text-decoration: underline;
+        }
+        
+        .team-member .email::before {
+            content: "✉ ";
+            color: #6c757d;
+            margin-right: 5px;
+        }
+        
+        /* Footer Banner Styles */
+        .footer-banner {
+            margin-top: 50px;
+        }
+        
+        .footer-main {
+            background-color: #dc3545;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left .association-name {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-copyright {
+            background-color: #c82333;
+            padding: 8px 50px;
+            text-align: center;
+        }
+        
+        .footer-copyright span {
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html">Eastlake Wolfpack Association</a>
+        </div>
+        <div class="header-right">
+            <span style="color: #dc3545;">EWA Team</span>
+            <a href="../original/team.html" class="version-toggle">Revert to Original</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Meet The Team</h1>
+        <p class="subtitle">Meet the EWA Team</p>
+        
+        <div class="team-grid">
+            <div class="team-member">
+                <h2>Doug Sargent</h2>
+                <div class="title">PRESIDENT</div>
+                <div class="email">
+                    <a href="mailto:ewapresident@gmail.com">ewapresident@gmail.com</a>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <h2>Sara Goldie</h2>
+                <div class="title">ATHLETIC DIRECTOR</div>
+                <div class="email">
+                    <a href="mailto:sgoldie@lwsd.org">sgoldie@lwsd.org</a>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <h2>Baxter Kent</h2>
+                <div class="title">SECRETARY</div>
+                <div class="email">
+                    <a href="mailto:ewasecretary1@gmail.com">ewasecretary1@gmail.com</a>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <h2>Shirley Brill</h2>
+                <div class="title">TREASURER</div>
+                <div class="email">
+                    <a href="mailto:ewatreasurer@gmail.com">ewatreasurer@gmail.com</a>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <h2>Todd Johnson</h2>
+                <div class="title">CONCESSIONS/MERCH</div>
+                <div class="email">
+                    <a href="mailto:ewaconcessions@gmail.com">ewaconcessions@gmail.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer Banner -->
+    <div class="footer-banner">
+        <div class="footer-main">
+            <div class="footer-left">
+                <span class="association-name">Eastlake Wolfpack Association</span>
+            </div>
+            <div class="footer-right">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="team.html" class="footer-link">EWA Team</a>
+                <a href="../original/team.html" class="footer-link">Original Version</a>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <span>© 2025 Eastlake Wolfpack Association</span>
+        </div>
+    </div>
+</body>
+</html>

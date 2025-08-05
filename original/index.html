@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eastlake Wolfpack Association</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 80px;
+        }
+        
+        .header-left a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .header-right {
+            color: #dc3545;
+            font-size: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .version-toggle {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .version-toggle:hover {
+            background-color: #0056b3;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1200px;
+        }
+        
+        .content-left h1 {
+            font-size: 4rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+        
+        .content-left p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            line-height: 1.8;
+            margin: 0;
+        }
+        
+        .content-right {
+            text-align: center;
+        }
+        
+        .wolf-logo {
+            width: 400px;
+            height: 400px;
+            background: url('../assets/ewa-wolf.jpg') no-repeat center;
+            background-size: contain;
+        }
+        
+        .clubs-section {
+            margin-top: 100px;
+            max-width: 1200px;
+        }
+        
+        .clubs-section h2 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+        
+        .club-card {
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            background-color: white;
+        }
+        
+        .club-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+        
+        .club-header h3 {
+            font-size: 1.2rem;
+            color: #007bff;
+            margin: 0;
+            font-weight: normal;
+        }
+        
+        .club-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .club-content {
+            display: none;
+            padding: 0 20px 20px 20px;
+        }
+        
+        .club-content.active {
+            display: block;
+        }
+        
+        .club-content p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .club-donate-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .club-donate-btn:hover {
+            background-color: #c82333;
+        }
+        
+        /* Footer Banner Styles */
+        .footer-banner {
+            margin-top: 50px;
+        }
+        
+        .footer-main {
+            background-color: #dc3545;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left .association-name {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-copyright {
+            background-color: #c82333;
+            padding: 8px 50px;
+            text-align: center;
+        }
+        
+        .footer-copyright span {
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border: none;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -10px;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .modal h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .modal p {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .modal hr {
+            border: none;
+            border-top: 1px solid #e9ecef;
+            margin: 20px 0;
+        }
+        
+        .modal code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="#home">Eastlake Wolfpack Association</a>
+        </div>
+        <div class="header-right">
+            <a href="team.html" style="color: #dc3545; text-decoration: none;">EWA Team</a>
+            <a href="../new/index.html" class="version-toggle">Try New Version</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-left">
+            <h1>Eastlake Wolfpack Association</h1>
+            <p>Eastlake Wolfpack Association (EWA) is an umbrella organization for Eastlake High School booster clubs. We provide education and a forum for the clubs to communicate and coordinate efforts. EWA processes corporation matching fund donations, manages activity liability insurance, file taxes, submits annual report and charitable registrations annually with the State of Washington and runs fundraisers on behalf of our booster club members. We are a nonprofit organization recognized by the IRS as 501(c) (3) with Tax identification # 77-0616862.</p>
+        </div>
+        <div class="content-right">
+            <div class="wolf-logo"></div>
+        </div>
+    </div>
+
+    <div class="clubs-section">
+        <h2>Clubs associated with EWA</h2>
+        
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(0)">
+                <h3>EHS Band Boosters</h3>
+                <button class="club-toggle">−</button>
+            </div>
+            <div class="club-content active">
+                <p>The EHS Band Boosters is dedicated to supporting the Eastlake High School band program. Our mission is to enhance the musical experience for students by providing financial support, organizing events, and fostering a community of enthusiastic supporters. We aim to ensure that every band member has the resources and opportunities to excel in their musical journey.</p>
+                <button class="club-donate-btn" onclick="showModal('EHS Band Boosters')">SEND MONEY TO EHS BAND BOOSTERS</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(1)">
+                <h3>Eastlake Baseball Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Baseball Club supports the Eastlake High School baseball teams by providing resources, organizing events, and fostering a community of fans and supporters. Our goal is to enhance the athletic experience for players and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Baseball Club')">Send money to Eastlake Baseball Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(2)">
+                <h3>Eastlake Boys Basketball Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Boys Basketball Booster Club is dedicated to supporting the boys' basketball program at Eastlake High School. We provide financial assistance, organize events, and build a strong community of supporters to ensure that our athletes have the best possible experience on and off the court.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Boys Basketball Booster Club')">Send money to Eastlake Boys Basketball Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(3)">
+                <h3>Eastlake Girls Basketball Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Girls Basketball Booster Club is dedicated to supporting the girls' basketball program at Eastlake High School. Our mission is to provide financial assistance, organize events, and build a strong community of supporters to ensure that our athletes have the best possible experience on and off the court. We strive to promote the values of teamwork, sportsmanship, and dedication, while enhancing the overall athletic experience for our players.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Girls Basketball Booster Club')">Send money to Eastlake Girls Basketball Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(4)">
+                <h3>Eastlake Cheer Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Cheer Booster Club supports the cheerleading teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for cheerleaders and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Cheer Booster Club')">Send money to Eastlake Cheer Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(5)">
+                <h3>Eastlake Choir</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Choir Booster Club is committed to supporting the choir program at Eastlake High School. Our mission is to enhance the musical experience for students by providing financial assistance, organizing events, and fostering a community of passionate supporters. We aim to ensure that every choir member has the resources and opportunities to excel in their vocal and musical journey, while promoting the values of creativity, collaboration, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Choir')">Send money to Eastlake Choir</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(6)">
+                <h3>Eastlake Cross-Country Boosters</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Cross-Country Boosters support the cross-country teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for runners and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Cross-Country Boosters')">Send money to Eastlake Cross-Country Boosters</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(7)">
+                <h3>Eastlake Dance Team Boosters</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Dance Team Boosters is dedicated to supporting the dance team at Eastlake High School. We provide financial assistance, organize events, and build a strong community of supporters to ensure that our dancers have the best possible experience in their performances and competitions.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Dance Team Boosters')">Send money to Eastlake Dance Team Boosters</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(8)">
+                <h3>EHS DECA Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The EHS DECA Booster Club is committed to supporting the DECA program at Eastlake High School. We provide financial assistance, organize events, and build a strong community of supporters to ensure that our students have the best possible experience in developing their business and leadership skills.</p>
+                <button class="club-donate-btn" onclick="showModal('EHS DECA Booster Club')">Send money to EHS DECA Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(9)">
+                <h3>Eastlake Drama</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Drama Booster Club supports the drama program at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the theatrical experience for students and promote the values of creativity, collaboration, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Drama')">Send money to Eastlake Drama</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(10)">
+                <h3>Eastlake Fastpitch (Girls)</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Fastpitch Booster Club supports the girls' fastpitch softball teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for players and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Fastpitch (Girls)')">Send money to Eastlake Fastpitch (Girls)</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(11)">
+                <h3>Eastlake Boys Golf Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Boys Golf Booster Club is committed to supporting the boys' golf program at Eastlake High School. Our mission is to provide financial assistance, organize events, and foster a community of supporters to ensure that our golfers have the resources and opportunities to excel both on the course and in their personal development. We aim to promote the values of sportsmanship, discipline, and teamwork.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Boys Golf Booster Club')">Send money to Eastlake Boys Golf Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(12)">
+                <h3>Eastlake Girls Golf Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Girls Golf Booster Club is dedicated to supporting the girls' golf program at Eastlake High School. We strive to provide financial support, organize events, and build a strong community of fans and supporters. Our goal is to enhance the athletic experience for our golfers, promoting values such as sportsmanship, discipline, and teamwork, while helping them achieve success both on and off the course.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Girls Golf Booster Club')">Send money to Eastlake Girls Golf Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(13)">
+                <h3>EHS Orchestra Boosters Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The EHS Orchestra Boosters Club is dedicated to supporting the Eastlake High School orchestra program. Our mission is to enhance the musical experience for students by providing financial support, organizing events, and fostering a community of enthusiastic supporters. We aim to ensure that every orchestra member has the resources and opportunities to excel in their musical journey.</p>
+                <button class="club-donate-btn" onclick="showModal('EHS Orchestra Boosters Club')">Send money to EHS Orchestra Boosters Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(14)">
+                <h3>Eastlake Robotics Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The purpose of the Eastlake Robotics (Pack of Parts) Team 1294 shall be to promote science and technology in Eastlake High School and the surrounding community through student and community programs involving engineering and other technical skills.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Robotics Club')">Send money to Eastlake Robotics Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(15)">
+                <h3>Eastlake Boys Soccer</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Boys Soccer Booster Club supports the boys' soccer teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for players and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Boys Soccer')">Send money to Eastlake Boys Soccer</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(16)">
+                <h3>Eastlake Girls Soccer</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Girls Soccer Booster Club supports the girls' soccer teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for players and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Girls Soccer')">Send money to Eastlake Girls Soccer</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(17)">
+                <h3>Eastlake Boys Swim & Dive Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Boys Swim & Dive Booster Club is committed to supporting the swim and dive teams at Eastlake High School. We provide financial assistance, organize events, and build a strong community of supporters to ensure that our athletes have the best possible experience in and out of the pool.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Boys Swim & Dive Booster Club')">Send money to Eastlake Boys Swim & Dive Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(18)">
+                <h3>Eastlake Girls Swim & Dive Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Girls Swim & Dive Booster Club is dedicated to supporting the girls' swim and dive teams at Eastlake High School. Our mission is to provide financial assistance, organize events, and foster a community of enthusiastic supporters to ensure that our athletes have the best possible experience in and out of the pool. We aim to promote the values of teamwork, sportsmanship, and dedication, helping our swimmers and divers achieve their personal and team goals.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Girls Swim & Dive Booster Club')">Send money to Eastlake Girls Swim & Dive Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(19)">
+                <h3>EHS Track and Field Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The EHS Track and Field Booster Club supports the track and field teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for athletes and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('EHS Track and Field Booster Club')">Send money to EHS Track and Field Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(20)">
+                <h3>Eastlake Volleyball Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The Eastlake Volleyball Booster Club is dedicated to supporting the volleyball program at Eastlake High School. We provide financial assistance, organize events, and build a strong community of supporters to ensure that our athletes have the best possible experience on and off the court.</p>
+                <button class="club-donate-btn" onclick="showModal('Eastlake Volleyball Booster Club')">Send money to Eastlake Volleyball Booster Club</button>
+            </div>
+        </div>
+
+        <div class="club-card">
+            <div class="club-header" onclick="toggleClub(21)">
+                <h3>EHS Wrestling Booster Club</h3>
+                <button class="club-toggle">+</button>
+            </div>
+            <div class="club-content">
+                <p>The EHS Wrestling Booster Club supports the wrestling teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for wrestlers and promote the values of teamwork, sportsmanship, and dedication.</p>
+                <button class="club-donate-btn" onclick="showModal('EHS Wrestling Booster Club')">Send money to EHS Wrestling Booster Club</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Banner -->
+    <div class="footer-banner">
+        <div class="footer-main">
+            <div class="footer-left">
+                <span class="association-name">Eastlake Wolfpack Association</span>
+            </div>
+            <div class="footer-right">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="team.html" class="footer-link">EWA Team</a>
+                <a href="../new/index.html" class="footer-link">New Version</a>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <span>© 2025 Eastlake Wolfpack Association</span>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="donationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Donate</h2>
+            
+            <p><strong>Zelle® payments:</strong> Please make sure to include the student name, student number and a short description of the purpose. Indicate if this is a <strong>donation</strong>, <strong>service</strong> or <strong>product</strong>, include your email address so that we can send you a tax-receipt</p>
+            
+            <p>ex. <code>donation: 123456, Jane Doe, donor_email@gmail.com</code></p>
+            
+            <hr>
+            
+            <p><strong>Check:</strong> Please make checks payable to <span id="selectedClub">[Club Name]</span> and mail or drop them off at Eastlake Highschool main office.</p>
+            
+            <hr>
+            
+            <p><strong>Credit Card:</strong> Stripe</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleClub(index) {
+            const allContents = document.querySelectorAll('.club-content');
+            const allToggleButtons = document.querySelectorAll('.club-toggle');
+            const targetContent = allContents[index];
+            const targetButton = allToggleButtons[index];
+            
+            // Close all other accordion items
+            allContents.forEach((content, i) => {
+                if (i !== index) {
+                    content.classList.remove('active');
+                    allToggleButtons[i].textContent = '+';
+                }
+            });
+            
+            // Toggle the clicked item
+            if (targetContent.classList.contains('active')) {
+                targetContent.classList.remove('active');
+                targetButton.textContent = '+';
+            } else {
+                targetContent.classList.add('active');
+                targetButton.textContent = '−';
+            }
+        }
+        
+        function showModal(clubName) {
+            document.getElementById('selectedClub').textContent = clubName;
+            document.getElementById('donationModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('donationModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('donationModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Initialize the first club as expanded
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstToggle = document.querySelector('.club-toggle');
+            if (firstToggle) {
+                firstToggle.textContent = '−';
+            }
+        });
+    </script>
+</body>
+</html>
