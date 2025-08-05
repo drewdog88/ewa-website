@@ -796,6 +796,20 @@ app.get('/api/insurance/:club', async (req, res) => {
     }
 });
 
+// Get all insurance submissions (admin only)
+app.get('/api/insurance', async (req, res) => {
+    try {
+        const insuranceSubmissions = await getInsurance();
+        res.json({ success: true, submissions: insuranceSubmissions });
+    } catch (error) {
+        console.error('Error getting all insurance submissions:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
 // Submit 1099 information
 app.post('/api/1099', async (req, res) => {
     try {
@@ -852,6 +866,20 @@ app.get('/api/1099/:club', async (req, res) => {
         res.json({ success: true, submissions: clubSubmissions });
     } catch (error) {
         console.error('Error getting 1099 submissions:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Get all 1099 submissions (admin only)
+app.get('/api/1099', async (req, res) => {
+    try {
+        const form1099Submissions = await getForm1099();
+        res.json({ success: true, submissions: form1099Submissions });
+    } catch (error) {
+        console.error('Error getting all 1099 submissions:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Internal server error' 
