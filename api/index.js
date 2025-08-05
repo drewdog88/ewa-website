@@ -186,6 +186,36 @@ async function getOfficers() {
     return memoryStorage.officers;
 }
 
+async function getUsers() {
+    if (redis) {
+        try {
+            const data = await redis.get('users');
+            return data ? JSON.parse(data) : memoryStorage.users;
+        } catch (error) {
+            console.error('Error getting users from Redis:', error);
+            return memoryStorage.users;
+        }
+    }
+    return memoryStorage.users;
+}
+
+async function updateUser(username, updates) {
+    if (redis) {
+        try {
+            const users = await getUsers();
+            users[username] = { ...users[username], ...updates };
+            await redis.set('users', JSON.stringify(users));
+            return true;
+        } catch (error) {
+            console.error('Error updating user in Redis:', error);
+            return false;
+        }
+    } else {
+        memoryStorage.users[username] = { ...memoryStorage.users[username], ...updates };
+        return true;
+    }
+}
+
 // Initialize Redis store on first request
 let redisInitialized = false;
 async function ensureRedisInitialized() {
@@ -233,6 +263,59 @@ app.get('/health', (req, res) => {
         blobAvailable: !!blob,
         storage: redis ? 'Redis' : 'In-memory'
     });
+});
+
+// User authentication
+app.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        
+        if (!username || !password) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Username and password required' 
+            });
+        }
+
+        const users = await getUsers();
+        const user = users[username];
+
+        if (!user || user.password !== password) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid username or password' 
+            });
+        }
+
+        // Check if account is locked
+        if (user.isLocked) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account is locked. Please contact administrator.' 
+            });
+        }
+
+        // Update last login time
+        await updateUser(username, { lastLogin: new Date().toISOString() });
+
+        res.json({ 
+            success: true, 
+            message: 'Login successful',
+            user: {
+                username: user.username,
+                role: user.role,
+                club: user.club,
+                clubName: user.clubName,
+                isFirstLogin: user.isFirstLogin || false
+            }
+        });
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
 });
 
 // Export for Vercel
