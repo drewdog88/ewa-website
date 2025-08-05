@@ -206,6 +206,44 @@ async function updateForm1099Status(formId, status) {
     }
 }
 
+async function updateForm1099(formId, updates) {
+    const sql = getSql();
+    if (!sql) return null;
+    
+    try {
+        const result = await sql`
+            UPDATE form_1099 
+            SET 
+                recipient_name = ${updates.recipientName},
+                recipient_tin = ${updates.recipientTin},
+                amount = ${updates.amount},
+                description = ${updates.description || ''},
+                tax_year = ${updates.taxYear},
+                booster_club = ${updates.boosterClub || null},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${formId}
+            RETURNING *
+        `;
+        return result[0];
+    } catch (error) {
+        console.error('Error updating 1099 form:', error);
+        throw error;
+    }
+}
+
+async function deleteForm1099(formId) {
+    const sql = getSql();
+    if (!sql) return false;
+    
+    try {
+        const result = await sql`DELETE FROM form_1099 WHERE id = ${formId} RETURNING *`;
+        return result.length > 0;
+    } catch (error) {
+        console.error('Error deleting 1099 form:', error);
+        throw error;
+    }
+}
+
 // Documents functions
 async function getDocuments(boosterClub = null) {
     const sql = getSql();
@@ -327,6 +365,8 @@ module.exports = {
     getForm1099,
     addForm1099,
     updateForm1099Status,
+    updateForm1099,
+    deleteForm1099,
     getDocuments,
     addDocument,
     deleteDocument,
