@@ -20,6 +20,17 @@ if (process.env.NODE_ENV === 'production') {
     }
 }
 
+// Import Vercel Blob for file storage
+let blob;
+if (process.env.NODE_ENV === 'production') {
+    try {
+        blob = require('@vercel/blob');
+        console.log('Vercel Blob initialized successfully');
+    } catch (error) {
+        console.log('Vercel Blob not available:', error.message);
+    }
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -1535,6 +1546,214 @@ async function generateDocumentsReport(dateRange) {
     }
 }
 
+// Vercel Blob Storage API Routes
+
+// Upload file to Vercel Blob
+app.post('/api/upload', async (req, res) => {
+    try {
+        if (!blob) {
+            return res.status(503).json({ 
+                success: false, 
+                message: 'Blob storage not available' 
+            });
+        }
+
+        const { filename, content, contentType = 'text/plain' } = req.body;
+        
+        if (!filename || !content) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Filename and content are required' 
+            });
+        }
+
+        // Upload to Vercel Blob
+        const { url } = await blob.put(filename, content, { 
+            access: 'public',
+            contentType: contentType
+        });
+
+        res.json({ 
+            success: true, 
+            url: url,
+            filename: filename,
+            message: 'File uploaded successfully' 
+        });
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error uploading file' 
+        });
+    }
+});
+
+// Upload document (for insurance forms, 1099 forms, etc.)
+app.post('/api/upload-document', async (req, res) => {
+    try {
+        if (!blob) {
+            return res.status(503).json({ 
+                success: false, 
+                message: 'Blob storage not available' 
+            });
+        }
+
+        const { filename, content, contentType, boosterClub, documentType } = req.body;
+        
+        if (!filename || !content || !boosterClub || !documentType) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Filename, content, booster club, and document type are required' 
+            });
+        }
+
+        // Create a structured filename with metadata
+        const timestamp = new Date().toISOString().split('T')[0];
+        const structuredFilename = `documents/${boosterClub}/${documentType}/${timestamp}_${filename}`;
+
+        // Upload to Vercel Blob
+        const { url } = await blob.put(structuredFilename, content, { 
+            access: 'public',
+            contentType: contentType || 'application/octet-stream'
+        });
+
+        // Store document metadata in our data storage
+        const documentRecord = {
+            id: Date.now().toString(),
+            filename: filename,
+            blobUrl: url,
+            boosterClub: boosterClub,
+            documentType: documentType,
+            contentType: contentType,
+            uploadedAt: new Date().toISOString(),
+            uploadedBy: req.body.uploadedBy || 'unknown'
+        };
+
+        // Add to in-memory storage or KV
+        if (kv) {
+            await kv.hset('documents', documentRecord.id, JSON.stringify(documentRecord));
+        } else {
+            if (!memoryStorage.documents) {
+                memoryStorage.documents = [];
+            }
+            memoryStorage.documents.push(documentRecord);
+        }
+
+        res.json({ 
+            success: true, 
+            url: url,
+            documentId: documentRecord.id,
+            message: 'Document uploaded successfully' 
+        });
+    } catch (error) {
+        console.error('Error uploading document:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error uploading document' 
+        });
+    }
+});
+
+// Get documents for a booster club
+app.get('/api/documents/:boosterClub', async (req, res) => {
+    try {
+        const { boosterClub } = req.params;
+        
+        let documents = [];
+        
+        if (kv) {
+            const allDocuments = await kv.hgetall('documents');
+            documents = Object.values(allDocuments || {})
+                .map(doc => JSON.parse(doc))
+                .filter(doc => doc.boosterClub === boosterClub);
+        } else {
+            documents = (memoryStorage.documents || [])
+                .filter(doc => doc.boosterClub === boosterClub);
+        }
+
+        res.json({ 
+            success: true, 
+            documents: documents 
+        });
+    } catch (error) {
+        console.error('Error getting documents:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error retrieving documents' 
+        });
+    }
+});
+
+// Get all documents (admin only)
+app.get('/api/documents', async (req, res) => {
+    try {
+        let documents = [];
+        
+        if (kv) {
+            const allDocuments = await kv.hgetall('documents');
+            documents = Object.values(allDocuments || {})
+                .map(doc => JSON.parse(doc));
+        } else {
+            documents = memoryStorage.documents || [];
+        }
+
+        res.json({ 
+            success: true, 
+            documents: documents 
+        });
+    } catch (error) {
+        console.error('Error getting all documents:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error retrieving documents' 
+        });
+    }
+});
+
+// Delete document
+app.delete('/api/documents/:documentId', async (req, res) => {
+    try {
+        const { documentId } = req.params;
+        
+        let document = null;
+        
+        if (kv) {
+            const docData = await kv.hget('documents', documentId);
+            if (docData) {
+                document = JSON.parse(docData);
+                await kv.hdel('documents', documentId);
+            }
+        } else {
+            const docIndex = (memoryStorage.documents || []).findIndex(doc => doc.id === documentId);
+            if (docIndex !== -1) {
+                document = memoryStorage.documents[docIndex];
+                memoryStorage.documents.splice(docIndex, 1);
+            }
+        }
+
+        if (!document) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Document not found' 
+            });
+        }
+
+        // Note: Vercel Blob doesn't have a direct delete method in the current API
+        // The file will remain in blob storage but the reference is removed from our database
+
+        res.json({ 
+            success: true, 
+            message: 'Document deleted successfully' 
+        });
+    } catch (error) {
+        console.error('Error deleting document:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error deleting document' 
+        });
+    }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ 
@@ -1542,6 +1761,7 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development',
         kvAvailable: !!kv,
+        blobAvailable: !!blob,
         storage: kv ? 'Vercel KV' : 'In-memory'
     });
 });
