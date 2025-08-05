@@ -264,6 +264,14 @@
             text-decoration: underline;
         }
         
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -310,40 +318,9 @@
         <h1>EWA Team</h1>
         <p class="subtitle">Meet the dedicated officers and volunteers who make the Eastlake Wolfpack Association possible.</p>
         
-        <div class="team-member">
-            <h3>John Smith</h3>
-            <div class="position">President</div>
-            <div class="contact">
-                Email: <a href="mailto:president@ewa.org" data-email="president@ewa.org" class="sensitive-data">Click to reveal</a><br>
-                Phone: <span data-phone="555-123-4567" class="sensitive-data">Click to reveal</span>
-            </div>
-        </div>
-        
-        <div class="team-member">
-            <h3>Sarah Johnson</h3>
-            <div class="position">Vice President</div>
-            <div class="contact">
-                Email: <a href="mailto:vicepresident@ewa.org" data-email="vicepresident@ewa.org" class="sensitive-data">Click to reveal</a><br>
-                Phone: <span data-phone="555-234-5678" class="sensitive-data">Click to reveal</span>
-            </div>
-        </div>
-        
-        <div class="team-member">
-            <h3>Mike Davis</h3>
-            <div class="position">Treasurer</div>
-            <div class="contact">
-                Email: <a href="mailto:treasurer@ewa.org" data-email="treasurer@ewa.org" class="sensitive-data">Click to reveal</a><br>
-                Phone: <span data-phone="555-345-6789" class="sensitive-data">Click to reveal</span>
-            </div>
-        </div>
-        
-        <div class="team-member">
-            <h3>Lisa Wilson</h3>
-            <div class="position">Secretary</div>
-            <div class="contact">
-                Email: <a href="mailto:secretary@ewa.org" data-email="secretary@ewa.org" class="sensitive-data">Click to reveal</a><br>
-                Phone: <span data-phone="555-456-7890" class="sensitive-data">Click to reveal</span>
-            </div>
+        <div id="team-members-container">
+            <!-- Team members will be loaded dynamically -->
+            <div class="loading">Loading team information...</div>
         </div>
     </main>
 
@@ -359,5 +336,75 @@
     </footer>
 
     <script src="security.js"></script>
+    <script>
+        // Load team members from API
+        async function loadTeamMembers() {
+            try {
+                const response = await fetch('/api/officers');
+                const data = await response.json();
+                
+                const container = document.getElementById('team-members-container');
+                
+                if (data.success && data.officers && data.officers.length > 0) {
+                    // Group officers by club
+                    const clubOfficers = {};
+                    data.officers.forEach(officer => {
+                        if (!clubOfficers[officer.clubName]) {
+                            clubOfficers[officer.clubName] = [];
+                        }
+                        clubOfficers[officer.clubName].push(officer);
+                    });
+                    
+                    let html = '';
+                    
+                    // Display officers grouped by club
+                    Object.keys(clubOfficers).forEach(clubName => {
+                        html += `<h2 style="margin-top: 30px; color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">${clubName}</h2>`;
+                        
+                        clubOfficers[clubName].forEach(officer => {
+                            html += `
+                                <div class="team-member">
+                                    <h3>${officer.name}</h3>
+                                    <div class="position">${officer.position}</div>
+                                    <div class="contact">
+                                        Email: <a href="mailto:${officer.email}" data-email="${officer.email}" class="sensitive-data">Click to reveal</a><br>
+                                        Phone: <span data-phone="${officer.phone}" class="sensitive-data">Click to reveal</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    });
+                    
+                    container.innerHTML = html;
+                } else {
+                    // Fallback to placeholder content if no officers found
+                    container.innerHTML = `
+                        <div class="team-member">
+                            <h3>Team Information</h3>
+                            <div class="position">Coming Soon</div>
+                            <div class="contact">
+                                <p>Our team information is being updated. Please check back soon or contact us for more information.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading team members:', error);
+                const container = document.getElementById('team-members-container');
+                container.innerHTML = `
+                    <div class="team-member">
+                        <h3>Team Information</h3>
+                        <div class="position">Temporarily Unavailable</div>
+                        <div class="contact">
+                            <p>Unable to load team information at this time. Please try again later or contact us directly.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load team members when page loads
+        document.addEventListener('DOMContentLoaded', loadTeamMembers);
+    </script>
 </body>
 </html>
