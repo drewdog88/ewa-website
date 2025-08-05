@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Opportunities - Eastlake Wolfpack Association</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Volunteer with Eastlake High School booster clubs. Support our student athletes and programs through volunteering.">
+    <meta name="keywords" content="volunteer, Eastlake High School, booster clubs, community service, Kirkland, WA">
+    <meta name="author" content="Eastlake Wolfpack Association">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="noai">
+    <meta name="googlebot" content="noimageai">
+    <meta name="googlebot" content="nosnippet">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Volunteer Opportunities - Eastlake Wolfpack Association">
+    <meta property="og:description" content="Support our student athletes by volunteering with Eastlake High School booster clubs">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ewa-website.com/volunteers">
+    
+    <!-- Prevent AI Training -->
+    <meta name="robots" content="noai, noimageai, nosnippet">
+    <meta name="googlebot" content="noai, noimageai, nosnippet">
+    
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            padding: 20px 0;
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .header-left a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-right: 20px;
+        }
+        
+        .header-right {
+            color: #dc3545;
+            font-size: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .version-toggle {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .version-toggle:hover {
+            background-color: #c82333;
+        }
+        
+        .admin-link {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .admin-link:hover {
+            background-color: #218838;
+        }
+        
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .page-description {
+            font-size: 1.2rem;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 50px;
+            line-height: 1.8;
+        }
+        
+        /* Volunteer Form */
+        .volunteer-form {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .form-title {
+            color: #dc3545;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .submit-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        /* Success Message */
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px 0;
+            border-top: 2px solid #dc3545;
+            color: #6c757d;
+        }
+        
+        .footer-links {
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .volunteer-form {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html">Home</a>
+            <a href="team.html">EWA Team</a>
+            <a href="news.html">News</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="links.html">Links</a>
+            <a href="volunteers.html">Volunteers</a>
+        </div>
+        <div class="header-right">
+            <a href="../original/index.html" class="version-toggle">Original Version</a>
+            <a href="admin/login.html" class="admin-link">Admin</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="page-title">Volunteer Opportunities</h1>
+        <p class="page-description">
+            Support Eastlake High School student athletes by volunteering with our booster clubs. 
+            Your time and dedication help make our programs successful and provide opportunities for our students to excel.
+        </p>
+
+        <!-- Volunteer Form -->
+        <div class="volunteer-form">
+            <h2 class="form-title">Express Your Interest</h2>
+            <form id="volunteerForm">
+                <div class="form-group">
+                    <label for="boosterClub">Booster Club <span class="required">*</span></label>
+                    <select id="boosterClub" name="boosterClub" required>
+                        <option value="">Select a Booster Club</option>
+                        <option value="band">EHS Band Boosters</option>
+                        <option value="baseball">Eastlake Baseball Club</option>
+                        <option value="boys-basketball">Eastlake Boys Basketball Booster Club</option>
+                        <option value="girls-basketball">Eastlake Girls Basketball Booster Club</option>
+                        <option value="cheer">Eastlake Cheer Booster Club</option>
+                        <option value="choir">Eastlake Choir</option>
+                        <option value="cross-country">Eastlake Cross-Country Boosters</option>
+                        <option value="dance">Eastlake Dance Team Boosters</option>
+                        <option value="deca">EHS DECA Booster Club</option>
+                        <option value="drama">Eastlake Drama</option>
+                        <option value="fastpitch">Eastlake Fastpitch (Girls)</option>
+                        <option value="boys-golf">Eastlake Boys Golf Booster Club</option>
+                        <option value="girls-golf">Eastlake Girls Golf Booster Club</option>
+                        <option value="orchestra">EHS Orchestra Boosters Club</option>
+                        <option value="robotics">Eastlake Robotics Club</option>
+                        <option value="boys-soccer">Eastlake Boys Soccer</option>
+                        <option value="girls-soccer">Eastlake Girls Soccer</option>
+                        <option value="boys-swim">Eastlake Boys Swim & Dive Booster Club</option>
+                        <option value="girls-swim">Eastlake Girls Swim & Dive Booster Club</option>
+                        <option value="track">EHS Track and Field Booster Club</option>
+                        <option value="volleyball">Eastlake Volleyball Booster Club</option>
+                        <option value="wrestling">EHS Wrestling Booster Club</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="volunteerName">Your Name <span class="required">*</span></label>
+                    <input type="text" id="volunteerName" name="volunteerName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="childName">Child's Name (if applicable)</label>
+                    <input type="text" id="childName" name="childName" placeholder="Student's name if you're a parent">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567">
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Volunteer Interest</button>
+            </form>
+
+            <div id="successMessage" class="success-message">
+                <h3>Thank You!</h3>
+                <p>Your volunteer interest has been submitted successfully. The booster club will contact you soon.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-links">
+            <a href="index.html" class="footer-link">Home</a>
+            <a href="team.html" class="footer-link">EWA Team</a>
+            <a href="news.html" class="footer-link">News</a>
+            <a href="gallery.html" class="footer-link">Gallery</a>
+            <a href="links.html" class="footer-link">Links</a>
+            <a href="volunteers.html" class="footer-link">Volunteers</a>
+        </div>
+        <div>© 2025 Eastlake Wolfpack Association. All rights reserved.</div>
+    </div>
+
+    <script>
+        // Prevent AI training
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 'c') e.preventDefault();
+        });
+
+        // Form submission handling
+        document.getElementById('volunteerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const volunteerData = {
+                boosterClub: formData.get('boosterClub'),
+                volunteerName: formData.get('volunteerName'),
+                childName: formData.get('childName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                submittedAt: new Date().toISOString()
+            };
+            
+            // In a real implementation, this would send to a server
+            console.log('Volunteer submission:', volunteerData);
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        });
+    </script>
+</body>
+</html> 
