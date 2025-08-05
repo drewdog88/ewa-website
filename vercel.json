@@ -1,11 +1,5 @@
 {
   "version": 2,
-  "git": {
-    "deploymentEnabled": {
-      "main": false,
-      "vercel-kv-deployment": true
-    }
-  },
   "builds": [
     {
       "src": "server.js",

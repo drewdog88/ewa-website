@@ -8,9 +8,15 @@ const path = require('path');
 let kv;
 if (process.env.NODE_ENV === 'production') {
     try {
-        kv = require('@vercel/kv');
+        // Only try to import KV if we have the environment variables
+        if (process.env.KV_URL || process.env.KV_REST_API_URL) {
+            kv = require('@vercel/kv');
+            console.log('Vercel KV initialized successfully');
+        } else {
+            console.log('Vercel KV environment variables not found, using in-memory storage');
+        }
     } catch (error) {
-        console.log('Vercel KV not available, using in-memory storage');
+        console.log('Vercel KV not available, using in-memory storage:', error.message);
     }
 }
 
@@ -1337,9 +1343,32 @@ app.get('/api/officers/template', (req, res) => {
     }
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        kvAvailable: !!kv,
+        storage: kv ? 'Vercel KV' : 'In-memory'
+    });
+});
+
 // Serve the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Catch-all route for SPA
+app.get('*', (req, res) => {
+    // Try to serve static files first
+    const filePath = path.join(__dirname, req.path);
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        res.sendFile(filePath);
+    } else {
+        // Fallback to main page for SPA routing
+        res.sendFile(path.join(__dirname, 'index.html'));
+    }
 });
 
 // Start server
