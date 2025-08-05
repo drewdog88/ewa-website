@@ -130,7 +130,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Rate limiting (simple in-memory store - consider Redis for production)
+// Rate limiting (simple in-memory store)
 const rateLimitStore = new Map();
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const RATE_LIMIT_MAX_REQUESTS = 100; // 100 requests per window
@@ -1477,13 +1477,12 @@ app.post('/api/upload-document', async (req, res) => {
             uploadedBy: req.body.uploadedBy || 'unknown'
         };
 
-        // Add to in-memory storage or Redis
-        if (redis) {
-            const documents = await redis.get('documents') || '[]';
-            const documentsArray = JSON.parse(documents);
-            documentsArray.push(documentRecord);
-            await redis.set('documents', JSON.stringify(documentsArray));
-        } else {
+        // Add to database
+        try {
+            await addDocument(documentRecord);
+        } catch (error) {
+            console.error('Error saving document to database:', error);
+            // Fallback to in-memory storage
             if (!memoryStorage.documents) {
                 memoryStorage.documents = [];
             }
@@ -1512,11 +1511,12 @@ app.get('/api/documents/:boosterClub', async (req, res) => {
         
         let documents = [];
         
-        if (redis) {
-            const allDocuments = await redis.get('documents') || '[]';
-            const documentsArray = JSON.parse(allDocuments);
-            documents = documentsArray.filter(doc => doc.boosterClub === boosterClub);
-        } else {
+        try {
+            const allDocuments = await getDocuments();
+            documents = allDocuments.filter(doc => doc.boosterClub === boosterClub);
+        } catch (error) {
+            console.error('Error getting documents from database:', error);
+            // Fallback to in-memory storage
             documents = (memoryStorage.documents || [])
                 .filter(doc => doc.boosterClub === boosterClub);
         }
@@ -1539,10 +1539,11 @@ app.get('/api/documents', async (req, res) => {
     try {
         let documents = [];
         
-        if (redis) {
-            const allDocuments = await redis.get('documents') || '[]';
-            documents = JSON.parse(allDocuments);
-        } else {
+        try {
+            documents = await getDocuments();
+        } catch (error) {
+            console.error('Error getting documents from database:', error);
+            // Fallback to in-memory storage
             documents = memoryStorage.documents || [];
         }
 
@@ -1566,16 +1567,15 @@ app.delete('/api/documents/:documentId', async (req, res) => {
         
         let document = null;
         
-        if (redis) {
-            const allDocuments = await redis.get('documents') || '[]';
-            const documentsArray = JSON.parse(allDocuments);
-            const docIndex = documentsArray.findIndex(doc => doc.id === documentId);
-            if (docIndex !== -1) {
-                document = documentsArray[docIndex];
-                documentsArray.splice(docIndex, 1);
-                await redis.set('documents', JSON.stringify(documentsArray));
-            }
-        } else {
+        try {
+            // Delete from database
+            await deleteDocument(documentId);
+            // Get the document details before deletion for blob cleanup
+            const allDocuments = await getDocuments();
+            document = allDocuments.find(doc => doc.id === documentId);
+        } catch (error) {
+            console.error('Error deleting document from database:', error);
+            // Fallback to in-memory storage
             const docIndex = (memoryStorage.documents || []).findIndex(doc => doc.id === documentId);
             if (docIndex !== -1) {
                 document = memoryStorage.documents[docIndex];

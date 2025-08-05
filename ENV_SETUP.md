@@ -6,7 +6,7 @@ Create a file called `.env.local` in the root directory with the following conte
 
 ```
 BLOB_READ_WRITE_TOKEN=vercel_blob_rw_UWH6nTy2XcA4BS7u_OS0oZHtQ56g3BjXFIWAqNSlxDPJVHV
-REDIS_URL=redis://default:VTXmdYzdNkE0l338u8aEVRtQLpB3TTbj@redis-18758.c285.us-west-2-2.ec2.redns.redis-cloud.com:18758
+DATABASE_URL=postgres://neondb_owner:npg_Lj2UaqCig6HI@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require
 ```
 
 ## For Vercel Production
@@ -20,9 +20,9 @@ Go to "Settings" → "Environment Variables" and add:
 - **Value**: `vercel_blob_rw_UWH6nTy2XcA4BS7u_OS0oZHtQ56g3BjXFIWAqNSlxDPJVHV`
 - **Environment**: Production (and optionally Preview/Development)
 
-**Redis Database:**
-- **Name**: `REDIS_URL`
-- **Value**: `redis://default:VTXmdYzdNkE0l338u8aEVRtQLpB3TTbj@redis-18758.c285.us-west-2-2.ec2.redns.redis-cloud.com:18758`
+**Neon Database:**
+- **Name**: `DATABASE_URL`
+- **Value**: `postgres://neondb_owner:npg_Lj2UaqCig6HI@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require`
 - **Environment**: Production
 
 ## Testing
@@ -33,7 +33,7 @@ After setting up the environment variables:
 2. Visit `http://localhost:3000/blob-test.html` to test the blob functionality
 3. Check the server console for "Vercel Blob initialized successfully" message
 4. Visit `http://localhost:3000/team.html` to test the team page
-5. Check the server console for "Redis initialized successfully" message
+5. Check the server console for "✅ Connected to Neon PostgreSQL database" message
 
 ## Security Note
 
