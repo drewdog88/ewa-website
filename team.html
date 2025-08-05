@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News - Eastlake Wolfpack Association</title>
     
     <!-- Enhanced SEO Meta Tags -->
-    <meta name="description" content="Stay updated with the latest news from the Eastlake Wolfpack Association. Get information about events, achievements, and updates from Eastlake High School athletics and booster clubs.">
-    <meta name="keywords" content="Eastlake High School, Wolfpack, news, events, athletics, booster clubs, Kirkland, WA, EWA updates">
+    <meta name="description" content="Meet the Eastlake Wolfpack Association team. Our dedicated officers and volunteers support Eastlake High School athletics and booster clubs in Kirkland, WA.">
+    <meta name="keywords" content="Eastlake High School, Wolfpack, EWA team, officers, volunteers, Kirkland, WA, athletics, booster clubs">
     <meta name="author" content="Eastlake Wolfpack Association">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="googlebot" content="noai, noimageai, nosnippet">
     <meta name="bingbot" content="noai, noimageai, nosnippet">
     
     <!-- Enhanced Open Graph Tags -->
-    <meta property="og:title" content="News - Eastlake Wolfpack Association">
-    <meta property="og:description" content="Stay updated with the latest news from the Eastlake Wolfpack Association. Get information about events, achievements, and updates.">
+    <meta property="og:title" content="EWA Team - Eastlake Wolfpack Association">
+    <meta property="og:description" content="Meet the dedicated team behind the Eastlake Wolfpack Association. Our officers and volunteers support Eastlake High School athletics.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ewa-website.com/new/news.html">
+    <meta property="og:url" content="https://ewa-website.com/team.html">
     <meta property="og:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
     <meta property="og:image:alt" content="Eastlake Wolfpack Association Logo">
     <meta property="og:site_name" content="Eastlake Wolfpack Association">
@@ -25,13 +24,13 @@
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="News - Eastlake Wolfpack Association">
-    <meta name="twitter:description" content="Stay updated with the latest news from the Eastlake Wolfpack Association">
+    <meta name="twitter:title" content="EWA Team - Eastlake Wolfpack Association">
+    <meta name="twitter:description" content="Meet the dedicated team behind the Eastlake Wolfpack Association">
     <meta name="twitter:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
     <meta name="twitter:image:alt" content="Eastlake Wolfpack Association Logo">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://ewa-website.com/new/news.html">
+    <link rel="canonical" href="https://ewa-website.com/team.html">
     
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="../assets/ewa-wolf.jpg">
@@ -65,7 +64,7 @@
     <!-- Preload Critical Resources -->
     <link rel="preload" href="../assets/ewa-wolf.jpg" as="image">
     <link rel="preload" href="index.html" as="document">
-    <link rel="preload" href="team.html" as="document">
+    <link rel="preload" href="volunteers.html" as="document">
     
     <!-- DNS Prefetch -->
     <link rel="dns-prefetch" href="//ewa-website.com">
@@ -78,7 +77,7 @@
     <!-- Vercel Speed Insights -->
     <script defer src="/_vercel/speed-insights/script.js"></script>
     
-    <title>News & Updates - Eastlake Wolfpack Association</title>
+    <title>EWA Team - Eastlake Wolfpack Association</title>
     
     <style>
         /* Reset and Base Styles */
@@ -149,28 +148,11 @@
             border-bottom: 2px solid #dc3545;
         }
         
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        
         .header-left a {
             color: #007bff;
             text-decoration: none;
             font-size: 16px;
             margin-right: 20px;
-        }
-        
-        .logo {
-            width: 60px;
-            height: 60px;
-            background: url('../assets/ewa-wolf.jpg') no-repeat center;
-            background-size: contain;
-            margin-right: 20px;
-            /* Performance optimization: will-change for GPU acceleration */
-            will-change: transform;
-            /* Optimize for animations */
-            transform: translateZ(0);
         }
         
         .header-right {
@@ -210,10 +192,26 @@
             background-color: #218838;
         }
         
-        /* Main Content */
+        /* Logo Styles */
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: url('../assets/ewa-wolf.jpg') no-repeat center;
+            background-size: contain;
+            margin-right: 20px;
+            /* Performance optimization: will-change for GPU acceleration */
+            will-change: transform;
+            /* Optimize for animations */
+            transform: translateZ(0);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
         .main-content {
             max-width: 1200px;
-            margin: 0 auto;
         }
         
         .main-content h1 {
@@ -230,8 +228,8 @@
             margin-bottom: 60px;
         }
         
-        /* News Article Styles */
-        .news-article {
+        /* Team Member Styles */
+        .team-member {
             background: white;
             padding: 30px;
             margin-bottom: 30px;
@@ -240,25 +238,30 @@
             border-left: 4px solid #dc3545;
         }
         
-        .news-article h2 {
+        .team-member h3 {
             color: #2c3e50;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-bottom: 10px;
         }
         
-        .news-article .date {
+        .team-member .position {
+            color: #dc3545;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .team-member .contact {
             color: #6c757d;
             font-size: 0.9rem;
-            margin-bottom: 15px;
         }
         
-        .news-article .content {
-            color: #2c3e50;
-            line-height: 1.8;
+        .team-member .contact a {
+            color: #007bff;
+            text-decoration: none;
         }
         
-        .news-article .content p {
-            margin-bottom: 15px;
+        .team-member .contact a:hover {
+            text-decoration: underline;
         }
         
         /* Responsive Design */
@@ -277,7 +280,7 @@
                 font-size: 2.5rem;
             }
             
-            .news-article {
+            .team-member {
                 padding: 20px;
             }
         }
@@ -291,57 +294,57 @@
         <nav class="header-left" role="navigation" aria-label="Main navigation">
             <div class="logo" role="img" aria-label="Eastlake Wolfpack Association Logo"></div>
             <a href="index.html">Home</a>
-            <a href="team.html">EWA Team</a>
+            <a href="team.html" aria-current="page">EWA Team</a>
             <a href="gallery.html">Photo Gallery</a>
-            <a href="news.html" aria-current="page">News</a>
+            <a href="news.html">News</a>
             <a href="volunteers.html">Volunteer</a>
             <a href="links.html">Resources</a>
         </nav>
         <div class="header-right" role="navigation" aria-label="Secondary navigation">
-            <a href="../original/news.html" class="version-toggle">Revert to Original</a>
+
             <a href="admin/login.html" class="admin-link">Admin</a>
         </div>
     </header>
 
     <main id="main-content" class="main-content" role="main">
-        <h1>News</h1>
-        <p class="subtitle">Stay updated with the latest news and events from the Eastlake Wolfpack Association.</p>
+        <h1>EWA Team</h1>
+        <p class="subtitle">Meet the dedicated officers and volunteers who make the Eastlake Wolfpack Association possible.</p>
         
-        <article class="news-article">
-            <h2>Welcome to the 2024-2025 School Year</h2>
-            <div class="date">September 1, 2024</div>
-            <div class="content">
-                <p>Welcome back to another exciting year of Eastlake High School athletics! The Eastlake Wolfpack Association is ready to support our student athletes and booster clubs throughout the 2024-2025 school year.</p>
-                <p>We have many exciting events planned, including fundraisers, volunteer opportunities, and community building activities. Stay tuned for updates on how you can get involved and support our programs.</p>
+        <div class="team-member">
+            <h3>John Smith</h3>
+            <div class="position">President</div>
+            <div class="contact">
+                Email: <a href="mailto:president@ewa.org" data-email="president@ewa.org" class="sensitive-data">Click to reveal</a><br>
+                Phone: <span data-phone="555-123-4567" class="sensitive-data">Click to reveal</span>
             </div>
-        </article>
+        </div>
         
-        <article class="news-article">
-            <h2>Fall Sports Season Begins</h2>
-            <div class="date">August 15, 2024</div>
-            <div class="content">
-                <p>The fall sports season is officially underway! Our football, soccer, volleyball, cross-country, and swimming teams are all in action. Come out and support our Wolfpack athletes as they compete this season.</p>
-                <p>Check our Resources page for game schedules and booster club information. We encourage all families to get involved with their respective booster clubs to help support our programs.</p>
+        <div class="team-member">
+            <h3>Sarah Johnson</h3>
+            <div class="position">Vice President</div>
+            <div class="contact">
+                Email: <a href="mailto:vicepresident@ewa.org" data-email="vicepresident@ewa.org" class="sensitive-data">Click to reveal</a><br>
+                Phone: <span data-phone="555-234-5678" class="sensitive-data">Click to reveal</span>
             </div>
-        </article>
+        </div>
         
-        <article class="news-article">
-            <h2>Volunteer Opportunities Available</h2>
-            <div class="date">August 10, 2024</div>
-            <div class="content">
-                <p>We're always looking for dedicated volunteers to help support our programs. Whether you can spare a few hours or want to take on a more involved role, there are opportunities for everyone.</p>
-                <p>Visit our Volunteer page to express your interest in helping with concessions, fundraising, event planning, or other areas where we need support. Every volunteer makes a difference!</p>
+        <div class="team-member">
+            <h3>Mike Davis</h3>
+            <div class="position">Treasurer</div>
+            <div class="contact">
+                Email: <a href="mailto:treasurer@ewa.org" data-email="treasurer@ewa.org" class="sensitive-data">Click to reveal</a><br>
+                Phone: <span data-phone="555-345-6789" class="sensitive-data">Click to reveal</span>
             </div>
-        </article>
+        </div>
         
-        <article class="news-article">
-            <h2>Spring Sports Success</h2>
-            <div class="date">June 15, 2024</div>
-            <div class="content">
-                <p>Congratulations to all our spring sports teams on another successful season! Our baseball, softball, track & field, tennis, and golf teams all had outstanding performances this year.</p>
-                <p>Special recognition goes to our state qualifiers and championship participants. Your hard work and dedication inspire us all. Thank you to the coaches, parents, and booster clubs for your support throughout the season.</p>
+        <div class="team-member">
+            <h3>Lisa Wilson</h3>
+            <div class="position">Secretary</div>
+            <div class="contact">
+                Email: <a href="mailto:secretary@ewa.org" data-email="secretary@ewa.org" class="sensitive-data">Click to reveal</a><br>
+                Phone: <span data-phone="555-456-7890" class="sensitive-data">Click to reveal</span>
             </div>
-        </article>
+        </div>
     </main>
 
     <footer class="footer-banner" role="contentinfo">
@@ -354,5 +357,7 @@
             <a href="volunteers.html">Volunteer</a>
         </nav>
     </footer>
+
+    <script src="security.js"></script>
 </body>
-</html> 
+</html>

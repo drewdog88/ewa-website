@@ -16,8 +16,8 @@
       "dest": "/assets/$1"
     },
     {
-      "src": "/new/(.*)",
-      "dest": "/new/$1"
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
     },
     {
       "src": "/data/(.*)",
