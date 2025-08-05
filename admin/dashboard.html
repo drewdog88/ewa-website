@@ -1533,6 +1533,10 @@
             
             console.log('🌐 Making API request to:', url);
             
+            // Add more debugging
+            console.log('🔍 Current window location:', window.location.href);
+            console.log('🔍 Full API URL will be:', window.location.origin + url);
+            
             // Show loading state - with better error handling
             const tbody = document.querySelector('#1099Table tbody');
             console.log('🔍 Looking for #1099Table tbody element...');
@@ -1551,6 +1555,7 @@
             }
             
             // Make API request
+            console.log('📡 About to make fetch request to:', url);
             fetch(url, {
                 method: 'GET',
                 headers: {
