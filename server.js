@@ -7,25 +7,22 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 
-// Import Redis for production
-let redis;
-if (process.env.NODE_ENV === 'production') {
-    try {
-        if (process.env.REDIS_URL) {
-            const { createClient } = require('redis');
-            redis = createClient({ url: process.env.REDIS_URL });
-            redis.connect().then(() => {
-                console.log('Redis initialized successfully');
-            }).catch((error) => {
-                console.log('Redis connection failed:', error.message);
-            });
-        } else {
-            console.log('REDIS_URL not found, using in-memory storage');
-        }
-    } catch (error) {
-        console.log('Redis not available, using in-memory storage:', error.message);
-    }
-}
+// Import Neon database functions
+const {
+    getOfficers,
+    addOfficer,
+    getUsers,
+    updateUser,
+    getVolunteers,
+    addVolunteer,
+    getInsurance,
+    addInsurance,
+    getForm1099,
+    addForm1099,
+    getDocuments,
+    addDocument,
+    deleteDocument
+} = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
 let blob;
@@ -43,7 +40,7 @@ if (process.env.BLOB_READ_WRITE_TOKEN) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Function to load initial data from JSON files
+// Function to load initial data from JSON files (fallback)
 function loadInitialData() {
     try {
         // Load officers data
@@ -60,56 +57,22 @@ function loadInitialData() {
     return { officers: [] };
 }
 
-// Function to initialize Redis store with data from JSON files
-async function initializeRedisStore() {
-    if (!redis) {
-        console.log('Redis not available, skipping initialization');
-        return;
-    }
-    
+// Function to initialize database connection
+async function initializeDatabase() {
     try {
-        console.log('Initializing Redis store with data from JSON files...');
+        console.log('Initializing Neon database connection...');
         
-        // Check if officers data exists in Redis
-        const existingOfficers = await redis.get('officers');
-        if (!existingOfficers) {
-            // Load officers from JSON file and store in Redis
-            const officersPath = path.join(__dirname, 'data', 'officers.json');
-            if (fs.existsSync(officersPath)) {
-                const officersData = fs.readFileSync(officersPath, 'utf8');
-                const officers = JSON.parse(officersData);
-                await redis.set('officers', JSON.stringify(officers));
-                console.log(`Initialized Redis store with ${officers.length} officers`);
-            }
-        } else {
-            const officers = JSON.parse(existingOfficers);
-            console.log(`Redis store already contains ${officers.length} officers`);
-        }
+        // Test the connection by getting officers
+        const officers = await getOfficers();
+        console.log(`Database connected successfully with ${officers.length} officers`);
         
-        // Initialize other data types if needed
-        const existingVolunteers = await redis.get('volunteers');
-        if (!existingVolunteers) {
-            await redis.set('volunteers', JSON.stringify([]));
-            console.log('Initialized Redis store with empty volunteers array');
-        }
-        
-        const existingInsurance = await redis.get('insurance');
-        if (!existingInsurance) {
-            await redis.set('insurance', JSON.stringify([]));
-            console.log('Initialized Redis store with empty insurance array');
-        }
-        
-        const existingForm1099 = await redis.get('form1099');
-        if (!existingForm1099) {
-            await redis.set('form1099', JSON.stringify([]));
-            console.log('Initialized Redis store with empty form1099 array');
-        }
-        
-        console.log('Redis store initialization completed');
     } catch (error) {
-        console.error('Error initializing Redis store:', error);
+        console.error('Database initialization failed:', error.message);
+        console.log('Falling back to in-memory storage');
     }
 }
+        
+
 
 // In-memory storage for development fallback
 const initialData = loadInitialData();
@@ -245,295 +208,110 @@ app.use(compression({
     }
 }));
 
-// Helper functions for Redis storage with fallback to in-memory
-async function getVolunteers() {
-    if (redis) {
-        try {
-            const data = await redis.get('volunteers');
-            return data ? JSON.parse(data) : [];
-        } catch (error) {
-            console.error('Error getting volunteers from Redis:', error);
-            return memoryStorage.volunteers;
-        }
-    }
-    return memoryStorage.volunteers;
-}
-
-async function addVolunteer(volunteer) {
-    if (redis) {
-        try {
-            const volunteers = await getVolunteers();
-            volunteers.push(volunteer);
-            await redis.set('volunteers', JSON.stringify(volunteers));
-            return true;
-        } catch (error) {
-            console.error('Error adding volunteer to Redis:', error);
-            memoryStorage.volunteers.push(volunteer);
-            return true;
-        }
-    }
-    memoryStorage.volunteers.push(volunteer);
-    return true;
-}
-
+// Helper functions for volunteer management
 async function updateVolunteer(id, updates) {
-    if (redis) {
-        try {
-            const volunteers = await getVolunteers();
-            const index = volunteers.findIndex(v => v.id === id);
-            if (index !== -1) {
-                volunteers[index] = { ...volunteers[index], ...updates };
-                await redis.set('volunteers', JSON.stringify(volunteers));
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error updating volunteer in Redis:', error);
-            const index = memoryStorage.volunteers.findIndex(v => v.id === id);
-            if (index !== -1) {
-                memoryStorage.volunteers[index] = { ...memoryStorage.volunteers[index], ...updates };
-                return true;
-            }
-            return false;
-        }
+    // This function is used by the API but not directly available in neon-functions
+    // We'll implement it using the database connection
+    try {
+        const sql = require('./database/neon-functions').getSql();
+        if (!sql) return false;
+        
+        const result = await sql`
+            UPDATE volunteers 
+            SET name = ${updates.name || null},
+                email = ${updates.email || null},
+                phone = ${updates.phone || null},
+                interests = ${updates.interests || null},
+                availability = ${updates.availability || null},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${id}
+            RETURNING *
+        `;
+        return result.length > 0;
+    } catch (error) {
+        console.error('Error updating volunteer:', error);
+        return false;
     }
-    const index = memoryStorage.volunteers.findIndex(v => v.id === id);
-    if (index !== -1) {
-        memoryStorage.volunteers[index] = { ...memoryStorage.volunteers[index], ...updates };
-        return true;
-    }
-    return false;
 }
 
-async function getUsers() {
-    if (redis) {
-        try {
-            const data = await redis.get('users');
-            return data ? JSON.parse(data) : memoryStorage.users;
-        } catch (error) {
-            console.error('Error getting users from Redis:', error);
-            return memoryStorage.users;
-        }
-    }
-    return memoryStorage.users;
-}
-
-async function updateUser(username, updates) {
-    if (redis) {
-        try {
-            const users = await getUsers();
-            if (users[username]) {
-                users[username] = { ...users[username], ...updates };
-                await redis.set('users', JSON.stringify(users));
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error updating user in Redis:', error);
-            if (memoryStorage.users[username]) {
-                memoryStorage.users[username] = { ...memoryStorage.users[username], ...updates };
-                return true;
-            }
-            return false;
-        }
-    }
-    if (memoryStorage.users[username]) {
-        memoryStorage.users[username] = { ...memoryStorage.users[username], ...updates };
-        return true;
-    }
-    return false;
-}
-
+// Additional helper functions for user management
 async function addUser(username, userData) {
-    if (redis) {
-        try {
-            const users = await getUsers();
-            users[username] = userData;
-            await redis.set('users', JSON.stringify(users));
-            return true;
-        } catch (error) {
-            console.error('Error adding user to Redis:', error);
-            memoryStorage.users[username] = userData;
-            return true;
-        }
+    try {
+        const sql = require('./database/neon-functions').getSql();
+        if (!sql) return false;
+        
+        const result = await sql`
+            INSERT INTO users (username, password, role, club, club_name, is_locked, is_first_login, created_at)
+            VALUES (${username}, ${userData.password}, ${userData.role}, ${userData.club || ''}, ${userData.clubName || ''}, ${userData.isLocked || false}, ${userData.isFirstLogin || true}, CURRENT_TIMESTAMP)
+            ON CONFLICT (username) DO UPDATE SET
+                password = EXCLUDED.password,
+                role = EXCLUDED.role,
+                club = EXCLUDED.club,
+                club_name = EXCLUDED.club_name,
+                is_locked = EXCLUDED.is_locked,
+                is_first_login = EXCLUDED.is_first_login,
+                updated_at = CURRENT_TIMESTAMP
+            RETURNING *
+        `;
+        return result.length > 0;
+    } catch (error) {
+        console.error('Error adding user:', error);
+        return false;
     }
-    memoryStorage.users[username] = userData;
-    return true;
 }
 
 async function deleteUser(username) {
-    if (redis) {
-        try {
-            const users = await getUsers();
-            if (users[username]) {
-                delete users[username];
-                await redis.set('users', JSON.stringify(users));
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error deleting user from Redis:', error);
-            if (memoryStorage.users[username]) {
-                delete memoryStorage.users[username];
-                return true;
-            }
-            return false;
-        }
+    try {
+        const sql = require('./database/neon-functions').getSql();
+        if (!sql) return false;
+        
+        const result = await sql`DELETE FROM users WHERE username = ${username} RETURNING *`;
+        return result.length > 0;
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return false;
     }
-    if (memoryStorage.users[username]) {
-        delete memoryStorage.users[username];
-        return true;
-    }
-    return false;
 }
 
-async function getOfficers() {
-    if (redis) {
-        try {
-            const data = await redis.get('officers');
-            return data ? JSON.parse(data) : [];
-        } catch (error) {
-            console.error('Error getting officers from Redis:', error);
-            return memoryStorage.officers;
-        }
-    }
-    return memoryStorage.officers;
-}
-
-async function addOfficer(officer) {
-    if (redis) {
-        try {
-            const officers = await getOfficers();
-            officers.push(officer);
-            await redis.set('officers', JSON.stringify(officers));
-            return true;
-        } catch (error) {
-            console.error('Error adding officer to Redis:', error);
-            memoryStorage.officers.push(officer);
-            return true;
-        }
-    }
-    memoryStorage.officers.push(officer);
-    return true;
-}
-
+// Additional helper functions for officer management
 async function updateOfficer(id, updates) {
-    if (redis) {
-        try {
-            const officers = await getOfficers();
-            const index = officers.findIndex(o => o.id === id);
-            if (index !== -1) {
-                officers[index] = { ...officers[index], ...updates };
-                await redis.set('officers', JSON.stringify(officers));
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error updating officer in Redis:', error);
-            const index = memoryStorage.officers.findIndex(o => o.id === id);
-            if (index !== -1) {
-                memoryStorage.officers[index] = { ...memoryStorage.officers[index], ...updates };
-                return true;
-            }
-            return false;
-        }
+    try {
+        const sql = require('./database/neon-functions').getSql();
+        if (!sql) return false;
+        
+        const result = await sql`
+            UPDATE officers 
+            SET name = ${updates.name || null},
+                position = ${updates.position || null},
+                email = ${updates.email || null},
+                phone = ${updates.phone || null},
+                club = ${updates.club || null},
+                club_name = ${updates.clubName || null},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${id}
+            RETURNING *
+        `;
+        return result.length > 0;
+    } catch (error) {
+        console.error('Error updating officer:', error);
+        return false;
     }
-    const index = memoryStorage.officers.findIndex(o => o.id === id);
-    if (index !== -1) {
-        memoryStorage.officers[index] = { ...memoryStorage.officers[index], ...updates };
-        return true;
-    }
-    return false;
 }
 
 async function deleteOfficer(id) {
-    if (redis) {
-        try {
-            const officers = await getOfficers();
-            const index = officers.findIndex(o => o.id === id);
-            if (index !== -1) {
-                officers.splice(index, 1);
-                await redis.set('officers', JSON.stringify(officers));
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error deleting officer from Redis:', error);
-            const index = memoryStorage.officers.findIndex(o => o.id === id);
-            if (index !== -1) {
-                memoryStorage.officers.splice(index, 1);
-                return true;
-            }
-            return false;
-        }
+    try {
+        const sql = require('./database/neon-functions').getSql();
+        if (!sql) return false;
+        
+        const result = await sql`DELETE FROM officers WHERE id = ${id} RETURNING *`;
+        return result.length > 0;
+    } catch (error) {
+        console.error('Error deleting officer:', error);
+        return false;
     }
-    const index = memoryStorage.officers.findIndex(o => o.id === id);
-    if (index !== -1) {
-        memoryStorage.officers.splice(index, 1);
-        return true;
-    }
-    return false;
 }
 
-async function getInsurance() {
-    if (redis) {
-        try {
-            const data = await redis.get('insurance');
-            return data ? JSON.parse(data) : [];
-        } catch (error) {
-            console.error('Error getting insurance from Redis:', error);
-            return memoryStorage.insurance;
-        }
-    }
-    return memoryStorage.insurance;
-}
 
-async function addInsurance(insuranceData) {
-    if (redis) {
-        try {
-            const insurance = await getInsurance();
-            insurance.push(insuranceData);
-            await redis.set('insurance', JSON.stringify(insurance));
-            return true;
-        } catch (error) {
-            console.error('Error adding insurance to Redis:', error);
-            memoryStorage.insurance.push(insuranceData);
-            return true;
-        }
-    }
-    memoryStorage.insurance.push(insuranceData);
-    return true;
-}
-
-async function getForm1099() {
-    if (redis) {
-        try {
-            const data = await redis.get('form1099');
-            return data ? JSON.parse(data) : [];
-        } catch (error) {
-            console.error('Error getting form1099 from Redis:', error);
-            return memoryStorage.form1099;
-        }
-    }
-    return memoryStorage.form1099;
-}
-
-async function addForm1099(formData) {
-    if (redis) {
-        try {
-            const form1099 = await getForm1099();
-            form1099.push(formData);
-            await redis.set('form1099', JSON.stringify(form1099));
-            return true;
-        } catch (error) {
-            console.error('Error adding form1099 to Redis:', error);
-            memoryStorage.form1099.push(formData);
-            return true;
-        }
-    }
-    memoryStorage.form1099.push(formData);
-    return true;
-}
 
 // API Routes
 
@@ -1834,9 +1612,9 @@ app.get('/api/health', (req, res) => {
         status: 'ok', 
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development',
-        redisAvailable: !!redis,
+        databaseAvailable: !!process.env.DATABASE_URL,
         blobAvailable: !!blob,
-        storage: redis ? 'Redis' : 'In-memory'
+        storage: 'Neon PostgreSQL'
     });
 });
 
@@ -1868,11 +1646,9 @@ app.get('*', (req, res) => {
 // Start server
 app.listen(PORT, async () => {
     console.log(`EWA Website server running on http://localhost:${PORT}`);
-    console.log(`Storage: ${redis ? 'Redis (production)' : 'In-memory (development)'}`);
+    console.log(`Storage: Neon PostgreSQL (production)`);
     console.log(`Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
     
-    // Initialize Redis store with data from JSON files
-    if (redis) {
-        await initializeRedisStore();
-    }
+    // Initialize database connection
+    await initializeDatabase();
 }); 
