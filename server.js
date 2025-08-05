@@ -55,10 +55,18 @@ if (!fs.existsSync(USERS_FILE)) {
 // Helper function to read JSON file
 function readJsonFile(filePath) {
     try {
+        console.log(`Reading file: ${filePath}`);
+        if (!fs.existsSync(filePath)) {
+            console.log(`File does not exist: ${filePath}`);
+            return [];
+        }
         const data = fs.readFileSync(filePath, 'utf8');
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+        console.log(`Successfully read file: ${filePath}, data type: ${typeof parsed}`);
+        return parsed;
     } catch (error) {
         console.error(`Error reading ${filePath}:`, error);
+        console.error(`Error details: ${error.message}`);
         return [];
     }
 }
@@ -66,10 +74,14 @@ function readJsonFile(filePath) {
 // Helper function to write JSON file
 function writeJsonFile(filePath, data) {
     try {
+        console.log(`Writing file: ${filePath}`);
+        console.log(`Data to write:`, data);
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+        console.log(`Successfully wrote file: ${filePath}`);
         return true;
     } catch (error) {
         console.error(`Error writing ${filePath}:`, error);
+        console.error(`Error details: ${error.message}`);
         return false;
     }
 }
@@ -79,17 +91,26 @@ function writeJsonFile(filePath, data) {
 // Submit volunteer interest
 app.post('/api/volunteers', (req, res) => {
     try {
+        console.log('Received volunteer submission request:', req.body);
+        
         const { boosterClub, volunteerName, childName, email, phone } = req.body;
         
         // Validate required fields
         if (!boosterClub || !volunteerName || !email) {
+            const missingFields = [];
+            if (!boosterClub) missingFields.push('boosterClub');
+            if (!volunteerName) missingFields.push('volunteerName');
+            if (!email) missingFields.push('email');
+            
             return res.status(400).json({ 
                 success: false, 
-                message: 'Missing required fields: boosterClub, volunteerName, email' 
+                message: `Missing required fields: ${missingFields.join(', ')}` 
             });
         }
 
+        console.log('Reading volunteers file...');
         const volunteers = readJsonFile(VOLUNTEERS_FILE);
+        console.log('Current volunteers count:', volunteers.length);
         
         const newVolunteer = {
             id: Date.now().toString(),
@@ -102,25 +123,29 @@ app.post('/api/volunteers', (req, res) => {
             submittedAt: new Date().toISOString()
         };
 
+        console.log('Adding new volunteer:', newVolunteer);
         volunteers.push(newVolunteer);
         
+        console.log('Writing volunteers file...');
         if (writeJsonFile(VOLUNTEERS_FILE, volunteers)) {
+            console.log('Volunteer saved successfully');
             res.json({ 
                 success: true, 
                 message: 'Volunteer interest submitted successfully',
                 volunteer: newVolunteer
             });
         } else {
+            console.error('Failed to write volunteer data to file');
             res.status(500).json({ 
                 success: false, 
-                message: 'Failed to save volunteer data' 
+                message: 'Failed to save volunteer data - file write error' 
             });
         }
     } catch (error) {
         console.error('Error submitting volunteer:', error);
         res.status(500).json({ 
             success: false, 
-            message: 'Internal server error' 
+            message: `Internal server error: ${error.message}` 
         });
     }
 });

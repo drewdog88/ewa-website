@@ -386,12 +386,21 @@
                         document.getElementById('successMessage').style.display = 'none';
                     }, 5000);
                 } else {
-                    alert('Error: ' + data.message);
+                    console.error('Server error:', data.message);
+                    alert('Server Error: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error submitting volunteer interest. Please try again.');
+                let errorMessage = 'Error submitting volunteer interest. ';
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage += 'Network error - please check your connection and try again.';
+                } else if (error.message) {
+                    errorMessage += 'Details: ' + error.message;
+                } else {
+                    errorMessage += 'Please try again.';
+                }
+                alert(errorMessage);
             });
         });
     </script>
