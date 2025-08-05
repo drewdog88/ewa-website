@@ -602,15 +602,43 @@
                         <label for="1099Description">Description</label>
                         <textarea id="1099Description" placeholder="Description of services or goods" rows="3"></textarea>
                     </div>
-                            <div class="form-group">
-            <label for="1099TaxYear">Calendar Year *</label>
-            <select id="1099TaxYear" required>
-                <option value="">Select Calendar Year</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-            </select>
-        </div>
+                    <div class="form-group">
+                        <label for="1099BoosterClub">Booster Club *</label>
+                        <select id="1099BoosterClub" required>
+                            <option value="">Select Booster Club</option>
+                            <option value="band">EHS Band Boosters</option>
+                            <option value="baseball">Eastlake Baseball Club</option>
+                            <option value="boys-basketball">Eastlake Boys Basketball Booster Club</option>
+                            <option value="girls-basketball">Eastlake Girls Basketball Booster Club</option>
+                            <option value="cheer">Eastlake Cheer Booster Club</option>
+                            <option value="choir">Eastlake Choir</option>
+                            <option value="cross-country">Eastlake Cross-Country Boosters</option>
+                            <option value="dance">Eastlake Dance Team Boosters</option>
+                            <option value="deca">EHS DECA Booster Club</option>
+                            <option value="drama">Eastlake Drama</option>
+                            <option value="fastpitch">Eastlake Fastpitch (Girls)</option>
+                            <option value="boys-golf">Eastlake Boys Golf Booster Club</option>
+                            <option value="girls-golf">Eastlake Girls Golf Booster Club</option>
+                            <option value="orchestra">EHS Orchestra Boosters Club</option>
+                            <option value="robotics">Eastlake Robotics Club</option>
+                            <option value="boys-soccer">Eastlake Boys Soccer</option>
+                            <option value="girls-soccer">Eastlake Girls Soccer</option>
+                            <option value="boys-swim">Eastlake Boys Swim & Dive Booster Club</option>
+                            <option value="girls-swim">Eastlake Girls Swim & Dive Booster Club</option>
+                            <option value="track">EHS Track and Field Booster Club</option>
+                            <option value="volleyball">Eastlake Volleyball Booster Club</option>
+                            <option value="wrestling">EHS Wrestling Booster Club</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="1099TaxYear">Calendar Year *</label>
+                        <select id="1099TaxYear" required>
+                            <option value="">Select Calendar Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
                     
                     <!-- W9 File Upload Section -->
                     <div class="form-group">
@@ -629,24 +657,48 @@
                 
                 <div class="form-section">
                     <h3>Your 1099 Submissions</h3>
-                    <div style="margin-bottom: 15px;">
+                    
+                    <!-- Filter and Export Controls -->
+                    <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label for="yearFilter" style="font-weight: bold; margin-right: 5px;">Filter by Year:</label>
+                            <select id="yearFilter" onchange="filter1099ByYear()" style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="">All Years</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                        
                         <button class="action-btn" onclick="refresh1099Data()" id="refresh1099Btn" style="background-color: #007bff;">
                             🔄 Refresh Submissions
                         </button>
-                        <span style="margin-left: 10px; font-size: 14px; color: #666;">
-                            Click to reload your 1099 submissions
+                        
+                        <button class="action-btn" onclick="exportSelected1099()" id="export1099Btn" style="background-color: #28a745; display: none;">
+                            📊 Export Selected (CSV)
+                        </button>
+                        
+                        <button class="action-btn" onclick="downloadSelectedW9()" id="downloadW9Btn" style="background-color: #ffc107; color: #000; display: none;">
+                            📁 Download W9 Files
+                        </button>
+                        
+                        <span style="font-size: 14px; color: #666;">
+                            Select items to export or download W9 files
                         </span>
                     </div>
                     <table class="data-table" id="1099Table">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAll1099" onchange="toggleSelectAll1099()"></th>
                                 <th>Date Submitted</th>
                                 <th>Recipient Name</th>
                                 <th>Tax ID</th>
                                 <th>Amount</th>
                                 <th>Calendar Year</th>
+                                <th>Booster Club</th>
                                 <th>W9 Form</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1337,9 +1389,10 @@
         const recipientTin = document.getElementById('1099RecipientTin').value;
         const amountInput = document.getElementById('1099Amount');
         const amount = amountInput.value;
+        const boosterClub = document.getElementById('1099BoosterClub').value;
         const taxYear = document.getElementById('1099TaxYear').value;
         
-        if (!recipientName || !recipientTin || !amount || !taxYear) {
+        if (!recipientName || !recipientTin || !amount || !boosterClub || !taxYear) {
             alert('Please fill in all required fields');
             return;
         }
@@ -1389,6 +1442,7 @@
                     amount: amount,
                     description: document.getElementById('1099Description').value,
                     submittedBy: currentUser.username,
+                    boosterClub: boosterClub,
                     taxYear: taxYear,
                     w9Filename: uploadResult.filename,
                     w9BlobUrl: uploadResult.blobUrl,
@@ -1413,6 +1467,7 @@
                     document.getElementById('1099RecipientTin').value = '';
                     document.getElementById('1099Amount').value = '';
                     document.getElementById('1099Description').value = '';
+                    document.getElementById('1099BoosterClub').value = '';
                     document.getElementById('1099TaxYear').value = '';
                     document.getElementById('1099W9File').value = '';
                     document.getElementById('w9FileStatus').innerHTML = '';
@@ -1559,7 +1614,7 @@
             }
             
             if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Loading 1099 submissions...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Loading 1099 submissions...</td></tr>';
             } else {
                 console.error('❌ Could not find #1099Table tbody element - table may not be loaded yet');
                 // Try again after a short delay
@@ -1593,7 +1648,9 @@
                 
                 if (data && data.success) {
                     console.log('✅ API call successful, submissions count:', data.submissions ? data.submissions.length : 0);
-                    display1099Data(data.submissions || []);
+                    // Store submissions for filtering
+                    window.current1099Submissions = data.submissions || [];
+                    display1099Data(window.current1099Submissions);
                 } else {
                     console.error('❌ API returned error:', data);
                     display1099Data([]);
@@ -1641,7 +1698,7 @@
             // Check if we have submissions
             if (!submissions || submissions.length === 0) {
                 console.log('📭 No submissions to display');
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #666;">No 1099 submissions found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">No 1099 submissions found</td></tr>';
                 return;
             }
             
@@ -1667,16 +1724,38 @@
                         `$${parseFloat(submission.amount).toFixed(2)}` : 
                         'N/A';
                     
+                    // Get booster club display name
+                    const boosterClubDisplay = getBoosterClubDisplayName(submission.booster_club);
+                    
+                    // Create status dropdown
+                    const statusOptions = ['pending', 'acknowledged', 'submitted_to_irs'];
+                    const statusSelect = `
+                        <select onchange="update1099Status('${submission.id}', this.value)" style="padding: 2px; border: 1px solid #ddd; border-radius: 3px;">
+                            ${statusOptions.map(status => 
+                                `<option value="${status}" ${submission.status === status ? 'selected' : ''}>
+                                    ${status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                </option>`
+                            ).join('')}
+                        </select>
+                    `;
+                    
                     // Create table row
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td><input type="checkbox" class="1099-checkbox" value="${submission.id}" onchange="updateExportButtons()"></td>
                         <td>${formattedDate}</td>
                         <td>${submission.recipient_name || 'N/A'}</td>
                         <td>${submission.recipient_tin || 'N/A'}</td>
                         <td>${formattedAmount}</td>
                         <td>${submission.tax_year || 'N/A'}</td>
+                        <td>${boosterClubDisplay}</td>
                         <td>${w9Link}</td>
-                        <td><span class="status-${submission.status || 'pending'}">${submission.status || 'pending'}</span></td>
+                        <td>${statusSelect}</td>
+                        <td>
+                            <button onclick="view1099Details('${submission.id}')" class="action-btn-small" style="background-color: #007bff; color: white; padding: 2px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer;">
+                                View
+                            </button>
+                        </td>
                     `;
                     
                     tbody.appendChild(row);
@@ -2772,6 +2851,191 @@
         
         console.log('✅ Page initialization complete');
     });
+
+    // Helper function to get booster club display name
+    function getBoosterClubDisplayName(boosterClub) {
+        const clubNames = {
+            'band': 'EHS Band Boosters',
+            'baseball': 'Eastlake Baseball Club',
+            'boys-basketball': 'Eastlake Boys Basketball Booster Club',
+            'girls-basketball': 'Eastlake Girls Basketball Booster Club',
+            'cheer': 'Eastlake Cheer Booster Club',
+            'choir': 'Eastlake Choir',
+            'cross-country': 'Eastlake Cross-Country Boosters',
+            'dance': 'Eastlake Dance Team Boosters',
+            'deca': 'EHS DECA Booster Club',
+            'drama': 'Eastlake Drama',
+            'fastpitch': 'Eastlake Fastpitch (Girls)',
+            'boys-golf': 'Eastlake Boys Golf Booster Club',
+            'girls-golf': 'Eastlake Girls Golf Booster Club',
+            'orchestra': 'EHS Orchestra Boosters Club',
+            'robotics': 'Eastlake Robotics Club',
+            'boys-soccer': 'Eastlake Boys Soccer',
+            'girls-soccer': 'Eastlake Girls Soccer',
+            'boys-swim': 'Eastlake Boys Swim & Dive Booster Club',
+            'girls-swim': 'Eastlake Girls Swim & Dive Booster Club',
+            'track': 'EHS Track and Field Booster Club',
+            'volleyball': 'Eastlake Volleyball Booster Club',
+            'wrestling': 'EHS Wrestling Booster Club'
+        };
+        return clubNames[boosterClub] || boosterClub || 'N/A';
+    }
+
+    // Toggle select all checkboxes
+    function toggleSelectAll1099() {
+        const selectAllCheckbox = document.getElementById('selectAll1099');
+        const checkboxes = document.querySelectorAll('.1099-checkbox');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+        
+        updateExportButtons();
+    }
+
+    // Update export buttons visibility
+    function updateExportButtons() {
+        const checkboxes = document.querySelectorAll('.1099-checkbox:checked');
+        const exportBtn = document.getElementById('export1099Btn');
+        const downloadW9Btn = document.getElementById('downloadW9Btn');
+        
+        if (checkboxes.length > 0) {
+            exportBtn.style.display = 'inline-block';
+            downloadW9Btn.style.display = 'inline-block';
+        } else {
+            exportBtn.style.display = 'none';
+            downloadW9Btn.style.display = 'none';
+        }
+    }
+
+    // Filter 1099 data by year
+    function filter1099ByYear() {
+        const yearFilter = document.getElementById('yearFilter').value;
+        const currentSubmissions = window.current1099Submissions || [];
+        
+        if (!yearFilter) {
+            display1099Data(currentSubmissions);
+        } else {
+            const filteredSubmissions = currentSubmissions.filter(sub => 
+                sub.tax_year.toString() === yearFilter
+            );
+            display1099Data(filteredSubmissions);
+        }
+    }
+
+    // Update 1099 status
+    async function update1099Status(formId, status) {
+        try {
+            const response = await fetch(`/api/1099/${formId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                console.log('✅ Status updated successfully');
+                // Optionally refresh the data
+                load1099Data();
+            } else {
+                alert('Error updating status: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            alert('Error updating status. Please try again.');
+        }
+    }
+
+    // Export selected 1099 data
+    async function exportSelected1099() {
+        const checkboxes = document.querySelectorAll('.1099-checkbox:checked');
+        const submissionIds = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (submissionIds.length === 0) {
+            alert('Please select at least one submission to export');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/1099/export', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ submissionIds, format: 'csv' })
+            });
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `1099-submissions-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } else {
+                const data = await response.json();
+                alert('Error exporting data: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error exporting data:', error);
+            alert('Error exporting data. Please try again.');
+        }
+    }
+
+    // Download selected W9 files
+    async function downloadSelectedW9() {
+        const checkboxes = document.querySelectorAll('.1099-checkbox:checked');
+        const submissionIds = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (submissionIds.length === 0) {
+            alert('Please select at least one submission to download W9 files');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/1099/download-w9', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ submissionIds })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // For now, we'll download files individually
+                // In a full implementation, this would create a zip file
+                data.files.forEach(file => {
+                    const a = document.createElement('a');
+                    a.href = file.w9BlobUrl;
+                    a.download = file.w9Filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                });
+                
+                alert(`Downloaded ${data.files.length} W9 file(s)`);
+            } else {
+                alert('Error downloading W9 files: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error downloading W9 files:', error);
+            alert('Error downloading W9 files. Please try again.');
+        }
+    }
+
+    // View 1099 details (placeholder function)
+    function view1099Details(formId) {
+        // This could open a modal with detailed information
+        alert('View details functionality coming soon!');
+    }
 </script>
 </body>
 </html> 

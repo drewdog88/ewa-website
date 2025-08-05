@@ -177,13 +177,31 @@ async function addForm1099(form) {
     
     try {
         const result = await sql`
-            INSERT INTO form_1099 (recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, w9_filename, w9_blob_url, w9_file_size, w9_mime_type)
-            VALUES (${form.recipientName}, ${form.recipientTin}, ${form.amount}, ${form.description}, ${form.submittedBy}, ${form.taxYear}, ${form.status}, ${form.w9Filename || null}, ${form.w9BlobUrl || null}, ${form.w9FileSize || null}, ${form.w9MimeType || null})
+            INSERT INTO form_1099 (recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, w9_filename, w9_blob_url, w9_file_size, w9_mime_type, booster_club)
+            VALUES (${form.recipientName}, ${form.recipientTin}, ${form.amount}, ${form.description}, ${form.submittedBy}, ${form.taxYear}, ${form.status}, ${form.w9Filename || null}, ${form.w9BlobUrl || null}, ${form.w9FileSize || null}, ${form.w9MimeType || null}, ${form.boosterClub || null})
             RETURNING *
         `;
         return result[0];
     } catch (error) {
         console.error('Error adding 1099 form:', error);
+        throw error;
+    }
+}
+
+async function updateForm1099Status(formId, status) {
+    const sql = getSql();
+    if (!sql) return null;
+    
+    try {
+        const result = await sql`
+            UPDATE form_1099 
+            SET status = ${status}, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${formId}
+            RETURNING *
+        `;
+        return result[0];
+    } catch (error) {
+        console.error('Error updating 1099 form status:', error);
         throw error;
     }
 }
@@ -308,6 +326,7 @@ module.exports = {
     addInsurance,
     getForm1099,
     addForm1099,
+    updateForm1099Status,
     getDocuments,
     addDocument,
     deleteDocument,
