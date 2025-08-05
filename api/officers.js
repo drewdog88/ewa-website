@@ -1,26 +1,13 @@
-// Vercel serverless function for officers API
-const { getOfficers } = require('../database/neon-functions');
+require('dotenv').config();
 
-// Initialize database on first request
-let dbInitialized = false;
-async function ensureDatabaseInitialized() {
-    if (!dbInitialized) {
-        try {
-            console.log('Initializing Neon database connection...');
-            const officers = await getOfficers();
-            console.log(`Database connected successfully with ${officers.length} officers`);
-            dbInitialized = true;
-        } catch (error) {
-            console.error('Database initialization failed:', error.message);
-        }
-    }
-}
+// Import Neon database functions
+const { getOfficers } = require('../database/neon-functions');
 
 module.exports = async (req, res) => {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
@@ -29,18 +16,10 @@ module.exports = async (req, res) => {
     }
     
     try {
-        await ensureDatabaseInitialized();
         const officers = await getOfficers();
-        
-        res.status(200).json({ 
-            success: true, 
-            officers: officers 
-        });
+        res.json({ success: true, officers });
     } catch (error) {
         console.error('Error getting officers:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }; 
