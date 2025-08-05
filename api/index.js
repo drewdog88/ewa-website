@@ -308,6 +308,21 @@ app.post('/1099', async (req, res) => {
     }
 });
 
+// Get all 1099 submissions (admin only)
+app.get('/1099', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const form1099Submissions = await getForm1099();
+        res.json({ success: true, submissions: form1099Submissions });
+    } catch (error) {
+        console.error('Error getting all 1099 submissions:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
 // Get 1099 submissions for a club
 app.get('/1099/:club', async (req, res) => {
     try {
@@ -318,21 +333,6 @@ app.get('/1099/:club', async (req, res) => {
         res.json({ success: true, submissions: clubSubmissions });
     } catch (error) {
         console.error('Error getting 1099 submissions:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
-    }
-});
-
-// Get all 1099 submissions (admin only)
-app.get('/1099', async (req, res) => {
-    try {
-        await ensureDatabaseInitialized();
-        const form1099Submissions = await getForm1099();
-        res.json({ success: true, submissions: form1099Submissions });
-    } catch (error) {
-        console.error('Error getting all 1099 submissions:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Internal server error' 
