@@ -115,13 +115,9 @@ class UserSessionManager {
                 <span class="dropdown-arrow">▼</span>
             </button>
             <div class="user-dropdown" id="userDropdown">
-                <div class="dropdown-item" onclick="userSession.showProfile()">
-                    <span class="dropdown-icon">👤</span>
-                    Profile
-                </div>
                 <div class="dropdown-item" onclick="userSession.showChangePassword()">
                     <span class="dropdown-icon">🔒</span>
-                    Change Password
+                    Security Settings
                 </div>
                 <div class="dropdown-separator"></div>
                 <div class="dropdown-item" onclick="userSession.logout()">
@@ -187,6 +183,7 @@ class UserSessionManager {
                 z-index: 1000;
                 display: none;
                 margin-top: 4px;
+                color: #333;
             }
 
             .user-dropdown.show {
@@ -201,6 +198,8 @@ class UserSessionManager {
                 gap: 8px;
                 transition: background-color 0.2s ease;
                 border-bottom: 1px solid #f0f0f0;
+                color: #333;
+                font-size: 14px;
             }
 
             .dropdown-item:last-child {
@@ -278,6 +277,15 @@ class UserSessionManager {
                 display: none;
                 margin-top: 4px;
             }
+
+            .admin-header .user-dropdown.show {
+                display: block;
+            }
+
+            .admin-header .dropdown-item {
+                color: #333;
+                font-size: 14px;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -303,20 +311,40 @@ class UserSessionManager {
         }
     }
 
-    showProfile() {
-        this.closeDropdown();
-        // Navigate to admin dashboard profile section
-        window.location.href = 'admin/dashboard.html#profile';
-    }
-
     showChangePassword() {
         this.closeDropdown();
         // Navigate to admin dashboard profile section
-        window.location.href = 'admin/dashboard.html#profile';
+        if (window.location.pathname.includes('/admin/dashboard.html')) {
+            // If already on dashboard, programmatically trigger the profile section navigation
+            const profileLink = document.querySelector('a[data-section="profile"]');
+            if (profileLink) {
+                // Remove active class from all links and sections
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to profile link
+                profileLink.classList.add('active');
+                
+                // Show profile section
+                const profileSection = document.getElementById('profile');
+                if (profileSection) {
+                    profileSection.classList.add('active');
+                    profileSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        } else {
+            // If on other pages, navigate to dashboard profile section
+            window.location.href = 'admin/dashboard.html#profile';
+        }
     }
 
     async logout() {
         this.closeDropdown();
+        
+        // Set global flag to prevent data loading during logout
+        if (typeof window !== 'undefined') {
+            window.isLoggingOut = true;
+        }
         
         try {
             const response = await fetch('/api/logout', {
