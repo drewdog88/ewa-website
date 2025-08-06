@@ -346,22 +346,15 @@
                 const container = document.getElementById('team-members-container');
                 
                 if (data.success && data.officers && data.officers.length > 0) {
-                    // Group officers by club
-                    const clubOfficers = {};
-                    data.officers.forEach(officer => {
-                        if (!clubOfficers[officer.clubName]) {
-                            clubOfficers[officer.clubName] = [];
-                        }
-                        clubOfficers[officer.clubName].push(officer);
-                    });
+                    // Filter for EWA officers only (the "special board")
+                    const ewaOfficers = data.officers.filter(officer => 
+                        officer.clubName === 'EWA Eastlake Wolfpack Association'
+                    );
                     
-                    let html = '';
-                    
-                    // Display officers grouped by club
-                    Object.keys(clubOfficers).forEach(clubName => {
-                        html += `<h2 style="margin-top: 30px; color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">${clubName}</h2>`;
+                    if (ewaOfficers.length > 0) {
+                        let html = '<h2 style="margin-top: 30px; color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">Eastlake Wolfpack Association</h2>';
                         
-                        clubOfficers[clubName].forEach(officer => {
+                        ewaOfficers.forEach(officer => {
                             let contactHtml = '';
                             
                             if (officer.email) {
@@ -386,9 +379,12 @@
                                 </div>
                             `;
                         });
-                    });
-                    
-                    container.innerHTML = html;
+                        
+                        container.innerHTML = html;
+                    } else {
+                        // Fallback to static content if no EWA officers found
+                        showFallbackContent();
+                    }
                 } else {
                     // Fallback to static content if no officers found
                     showFallbackContent();

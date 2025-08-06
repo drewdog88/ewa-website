@@ -1,0 +1,104 @@
+# EWA Website Development Rules
+
+## 🎯 Project Overview
+This is the Eastlake Wolfpack Association (EWA) website - a Node.js/Express application with PostgreSQL database, deployed on Vercel. The system manages booster clubs, officers, volunteers, 1099 forms, and user administration.
+
+## 🔐 Security & Privacy (CRITICAL)
+- **PII Protection**: This application handles sensitive data including Social Security Numbers, phone numbers, and email addresses
+- **Compliance**: Follow US and Washington State privacy laws for PII handling
+- **Environment Variables**: Never commit `.env.local` or any files containing secrets
+- **Input Validation**: Always validate and sanitize user inputs, especially for forms
+- **SQL Injection Prevention**: Use parameterized queries (already implemented with Neon)
+- **File Upload Security**: Validate file types, sizes, and scan for malicious content
+- **Authentication**: Maintain secure session management and role-based access
+
+## 🧪 Testing & Quality Assurance
+- **Test Before Deploy**: ALWAYS test functionality locally before pushing to production
+- **Database Testing**: Verify database migrations work on both local and production
+- **API Testing**: Test all endpoints with various scenarios (success, error, edge cases)
+- **Frontend Testing**: Verify all forms, buttons, and interactive elements work
+- **Cross-Browser Testing**: Ensure compatibility with major browsers
+- **Performance Testing**: Monitor query performance and page load times
+
+## 🗄️ Database Design Principles
+- **Normalized Structure**: Use proper foreign key relationships (club_id instead of string names)
+- **Single Source of Truth**: Each entity should have one authoritative table
+- **Referential Integrity**: Maintain data consistency with proper constraints
+- **Indexing**: Create indexes for frequently queried columns
+- **Backup Strategy**: Regular automated backups with integrity verification
+- **Migration Safety**: Always backup before schema changes, test migrations thoroughly
+
+## 🚀 Deployment & Environment
+- **Local Development**: Windows environment with Node.js and PostgreSQL
+- **Production**: Vercel serverless functions with Neon PostgreSQL
+- **Git Workflow**: All changes go through Git with meaningful commit messages
+- **Environment Separation**: Clear distinction between local (.env.local) and production
+- **Rollback Capability**: Maintain ability to revert changes quickly
+
+## 💻 Clean Code Patterns
+- **Consistent Naming**: Use descriptive, consistent naming conventions
+- **Function Documentation**: Explain complex functions and their purpose
+- **Error Handling**: Implement proper try-catch blocks with meaningful error messages
+- **Code Organization**: Separate concerns (API routes, database functions, frontend)
+- **Comments**: Add comments for business logic and complex operations
+- **Modular Design**: Break functionality into reusable, testable modules
+
+## 📝 Code Style & Structure
+- **JavaScript**: Use modern ES6+ features, async/await for promises
+- **HTML**: Semantic markup, proper accessibility attributes
+- **CSS**: Consistent styling, responsive design principles
+- **SQL**: Readable queries with proper formatting and comments
+- **File Organization**: Logical directory structure and file naming
+
+## 🔄 Development Workflow
+1. **Plan**: Understand requirements and design approach
+2. **Test Locally**: Develop and test on local environment
+3. **Database Changes**: Create migration scripts, test thoroughly
+4. **Code Review**: Self-review for security, performance, and quality
+5. **Deploy**: Push to Git, verify Vercel deployment
+6. **Production Testing**: Verify functionality on live site
+7. **Documentation**: Update relevant documentation
+
+## 🛠️ Technical Standards
+- **Node.js**: Use latest LTS version features
+- **Express.js**: RESTful API design patterns
+- **PostgreSQL**: Use UUIDs for primary keys, proper data types
+- **Frontend**: Vanilla JavaScript, no heavy frameworks
+- **File Storage**: Vercel Blob for secure file handling
+- **Error Logging**: Implement proper error tracking and logging
+
+## 🚨 Critical Considerations
+- **Data Integrity**: Never lose user data - always backup before changes
+- **Performance**: Monitor database query performance, optimize slow queries
+- **User Experience**: Ensure forms work smoothly, provide clear feedback
+- **Accessibility**: Maintain WCAG compliance for all users
+- **Mobile Responsiveness**: Ensure all pages work on mobile devices
+
+## 📋 Before Any Major Change
+1. Create database backup
+2. Test locally with sample data
+3. Verify all existing functionality still works
+4. Check for security implications
+5. Update documentation if needed
+6. Plan rollback strategy
+
+## 🎯 Specific to This Project
+- **Booster Club Management**: Maintain accurate club relationships and officer data
+- **1099 Processing**: Handle tax documents securely and accurately
+- **Volunteer Coordination**: Ensure smooth volunteer signup and management
+- **Admin Functions**: Maintain secure admin panel with proper access controls
+- **File Management**: Secure handling of W9 forms and other documents
+
+## 🔍 Code Review Checklist
+- [ ] Security vulnerabilities addressed
+- [ ] Input validation implemented
+- [ ] Error handling in place
+- [ ] Performance considerations
+- [ ] Database queries optimized
+- [ ] Frontend functionality tested
+- [ ] Mobile responsiveness verified
+- [ ] Documentation updated
+- [ ] Environment variables properly configured
+- [ ] No sensitive data in code
+
+Remember: This is a production system handling sensitive data. Every change should be made with care, tested thoroughly, and deployed safely. 

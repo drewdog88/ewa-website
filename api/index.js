@@ -8,6 +8,9 @@ const path = require('path');
 // Import Neon database functions
 const {
     getOfficers,
+    addOfficer,
+    updateOfficer,
+    deleteOfficer,
     getUsers,
     updateUser,
     getVolunteers,
@@ -221,6 +224,143 @@ app.get('/officers/:club', async (req, res) => {
     } catch (error) {
         console.error('Error getting club officers:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// Add new officer
+app.post('/officers', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const { name, position, email, phone, booster_club } = req.body;
+        
+        if (!name || !position || !email || !phone || !booster_club) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'All fields required: name, position, email, phone, booster_club' 
+            });
+        }
+
+        const newOfficer = {
+            name,
+            position,
+            email,
+            phone,
+            booster_club,
+            createdAt: new Date().toISOString()
+        };
+
+        const result = await addOfficer(newOfficer);
+        if (result) {
+            res.json({ 
+                success: true, 
+                message: 'Officer added successfully',
+                officer: result
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                message: 'Failed to save officer data' 
+            });
+        }
+    } catch (error) {
+        console.error('Error adding officer:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Update officer
+app.put('/officers/:id', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const { id } = req.params;
+        const { name, position, email, phone, booster_club } = req.body;
+        
+        if (!name || !position || !email || !phone || !booster_club) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'All fields required: name, position, email, phone, booster_club' 
+            });
+        }
+
+        // Get the club_id for the selected booster club
+        const { getSql } = require('../database/neon-functions');
+        const sql = getSql();
+        if (!sql) {
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Database connection not available' 
+            });
+        }
+
+        const clubResult = await sql`SELECT id FROM booster_clubs WHERE name = ${booster_club}`;
+        if (clubResult.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid booster club name. Please select a valid club from the dropdown.' 
+            });
+        }
+
+        const club_id = clubResult[0].id;
+
+        const updates = {
+            name,
+            position,
+            email,
+            phone,
+            club_id,
+            clubName: booster_club,
+            updatedAt: new Date().toISOString()
+        };
+
+        if (await updateOfficer(id, updates)) {
+            const officers = await getOfficers();
+            const officer = officers.find(o => o.id === id);
+            res.json({ 
+                success: true, 
+                message: 'Officer updated successfully',
+                officer
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: 'Officer not found' 
+            });
+        }
+    } catch (error) {
+        console.error('Error updating officer:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
+// Delete officer
+app.delete('/officers/:id', async (req, res) => {
+    try {
+        await ensureDatabaseInitialized();
+        const { id } = req.params;
+        
+        if (await deleteOfficer(id)) {
+            res.json({ 
+                success: true, 
+                message: 'Officer deleted successfully'
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: 'Officer not found' 
+            });
+        }
+    } catch (error) {
+        console.error('Error deleting officer:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
     }
 });
 

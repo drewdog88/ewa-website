@@ -394,8 +394,7 @@ async function updateOfficer(id, updates) {
                 position = ${updates.position || null},
                 email = ${updates.email || null},
                 phone = ${updates.phone || null},
-                club = ${updates.club || null},
-                club_name = ${updates.clubName || null},
+                club_id = ${updates.club_id || null},
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ${id}
             RETURNING *
@@ -1394,58 +1393,21 @@ app.post('/api/officers', async (req, res) => {
             });
         }
 
-        // Map booster club names to short identifiers
-        const clubMapping = {
-            'EHS Band Boosters': 'band',
-            'EHS Orchestra Boosters Club': 'orchestra',
-            'EHS Choir Boosters': 'choir',
-            'EHS Drama Boosters': 'drama',
-            'EHS Art Boosters': 'art',
-            'EHS Debate Boosters': 'debate',
-            'EHS Robotics Boosters': 'robotics',
-            'EHS Soccer Boosters': 'soccer',
-            'EHS Basketball Boosters': 'basketball',
-            'EHS Volleyball Boosters': 'volleyball',
-            'EHS Track Boosters': 'track',
-            'EHS Swimming Boosters': 'swimming',
-            'EHS Tennis Boosters': 'tennis',
-            'EHS Golf Boosters': 'golf',
-            'EHS Baseball Boosters': 'baseball',
-            'EHS Softball Boosters': 'softball',
-            'EHS Football Boosters': 'football',
-            'EHS Wrestling Boosters': 'wrestling',
-            'EHS Cheerleading Boosters': 'cheerleading',
-            'EHS Dance Boosters': 'dance',
-            'EHS Yearbook Boosters': 'yearbook',
-            'EHS Newspaper Boosters': 'newspaper',
-            'EHS Photography Boosters': 'photography',
-            'EHS Video Boosters': 'video'
-        };
-
-        const club = clubMapping[booster_club];
-        if (!club) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Invalid booster club name. Please use one of the standard club names.' 
-            });
-        }
-
         const newOfficer = {
-            id: Date.now().toString(),
             name,
             position,
             email,
             phone,
-            club,
-            clubName: booster_club,
+            booster_club,
             createdAt: new Date().toISOString()
         };
 
-        if (await addOfficer(newOfficer)) {
+        const result = await addOfficer(newOfficer);
+        if (result) {
             res.json({ 
                 success: true, 
                 message: 'Officer added successfully',
-                officer: newOfficer
+                officer: result
             });
         } else {
             res.status(500).json({ 
@@ -1475,48 +1437,31 @@ app.put('/api/officers/:id', async (req, res) => {
             });
         }
 
-        // Map booster club names to short identifiers
-        const clubMapping = {
-            'EHS Band Boosters': 'band',
-            'EHS Orchestra Boosters Club': 'orchestra',
-            'EHS Choir Boosters': 'choir',
-            'EHS Drama Boosters': 'drama',
-            'EHS Art Boosters': 'art',
-            'EHS Debate Boosters': 'debate',
-            'EHS Robotics Boosters': 'robotics',
-            'EHS Soccer Boosters': 'soccer',
-            'EHS Basketball Boosters': 'basketball',
-            'EHS Volleyball Boosters': 'volleyball',
-            'EHS Track Boosters': 'track',
-            'EHS Swimming Boosters': 'swimming',
-            'EHS Tennis Boosters': 'tennis',
-            'EHS Golf Boosters': 'golf',
-            'EHS Baseball Boosters': 'baseball',
-            'EHS Softball Boosters': 'softball',
-            'EHS Football Boosters': 'football',
-            'EHS Wrestling Boosters': 'wrestling',
-            'EHS Cheerleading Boosters': 'cheerleading',
-            'EHS Dance Boosters': 'dance',
-            'EHS Yearbook Boosters': 'yearbook',
-            'EHS Newspaper Boosters': 'newspaper',
-            'EHS Photography Boosters': 'photography',
-            'EHS Video Boosters': 'video'
-        };
-
-        const club = clubMapping[booster_club];
-        if (!club) {
-            return res.status(400).json({ 
+        // Get the club_id for the selected booster club
+        const sql = require('./database/neon-functions').getSql();
+        if (!sql) {
+            return res.status(500).json({ 
                 success: false, 
-                message: 'Invalid booster club name. Please use one of the standard club names.' 
+                message: 'Database connection not available' 
             });
         }
+
+        const clubResult = await sql`SELECT id FROM booster_clubs WHERE name = ${booster_club}`;
+        if (clubResult.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid booster club name. Please select a valid club from the dropdown.' 
+            });
+        }
+
+        const club_id = clubResult[0].id;
 
         const updates = {
             name,
             position,
             email,
             phone,
-            club,
+            club_id,
             clubName: booster_club,
             updatedAt: new Date().toISOString()
         };

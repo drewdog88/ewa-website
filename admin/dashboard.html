@@ -93,6 +93,80 @@
             border-radius: 4px;
             font-size: 12px;
         }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #000;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -2218,6 +2292,9 @@
             const tbody = document.getElementById('officersTableBody');
             tbody.innerHTML = '';
             
+            // Store officers data for edit functionality
+            window.currentOfficers = officers;
+            
             if (officers.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No officers found</td></tr>';
                 return;
@@ -2228,7 +2305,7 @@
                 row.innerHTML = `
                     <td>${officer.name}</td>
                     <td>${officer.position}</td>
-                    <td>${officer.clubName}</td>
+                    <td>${officer.clubName || 'No club assigned'}</td>
                     <td>${officer.email}</td>
                     <td>${officer.phone}</td>
                     <td>
@@ -2290,22 +2367,127 @@
         
         // Edit officer
         function editOfficer(id) {
-            // For now, we'll use a simple prompt-based edit
-            // In a real application, you might want a modal or form
-            const newName = prompt('Enter new name:');
-            if (!newName) return;
+            // Find the officer data from the current display
+            const officers = window.currentOfficers || [];
+            const officer = officers.find(o => o.id === id);
             
-            const newPosition = prompt('Enter new position:');
-            if (!newPosition) return;
+            if (!officer) {
+                alert('Officer not found');
+                return;
+            }
             
-            const newEmail = prompt('Enter new email:');
-            if (!newEmail) return;
+            // Create and show edit modal
+            showEditOfficerModal(officer);
+        }
+        
+        // Show edit officer modal
+        function showEditOfficerModal(officer) {
+            // Create modal HTML
+            const modalHTML = `
+                <div id="editOfficerModal" class="modal" style="display: block;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Officer</h3>
+                            <span class="close" onclick="closeEditOfficerModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editOfficerForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editOfficerName">Name</label>
+                                        <input type="text" id="editOfficerName" value="${officer.name}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editOfficerPosition">Position</label>
+                                        <input type="text" id="editOfficerPosition" value="${officer.position}" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editOfficerEmail">Email</label>
+                                        <input type="email" id="editOfficerEmail" value="${officer.email}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editOfficerPhone">Phone</label>
+                                        <input type="tel" id="editOfficerPhone" value="${officer.phone}" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editOfficerClub">Booster Club</label>
+                                    <select id="editOfficerClub" required>
+                                        <option value="">Select Booster Club</option>
+                                        <option value="EWA Eastlake Wolfpack Association">EWA Eastlake Wolfpack Association</option>
+                                        <option value="EHS Band Boosters">EHS Band Boosters</option>
+                                        <option value="Eastlake Baseball Club">Eastlake Baseball Club</option>
+                                        <option value="Eastlake Boys Basketball Booster Club">Eastlake Boys Basketball Booster Club</option>
+                                        <option value="Eastlake Girls Basketball Booster Club">Eastlake Girls Basketball Booster Club</option>
+                                        <option value="Eastlake Cheer Booster Club">Eastlake Cheer Booster Club</option>
+                                        <option value="Eastlake Choir">Eastlake Choir</option>
+                                        <option value="Eastlake Cross-Country Boosters">Eastlake Cross-Country Boosters</option>
+                                        <option value="Eastlake Dance Team Boosters">Eastlake Dance Team Boosters</option>
+                                        <option value="EHS DECA Booster Club">EHS DECA Booster Club</option>
+                                        <option value="Eastlake Drama">Eastlake Drama</option>
+                                        <option value="Eastlake Fastpitch (Girls)">Eastlake Fastpitch (Girls)</option>
+                                        <option value="Eastlake Boys Golf Booster Club">Eastlake Boys Golf Booster Club</option>
+                                        <option value="Eastlake Girls Golf Booster Club">Eastlake Girls Golf Booster Club</option>
+                                        <option value="EHS Orchestra Boosters Club">EHS Orchestra Boosters Club</option>
+                                        <option value="Eastlake Robotics Club">Eastlake Robotics Club</option>
+                                        <option value="Eastlake Boys Soccer">Eastlake Boys Soccer</option>
+                                        <option value="Eastlake Girls Soccer">Eastlake Girls Soccer</option>
+                                        <option value="Eastlake Boys Swim & Dive Booster Club">Eastlake Boys Swim & Dive Booster Club</option>
+                                        <option value="Eastlake Girls Swim & Dive Booster Club">Eastlake Girls Swim & Dive Booster Club</option>
+                                        <option value="EHS Track and Field Booster Club">EHS Track and Field Booster Club</option>
+                                        <option value="Eastlake Volleyball Booster Club">Eastlake Volleyball Booster Club</option>
+                                        <option value="EHS Wrestling Booster Club">EHS Wrestling Booster Club</option>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" onclick="closeEditOfficerModal()" class="btn-secondary">Cancel</button>
+                                    <button type="submit" class="action-btn">Update Officer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
             
-            const newPhone = prompt('Enter new phone:');
-            if (!newPhone) return;
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
             
-            const clubSelect = document.getElementById('boosterClub');
-            const newBoosterClub = clubSelect.options[clubSelect.selectedIndex].text;
+            // Set the current club value
+            const clubSelect = document.getElementById('editOfficerClub');
+            if (clubSelect) {
+                clubSelect.value = officer.clubName || '';
+            }
+            
+            // Add form submit handler
+            document.getElementById('editOfficerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateOfficerData(officer.id);
+            });
+        }
+        
+        // Close edit officer modal
+        function closeEditOfficerModal() {
+            const modal = document.getElementById('editOfficerModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Update officer data
+        function updateOfficerData(id) {
+            const name = document.getElementById('editOfficerName').value.trim();
+            const position = document.getElementById('editOfficerPosition').value.trim();
+            const email = document.getElementById('editOfficerEmail').value.trim();
+            const phone = document.getElementById('editOfficerPhone').value.trim();
+            const clubSelect = document.getElementById('editOfficerClub');
+            const booster_club = clubSelect.options[clubSelect.selectedIndex].text;
+            
+            if (!name || !position || !email || !phone || !booster_club) {
+                alert('Please fill in all fields');
+                return;
+            }
             
             fetch(`/api/officers/${id}`, {
                 method: 'PUT',
@@ -2313,17 +2495,18 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: newName,
-                    position: newPosition,
-                    email: newEmail,
-                    phone: newPhone,
-                    booster_club: newBoosterClub
+                    name,
+                    position,
+                    email,
+                    phone,
+                    booster_club
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert('Officer updated successfully');
+                    closeEditOfficerModal();
                     loadOfficersData();
                 } else {
                     alert('Error updating officer: ' + data.message);
