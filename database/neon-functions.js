@@ -22,7 +22,12 @@ async function getOfficers() {
     if (!sql) return [];
     
     try {
-        const officers = await sql`SELECT * FROM officers ORDER BY created_at`;
+        const officers = await sql`
+            SELECT o.*, bc.name as clubName 
+            FROM officers o 
+            LEFT JOIN booster_clubs bc ON o.club_id = bc.id 
+            ORDER BY o.created_at
+        `;
         return officers;
     } catch (error) {
         console.error('❌ Database error getting officers:', {
@@ -40,9 +45,18 @@ async function addOfficer(officer) {
     if (!sql) return null;
     
     try {
+        // Get the club_id for the selected booster club
+        let club_id = null;
+        if (officer.booster_club) {
+            const clubResult = await sql`SELECT id FROM booster_clubs WHERE name = ${officer.booster_club}`;
+            if (clubResult.length > 0) {
+                club_id = clubResult[0].id;
+            }
+        }
+        
         const result = await sql`
-            INSERT INTO officers (name, position, email, phone, club, club_name)
-            VALUES (${officer.name}, ${officer.position}, ${officer.email}, ${officer.phone}, ${officer.club}, ${officer.clubName})
+            INSERT INTO officers (name, position, email, phone, club_id)
+            VALUES (${officer.name}, ${officer.position}, ${officer.email}, ${officer.phone}, ${club_id})
             RETURNING *
         `;
         return result[0];
