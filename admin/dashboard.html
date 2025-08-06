@@ -189,7 +189,7 @@
                 <li class="admin-only"><a href="#links" class="nav-link" data-section="links">Links & Resources</a></li>
                 <li><a href="#insurance" class="nav-link" data-section="insurance">Insurance Forms</a></li>
                             <li><a href="#1099" class="nav-link" data-section="1099">1099 Information</a></li>
-            <li><a href="#profile" class="nav-link" data-section="profile">Profile Management</a></li>
+            <li><a href="#profile" class="nav-link" data-section="profile">Security Settings</a></li>
             <li class="admin-only"><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
             <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
             <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
@@ -894,10 +894,10 @@
                 </div>
             </div>
             
-            <!-- Profile Management Section -->
+            <!-- Security Settings Section -->
             <div id="profile" class="content-section">
                 <div class="section-header">
-                    <h2>Profile Management</h2>
+                    <h2>Security Settings</h2>
                     <p>Manage your account settings and security.</p>
                 </div>
                 
@@ -1057,6 +1057,9 @@
 
     <script src="../assets/user-session.js"></script>
     <script>
+        // Global flag to prevent data loading during logout
+        let isLoggingOut = false;
+        
         // Navigation functionality
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -1072,6 +1075,9 @@
                 // Show corresponding section
                 const sectionId = this.getAttribute('data-section');
                 document.getElementById(sectionId).classList.add('active');
+                
+                // Update URL hash for proper browser navigation
+                window.location.hash = sectionId;
             });
         });
         
@@ -1863,7 +1869,7 @@
             alert('Error: ' + message);
         }
         
-        // Profile Management Functions
+        // Security Settings Functions
         
         // Check if user needs first login setup
         function checkFirstLogin() {
@@ -3027,13 +3033,149 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 Page loaded, initializing data...');
         
+        // Check if user is logged in and not logging out before loading data
+        const currentUser = userSession.currentUser || {};
+        if (!currentUser.username || window.isLoggingOut) {
+            console.log('⚠️ User not logged in or logging out, skipping data loading');
+            return;
+        }
+        
         // Load 1099 data automatically
         load1099Data();
         
         // Load insurance data automatically
         loadInsuranceData();
         
+        // Handle hash navigation for direct links
+        const hash = window.location.hash.substring(1); // Remove the # symbol
+        if (hash) {
+            // Check if user is logged in and not logging out before loading data
+            const currentUser = userSession.currentUser || {};
+            if (!currentUser.username || window.isLoggingOut) {
+                console.log('⚠️ User not logged in or logging out, skipping initial hash navigation data loading');
+                return;
+            }
+            const targetLink = document.querySelector(`a[data-section="${hash}"]`);
+            if (targetLink) {
+                // Remove active class from all links and sections
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to target link
+                targetLink.classList.add('active');
+                
+                // Show target section
+                const targetSection = document.getElementById(hash);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+                
+                // Load section-specific data if needed
+                switch(hash) {
+                    case 'officers':
+                        loadOfficersData();
+                        break;
+                    case 'club-websites':
+                        displayWebsiteLinks();
+                        break;
+                    case 'volunteers':
+                        loadVolunteerData();
+                        break;
+                    case 'news':
+                        loadNewsData();
+                        break;
+                    case 'links':
+                        loadLinksData();
+                        break;
+                    case 'insurance':
+                        loadInsuranceData();
+                        break;
+                    case '1099':
+                        load1099Data();
+                        break;
+                    case 'analytics':
+                        loadAnalyticsData();
+                        break;
+                    case 'content':
+                        loadContentData();
+                        break;
+                    case 'users':
+                        loadUsersData();
+                        break;
+                    case 'profile':
+                        checkFirstLogin();
+                        break;
+                }
+            }
+        }
+        
         console.log('✅ Page initialization complete');
+        
+        // Listen for hash changes (browser back/forward buttons, programmatic changes)
+        window.addEventListener('hashchange', function() {
+            // Check if user is still logged in and not logging out before loading data
+            const currentUser = userSession.currentUser || {};
+            if (!currentUser.username || window.isLoggingOut) {
+                console.log('⚠️ User not logged in or logging out, skipping hash navigation data loading');
+                return;
+            }
+            
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const targetLink = document.querySelector(`a[data-section="${hash}"]`);
+                if (targetLink) {
+                    // Remove active class from all links and sections
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to target link
+                    targetLink.classList.add('active');
+                    
+                    // Show target section
+                    const targetSection = document.getElementById(hash);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                    
+                    // Load section-specific data if needed
+                    switch(hash) {
+                        case 'officers':
+                            loadOfficersData();
+                            break;
+                        case 'club-websites':
+                            displayWebsiteLinks();
+                            break;
+                        case 'volunteers':
+                            loadVolunteerData();
+                            break;
+                        case 'news':
+                            loadNewsData();
+                            break;
+                        case 'links':
+                            loadLinksData();
+                            break;
+                        case 'insurance':
+                            loadInsuranceData();
+                            break;
+                        case '1099':
+                            load1099Data();
+                            break;
+                        case 'analytics':
+                            loadAnalyticsData();
+                            break;
+                        case 'content':
+                            loadContentData();
+                            break;
+                        case 'users':
+                            loadUsersData();
+                            break;
+                        case 'profile':
+                            checkFirstLogin();
+                            break;
+                    }
+                }
+            }
+        });
     });
 
     // Helper function to get booster club display name
