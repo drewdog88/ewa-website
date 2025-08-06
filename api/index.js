@@ -233,11 +233,16 @@ app.post('/officers', async (req, res) => {
         await ensureDatabaseInitialized();
         const { name, position, email, phone, booster_club } = req.body;
         
-        if (!name || !position || !email || !phone || !booster_club) {
+        if (!name || !position || !email || !booster_club) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'All fields required: name, position, email, phone, booster_club' 
+                message: 'Required fields missing: name, position, email, booster_club' 
             });
+        }
+        
+        // Format blank phone as "000-000-0000"
+        if (!phone) {
+            phone = "000-000-0000";
         }
 
         const newOfficer = {
@@ -278,11 +283,16 @@ app.put('/officers/:id', async (req, res) => {
         const { id } = req.params;
         const { name, position, email, phone, booster_club } = req.body;
         
-        if (!name || !position || !email || !phone || !booster_club) {
+        if (!name || !position || !email || !booster_club) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'All fields required: name, position, email, phone, booster_club' 
+                message: 'Required fields missing: name, position, email, booster_club' 
             });
+        }
+        
+        // Format blank phone as "000-000-0000"
+        if (!phone) {
+            phone = "000-000-0000";
         }
 
         // Get the club_id for the selected booster club

@@ -294,11 +294,11 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="officerEmail">Email</label>
-                            <input type="email" id="officerEmail" placeholder="officer@example.com">
+                            <label for="officerEmail">Email *</label>
+                            <input type="email" id="officerEmail" placeholder="officer@example.com" required>
                         </div>
                         <div class="form-group">
-                            <label for="officerPhone">Phone</label>
+                            <label for="officerPhone">Phone (optional)</label>
                             <input type="tel" id="officerPhone" placeholder="(425) 555-0101">
                         </div>
                     </div>
@@ -2322,12 +2322,17 @@
             const name = document.getElementById('officerName').value.trim();
             const position = document.getElementById('officerPosition').value.trim();
             const email = document.getElementById('officerEmail').value.trim();
-            const phone = document.getElementById('officerPhone').value.trim();
+            let phone = document.getElementById('officerPhone').value.trim();
             const clubSelect = document.getElementById('boosterClub');
             const booster_club = clubSelect.options[clubSelect.selectedIndex].text;
             
-            if (!name || !position || !email || !phone || !booster_club) {
-                alert('Please fill in all fields');
+            // Format blank phone as "000-000-0000"
+            if (!phone) {
+                phone = "000-000-0000";
+            }
+            
+            if (!name || !position || !email || !booster_club) {
+                alert('Please fill in all required fields (Name, Position, Email, and Booster Club)');
                 return;
             }
             
@@ -2404,12 +2409,12 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="editOfficerEmail">Email</label>
+                                        <label for="editOfficerEmail">Email *</label>
                                         <input type="email" id="editOfficerEmail" value="${officer.email}" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="editOfficerPhone">Phone</label>
-                                        <input type="tel" id="editOfficerPhone" value="${officer.phone}" required>
+                                        <label for="editOfficerPhone">Phone (optional)</label>
+                                        <input type="tel" id="editOfficerPhone" value="${officer.phone}">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -2480,12 +2485,17 @@
             const name = document.getElementById('editOfficerName').value.trim();
             const position = document.getElementById('editOfficerPosition').value.trim();
             const email = document.getElementById('editOfficerEmail').value.trim();
-            const phone = document.getElementById('editOfficerPhone').value.trim();
+            let phone = document.getElementById('editOfficerPhone').value.trim();
             const clubSelect = document.getElementById('editOfficerClub');
             const booster_club = clubSelect.options[clubSelect.selectedIndex].text;
             
-            if (!name || !position || !email || !phone || !booster_club) {
-                alert('Please fill in all fields');
+            // Format blank phone as "000-000-0000"
+            if (!phone) {
+                phone = "000-000-0000";
+            }
+            
+            if (!name || !position || !email || !booster_club) {
+                alert('Please fill in all required fields (Name, Position, Email, and Booster Club)');
                 return;
             }
             
