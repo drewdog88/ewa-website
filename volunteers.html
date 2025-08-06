@@ -414,7 +414,7 @@
         </nav>
     </footer>
 
-    <script src="assets/user-session.js"></script>
+    <script src="../assets/user-session.js"></script>
     <script>
         document.getElementById('volunteerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -441,7 +441,7 @@
             };
             
             try {
-                const response = await fetch('/api/volunteers', {
+                const response = await fetch('/volunteers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
