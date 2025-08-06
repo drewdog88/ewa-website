@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "id": "1",
+    "recipient_name": "John Smith",
+    "recipient_tin": "123-45-6789",
+    "amount": 1500.00,
+    "description": "Website development services",
+    "booster_club": "boys-basketball",
+    "tax_year": 2024,
+    "status": "pending",
+    "w9_filename": "john_smith_w9.pdf",
+    "w9_blob_url": "https://vercel-blob-store.com/w9-files/1234567890-john_smith_w9.pdf",
+    "created_at": "2024-01-15T10:30:00.000Z",
+    "updated_at": "2024-01-15T10:30:00.000Z"
+  },
+  {
+    "id": "2",
+    "recipient_name": "Sarah Johnson",
+    "recipient_tin": "987-65-4321",
+    "amount": 2500.00,
+    "description": "Graphic design and marketing materials",
+    "booster_club": "girls-soccer",
+    "tax_year": 2024,
+    "status": "acknowledged",
+    "w9_filename": "sarah_johnson_w9.pdf",
+    "w9_blob_url": "https://vercel-blob-store.com/w9-files/1234567891-sarah_johnson_w9.pdf",
+    "created_at": "2024-01-20T14:15:00.000Z",
+    "updated_at": "2024-01-22T09:45:00.000Z"
+  },
+  {
+    "id": "3",
+    "recipient_name": "Mike Wilson",
+    "recipient_tin": "456-78-9012",
+    "amount": 800.00,
+    "description": "Equipment maintenance",
+    "booster_club": "football",
+    "tax_year": 2024,
+    "status": "submitted_to_irs",
+    "w9_filename": "mike_wilson_w9.pdf",
+    "w9_blob_url": "https://vercel-blob-store.com/w9-files/1234567892-mike_wilson_w9.pdf",
+    "created_at": "2024-01-10T08:20:00.000Z",
+    "updated_at": "2024-01-25T16:30:00.000Z"
+  }
+]
