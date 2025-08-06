@@ -174,7 +174,7 @@
         <h1><div class="logo"></div>EWA Admin Dashboard</h1>
         <div class="header-buttons">
             <a href="../index.html" class="home-btn">Home</a>
-            <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+            <div id="userButtonContainer"></div>
         </div>
     </div>
     
@@ -748,16 +748,20 @@
                             </select>
                         </div>
                         
+                        <button class="action-btn" onclick="load1099Data()" id="load1099Btn" style="background-color: #17a2b8;">
+                            📊 Load Data
+                        </button>
+                        
                         <button class="action-btn" onclick="refresh1099Data()" id="refresh1099Btn" style="background-color: #007bff;">
                             🔄 Refresh Submissions
                         </button>
                         
-                        <button class="action-btn" onclick="exportSelected1099()" id="export1099Btn" style="background-color: #28a745; display: none;">
+                        <button class="action-btn" onclick="exportSelected1099()" id="export1099Btn" style="background-color: #28a745; margin-right: 10px;">
                             📊 Export Selected (CSV)
                         </button>
                         
-                        <button class="action-btn" onclick="downloadSelectedW9()" id="downloadW9Btn" style="background-color: #ffc107; color: #000; display: none;">
-                            📁 Download W9 Files
+                        <button class="action-btn" onclick="downloadSelectedW9()" id="downloadW9Btn" style="background-color: #ffc107; color: #000; margin-right: 10px;">
+                            📁 Download W9 Files (ZIP)
                         </button>
                         
                         <span style="font-size: 14px; color: #666;">
@@ -1051,6 +1055,7 @@
         </div>
     </div>
 
+    <script src="../assets/user-session.js"></script>
     <script>
         // Navigation functionality
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -1080,7 +1085,7 @@
         // Load volunteer data
         function loadVolunteerData() {
             // Get current user to determine what data to load
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             
             let url = '/api/volunteers';
             if ((currentUser.role === 'booster_admin' || currentUser.role === 'booster_officer') && currentUser.club) {
@@ -1227,7 +1232,7 @@
 
         // Export volunteer data to CSV
         function exportVolunteerData() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             
             // Get current filter values
             const clubFilter = document.getElementById('volunteerClubFilter').value;
@@ -1313,17 +1318,12 @@
         // Check session timeout every 5 minutes
         setInterval(checkSessionTimeout, 5 * 60 * 1000);
         
-        // Logout function
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = 'login.html';
-        }
+
         
         // Demo data loading
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in
-            const currentUser = sessionStorage.getItem('currentUser');
-            if (!currentUser) {
+            // Check if user is logged in using session manager
+            if (!userSession.isLoggedIn || !userSession.currentUser) {
                 window.location.href = 'login.html';
                 return;
             }
@@ -1331,8 +1331,8 @@
             // Check session timeout
             checkSessionTimeout();
             
-            // Parse user data
-            const userData = JSON.parse(currentUser);
+            // Get user data from session manager
+            const userData = userSession.currentUser;
             
             // Set up role-based access control
             setupRoleBasedAccess(userData);
@@ -1358,10 +1358,14 @@
                 setTimeout(loadInsuranceData, 100);
             });
             
-            // Load 1099 data when 1099 section is shown
-            document.querySelector('[data-section="1099"]').addEventListener('click', function() {
-                setTimeout(load1099Data, 100);
-            });
+                    // Load 1099 data when 1099 section is shown
+        document.querySelector('[data-section="1099"]').addEventListener('click', function() {
+            console.log('🎯 1099 section clicked, loading data...');
+            setTimeout(() => {
+                console.log('⏰ Loading 1099 data after timeout...');
+                load1099Data();
+            }, 100);
+        });
             
             console.log('Admin dashboard loaded');
         });
@@ -1398,7 +1402,7 @@
         
         // Submit insurance form
         function submitInsuranceForm() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             
             const participantCountInput = document.getElementById('insuranceParticipantCount');
             
@@ -1451,7 +1455,7 @@
         
         // Submit 1099 form
         async function submit1099Form() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             const submitBtn = document.getElementById('submit1099Btn');
             const fileInput = document.getElementById('1099W9File');
             
@@ -1575,7 +1579,7 @@
         
         // Load insurance data
         function loadInsuranceData() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             
             let url = '/api/insurance';
             if (currentUser.role === 'booster_admin' && currentUser.club) {
@@ -1648,7 +1652,7 @@
             console.log('🚀 Starting 1099 data load...');
             
             // Get current user
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             console.log('👤 Current user:', currentUser);
             
             // Determine API URL based on user role
@@ -1666,28 +1670,21 @@
             // Show loading state - with better error handling
             let tbody = null;
             try {
-                console.log('🔍 Looking for #1099Table tbody element...');
-                tbody = document.querySelector('#1099Table tbody');
-                console.log('🔍 Found tbody element:', tbody);
-            } catch (error) {
-                console.error('❌ Error with querySelector:', error);
-                // Try alternative approach
-                try {
-                    const table = document.getElementById('1099Table');
-                    console.log('🔍 Found table element:', table);
-                    if (table) {
-                        tbody = table.querySelector('tbody');
-                        console.log('🔍 Found tbody via table:', tbody);
-                    }
-                } catch (altError) {
-                    console.error('❌ Alternative approach also failed:', altError);
+                console.log('🔍 Looking for 1099Table tbody element...');
+                const table = document.getElementById('1099Table');
+                console.log('🔍 Found table element:', table);
+                if (table) {
+                    tbody = table.querySelector('tbody');
+                    console.log('🔍 Found tbody via table:', tbody);
                 }
+            } catch (error) {
+                console.error('❌ Error finding tbody:', error);
             }
             
             if (tbody) {
                 tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Loading 1099 submissions...</td></tr>';
             } else {
-                console.error('❌ Could not find #1099Table tbody element - table may not be loaded yet');
+                console.error('❌ Could not find 1099Table tbody element - table may not be loaded yet');
                 // Try again after a short delay
                 setTimeout(() => {
                     console.log('🔄 Retrying load1099Data after delay...');
@@ -1740,25 +1737,22 @@
             console.log('🎨 Starting to display 1099 data...');
             console.log('📋 Submissions to display:', submissions);
             
+            // Initialize export buttons
+            updateExportButtons();
+            
             // Find the table body with error handling
             let tbody = null;
             try {
-                tbody = document.querySelector('#1099Table tbody');
-            } catch (error) {
-                console.error('❌ Error with querySelector in display1099Data:', error);
-                // Try alternative approach
-                try {
-                    const table = document.getElementById('1099Table');
-                    if (table) {
-                        tbody = table.querySelector('tbody');
-                    }
-                } catch (altError) {
-                    console.error('❌ Alternative approach also failed in display1099Data:', altError);
+                const table = document.getElementById('1099Table');
+                if (table) {
+                    tbody = table.querySelector('tbody');
                 }
+            } catch (error) {
+                console.error('❌ Error finding tbody in display1099Data:', error);
             }
             
             if (!tbody) {
-                console.error('❌ Could not find #1099Table tbody element');
+                console.error('❌ Could not find 1099Table tbody element');
                 showErrorMessage('Could not find 1099 table element');
                 return;
             }
@@ -1813,7 +1807,7 @@
                     // Create table row
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><input type="checkbox" class="1099-checkbox" value="${submission.id}" onchange="updateExportButtons()"></td>
+                        <td><input type="checkbox" class="checkbox-1099" value="${submission.id}" onchange="updateExportButtons()"></td>
                         <td>${formattedDate}</td>
                         <td>${submission.recipient_name || 'N/A'}</td>
                         <td>${submission.recipient_tin || 'N/A'}</td>
@@ -1841,6 +1835,9 @@
             });
             
             console.log('🎉 Finished displaying 1099 data');
+            
+            // Update export buttons after all data is displayed
+            updateExportButtons();
         }
         
         // Helper function to show error messages
@@ -1850,18 +1847,12 @@
             // Try to show error in the table with error handling
             let tbody = null;
             try {
-                tbody = document.querySelector('#1099Table tbody');
-            } catch (error) {
-                console.error('❌ Error with querySelector in showErrorMessage:', error);
-                // Try alternative approach
-                try {
-                    const table = document.getElementById('1099Table');
-                    if (table) {
-                        tbody = table.querySelector('tbody');
-                    }
-                } catch (altError) {
-                    console.error('❌ Alternative approach also failed in showErrorMessage:', altError);
+                const table = document.getElementById('1099Table');
+                if (table) {
+                    tbody = table.querySelector('tbody');
                 }
+            } catch (error) {
+                console.error('❌ Error finding tbody in showErrorMessage:', error);
             }
             
             if (tbody) {
@@ -1884,7 +1875,7 @@
         
         // Change password
         function changePassword() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            const currentUser = userSession.currentUser || {};
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPasswordProfile').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
@@ -3076,28 +3067,68 @@
 
     // Toggle select all checkboxes
     function toggleSelectAll1099() {
+        console.log('🔄 Toggle select all called');
         const selectAllCheckbox = document.getElementById('selectAll1099');
-        const checkboxes = document.querySelectorAll('.1099-checkbox');
+        const checkboxes = document.querySelectorAll('.checkbox-1099');
         
-        checkboxes.forEach(checkbox => {
+        console.log('📋 Found checkboxes:', checkboxes.length);
+        console.log('✅ Select all checkbox checked:', selectAllCheckbox.checked);
+        
+        checkboxes.forEach((checkbox, index) => {
             checkbox.checked = selectAllCheckbox.checked;
+            console.log(`📝 Checkbox ${index + 1} set to:`, checkbox.checked);
         });
         
         updateExportButtons();
+        updateSelectAllCheckbox();
     }
 
     // Update export buttons visibility
     function updateExportButtons() {
-        const checkboxes = document.querySelectorAll('.1099-checkbox:checked');
+        console.log('🔧 Update export buttons called');
+        
+        // Use a safer approach to find checked checkboxes
+        const allCheckboxes = document.querySelectorAll('.checkbox-1099');
+        const checkedCheckboxes = Array.from(allCheckboxes).filter(cb => cb.checked);
+        
         const exportBtn = document.getElementById('export1099Btn');
         const downloadW9Btn = document.getElementById('downloadW9Btn');
         
-        if (checkboxes.length > 0) {
+        console.log('📋 Checked checkboxes:', checkedCheckboxes.length);
+        console.log('📊 Export button found:', !!exportBtn);
+        console.log('📁 Download W9 button found:', !!downloadW9Btn);
+        
+        if (checkedCheckboxes.length > 0) {
+            console.log('✅ Showing buttons');
             exportBtn.style.display = 'inline-block';
             downloadW9Btn.style.display = 'inline-block';
         } else {
+            console.log('❌ Hiding buttons');
             exportBtn.style.display = 'none';
             downloadW9Btn.style.display = 'none';
+        }
+        
+        updateSelectAllCheckbox();
+    }
+
+    // Update select all checkbox state
+    function updateSelectAllCheckbox() {
+        const selectAllCheckbox = document.getElementById('selectAll1099');
+        const checkboxes = document.querySelectorAll('.checkbox-1099');
+        const checkedCheckboxes = Array.from(checkboxes).filter(cb => cb.checked);
+        
+        if (checkboxes.length === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedCheckboxes.length === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedCheckboxes.length === checkboxes.length) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
         }
     }
 
@@ -3144,8 +3175,9 @@
 
     // Export selected 1099 data
     async function exportSelected1099() {
-        const checkboxes = document.querySelectorAll('.1099-checkbox:checked');
-        const submissionIds = Array.from(checkboxes).map(cb => cb.value);
+        const allCheckboxes = document.querySelectorAll('.checkbox-1099');
+        const checkedCheckboxes = Array.from(allCheckboxes).filter(cb => cb.checked);
+        const submissionIds = checkedCheckboxes.map(cb => cb.value);
         
         if (submissionIds.length === 0) {
             alert('Please select at least one submission to export');
@@ -3183,8 +3215,9 @@
 
     // Download selected W9 files
     async function downloadSelectedW9() {
-        const checkboxes = document.querySelectorAll('.1099-checkbox:checked');
-        const submissionIds = Array.from(checkboxes).map(cb => cb.value);
+        const allCheckboxes = document.querySelectorAll('.checkbox-1099');
+        const checkedCheckboxes = Array.from(allCheckboxes).filter(cb => cb.checked);
+        const submissionIds = checkedCheckboxes.map(cb => cb.value);
         
         if (submissionIds.length === 0) {
             alert('Please select at least one submission to download W9 files');
@@ -3221,6 +3254,34 @@
         } catch (error) {
             console.error('Error downloading W9 files:', error);
             alert('Error downloading W9 files. Please try again.');
+        }
+    }
+
+    // Delete 1099 submission
+    async function delete1099Submission(formId, recipientName) {
+        if (!confirm(`Are you sure you want to delete the 1099 submission for ${recipientName}?`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/1099/${formId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('1099 submission deleted successfully');
+                load1099Data();
+            } else {
+                alert('Error deleting submission: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error deleting submission:', error);
+            alert('Error deleting submission. Please try again.');
         }
     }
 

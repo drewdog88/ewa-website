@@ -614,6 +614,74 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Check user session
+app.get('/api/session', async (req, res) => {
+    try {
+        // Get the session token from the request headers or query params
+        const sessionToken = req.headers['x-session-token'] || req.query.token;
+        
+        if (!sessionToken) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'No session token provided',
+                isLoggedIn: false
+            });
+        }
+
+        // For now, we'll use a simple approach where the token is the username
+        // In a production system, you'd want proper JWT tokens or session management
+        const users = await getUsers();
+        const user = users[sessionToken];
+
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid session token',
+                isLoggedIn: false
+            });
+        }
+
+        // Check if account is locked
+        if (user.isLocked) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account is locked',
+                isLoggedIn: false
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            isLoggedIn: true,
+            user: {
+                username: user.username,
+                role: user.role,
+                club: user.club,
+                clubName: user.clubName,
+                isFirstLogin: user.isFirstLogin || false,
+                lastLogin: user.lastLogin
+            }
+        });
+    } catch (error) {
+        ErrorHandler.sendError(res, 'check_session', error, 500, req);
+    }
+});
+
+// User logout
+app.post('/api/logout', async (req, res) => {
+    try {
+        // For a simple implementation, we just return success
+        // In a production system, you'd want to invalidate JWT tokens or clear server-side sessions
+        
+        res.json({ 
+            success: true, 
+            message: 'Logout successful'
+        });
+    } catch (error) {
+        ErrorHandler.sendError(res, 'user_logout', error, 500, req);
+    }
+});
+
 // Get users (for admin)
 app.get('/api/users', async (req, res) => {
     try {
