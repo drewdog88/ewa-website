@@ -2351,6 +2351,44 @@ app.use(express.static('.', {
     immutable: process.env.NODE_ENV === 'production'
 }));
 
+// Dashboard statistics endpoint
+app.get('/api/dashboard/stats', async (req, res) => {
+    try {
+        console.log('📊 Getting dashboard statistics...');
+        
+        // Get real counts from database
+        const officers = await getOfficers();
+        const volunteers = await getVolunteers();
+        const form1099 = await getForm1099();
+        const insurance = await getInsurance();
+        
+        // Filter pending 1099 forms
+        const pending1099 = form1099.filter(form => form.status === 'pending');
+        
+        // Calculate statistics
+        const stats = {
+            totalOfficers: officers.length,
+            totalVolunteers: volunteers.length,
+            pendingDocuments: pending1099.length,
+            total1099Forms: form1099.length,
+            totalInsuranceForms: insurance.length,
+            // Note: Site visitors would need analytics integration
+            siteVisitors: 'N/A'
+        };
+        
+        console.log('📊 Dashboard stats:', stats);
+        res.json({ success: true, stats });
+        
+    } catch (error) {
+        console.error('❌ Error getting dashboard stats:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to get dashboard statistics',
+            error: error.message 
+        });
+    }
+});
+
 // Serve the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
