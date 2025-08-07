@@ -101,6 +101,7 @@ const {
 
 // Initialize backup system
 let backupManager;
+let backupManagerError = null;
 try {
     // Use serverless backup manager for production, file-based for local development
     if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
@@ -113,7 +114,9 @@ try {
         console.log('💾 Local backup system initialized');
     }
 } catch (error) {
+    backupManagerError = error;
     console.error('⚠️ Backup system initialization failed:', error.message);
+    console.error('⚠️ Backup API endpoints will return error responses');
 }
 let blob;
 if (process.env.BLOB_READ_WRITE_TOKEN) {
@@ -2040,111 +2043,209 @@ app.delete('/api/documents/:documentId', async (req, res) => {
 });
 
 // Backup Management API Routes
-if (backupManager) {
-    // Get backup status
-    app.get('/api/backup/status', async (req, res) => {
-        try {
-            const status = await backupManager.getBackupStatus();
-            res.json({
-                success: true,
-                data: status
-            });
-        } catch (error) {
-            console.error('Error getting backup status:', error);
-            res.status(500).json({
+// Get backup status
+app.get('/api/backup/status', async (req, res) => {
+    try {
+        if (!backupManager) {
+            return res.status(503).json({
                 success: false,
-                message: 'Failed to get backup status'
+                message: 'Backup system is not available',
+                error: backupManagerError ? backupManagerError.message : 'Backup manager not initialized'
             });
         }
-    });
+        
+        const status = await backupManager.getBackupStatus();
+        res.json({
+            success: true,
+            data: status
+        });
+    } catch (error) {
+        console.error('Error getting backup status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get backup status',
+            error: error.message
+        });
+    }
+});
 
-    // Perform manual backup
-    app.post('/api/backup/perform', async (req, res) => {
-        try {
-            console.log('🔄 Manual backup requested');
-            const result = await backupManager.performFullBackup();
-            res.json({
-                success: true,
-                message: 'Backup completed successfully',
-                data: result
-            });
-        } catch (error) {
-            console.error('Error performing backup:', error);
-            res.status(500).json({
+// Perform manual backup
+app.post('/api/backup/perform', async (req, res) => {
+    try {
+        if (!backupManager) {
+            return res.status(503).json({
                 success: false,
-                message: 'Backup failed: ' + error.message
+                message: 'Backup system is not available',
+                error: backupManagerError ? backupManagerError.message : 'Backup manager not initialized'
             });
         }
-    });
 
-    // Cleanup old backups
-    app.post('/api/backup/cleanup', async (req, res) => {
-        try {
-            console.log('🧹 Manual cleanup requested');
-            const result = await backupManager.cleanupOldBackups();
-            res.json({
-                success: true,
-                message: 'Cleanup completed successfully',
-                data: result
-            });
-        } catch (error) {
-            console.error('Error cleaning up backups:', error);
-            res.status(500).json({
+        console.log('🔄 Manual backup requested');
+        const result = await backupManager.performFullBackup();
+        res.json({
+            success: true,
+            message: 'Backup completed successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error performing backup:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Backup failed: ' + error.message
+        });
+    }
+});
+
+// Cleanup old backups
+app.post('/api/backup/cleanup', async (req, res) => {
+    try {
+        if (!backupManager) {
+            return res.status(503).json({
                 success: false,
-                message: 'Cleanup failed: ' + error.message
+                message: 'Backup system is not available',
+                error: backupManagerError ? backupManagerError.message : 'Backup manager not initialized'
             });
         }
-    });
 
-    // Restore from backup
-    app.post('/api/backup/restore', async (req, res) => {
-        try {
-            const { backupTimestamp } = req.body;
-            
-            if (!backupTimestamp) {
-                return res.status(400).json({
+        console.log('🧹 Manual cleanup requested');
+        const result = await backupManager.cleanupOldBackups();
+        res.json({
+            success: true,
+            message: 'Cleanup completed successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error cleaning up backups:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Cleanup failed: ' + error.message
+        });
+    }
+});
+
+// Restore from backup
+app.post('/api/backup/restore', async (req, res) => {
+    try {
+        if (!backupManager) {
+            return res.status(503).json({
+                success: false,
+                message: 'Backup system is not available',
+                error: backupManagerError ? backupManagerError.message : 'Backup manager not initialized'
+            });
+        }
+
+        const { backupTimestamp } = req.body;
+        
+        if (!backupTimestamp) {
+            return res.status(400).json({
+                success: false,
+                message: 'Backup timestamp is required'
+            });
+        }
+
+        console.log(`🔄 Manual restore requested for: ${backupTimestamp}`);
+        const result = await backupManager.restoreFromBackup(backupTimestamp);
+        res.json({
+            success: true,
+            message: 'Restore completed successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error restoring from backup:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Restore failed: ' + error.message
+        });
+    }
+});
+
+// List available backups
+app.get('/api/backup/list', async (req, res) => {
+    try {
+        if (!backupManager) {
+            return res.status(503).json({
+                success: false,
+                message: 'Backup system is not available',
+                error: backupManagerError ? backupManagerError.message : 'Backup manager not initialized'
+            });
+        }
+
+        const status = await backupManager.getBackupStatus();
+        res.json({
+            success: true,
+            data: status.backups
+        });
+    } catch (error) {
+        console.error('Error listing backups:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to list backups'
+        });
+    }
+});
+
+// Download backup file
+app.get('/api/backup/download/:filename', async (req, res) => {
+    try {
+        if (!backupManager) {
+            return res.status(503).json({
+                success: false,
+                message: 'Backup system is not available',
+                error: backupManagerError ? backupManagerError.message : 'Backup manager not initialized'
+            });
+        }
+
+        const { filename } = req.params;
+        
+        // For serverless backup manager, we need to look up the backup in the database
+        if (backupManager.constructor.name === 'ServerlessBackupManager') {
+            try {
+                // Extract timestamp from filename (backup-YYYY-MM-DDTHH-MM-SS-sssZ.json)
+                const timestampMatch = filename.match(/backup-(.+)\.json/);
+                if (!timestampMatch) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Invalid backup filename format'
+                    });
+                }
+                
+                const timestamp = timestampMatch[1].replace(/-/g, ':').replace(/-/g, '.');
+                
+                // Look up the backup in the database
+                const backupResult = await backupManager.dbPool.query(`
+                    SELECT file_url FROM backup_metadata 
+                    WHERE timestamp = $1 AND status = 'success'
+                `, [timestamp]);
+                
+                if (backupResult.rows.length === 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Backup not found'
+                    });
+                }
+                
+                const backup = backupResult.rows[0];
+                
+                if (!backup.file_url) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Backup file URL not found'
+                    });
+                }
+                
+                // Redirect to the blob URL for direct download
+                res.redirect(backup.file_url);
+                return;
+                
+            } catch (error) {
+                console.error('Error looking up backup:', error);
+                return res.status(500).json({
                     success: false,
-                    message: 'Backup timestamp is required'
+                    message: 'Failed to locate backup file'
                 });
             }
-
-            console.log(`🔄 Manual restore requested for: ${backupTimestamp}`);
-            const result = await backupManager.restoreFromBackup(backupTimestamp);
-            res.json({
-                success: true,
-                message: 'Restore completed successfully',
-                data: result
-            });
-        } catch (error) {
-            console.error('Error restoring from backup:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Restore failed: ' + error.message
-            });
-        }
-    });
-
-    // List available backups
-    app.get('/api/backup/list', async (req, res) => {
-        try {
-            const status = await backupManager.getBackupStatus();
-            res.json({
-                success: true,
-                data: status.backups
-            });
-        } catch (error) {
-            console.error('Error listing backups:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to list backups'
-            });
-        }
-    });
-
-    // Download backup file
-    app.get('/api/backup/download/:filename', async (req, res) => {
-        try {
-            const { filename } = req.params;
+        } else {
+            // For local backup manager, use file system
             const filePath = path.join(backupManager.backupDir, filename);
             
             // Check if file exists
@@ -2164,15 +2265,15 @@ if (backupManager) {
             // Stream the file
             const fileStream = require('fs').createReadStream(filePath);
             fileStream.pipe(res);
-        } catch (error) {
-            console.error('Error downloading backup:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to download backup'
-            });
         }
-    });
-}
+    } catch (error) {
+        console.error('Error downloading backup:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to download backup'
+        });
+    }
+});
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
