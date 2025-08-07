@@ -17,7 +17,11 @@ class ServerlessBackupManager {
             backupCount: 0,
             totalBackupSize: 0
         };
-        this.initializeBackupTables();
+        this.initialized = false;
+        this.initializeBackupTables().catch(error => {
+            console.error('Backup tables initialization failed:', error.message);
+            // Don't throw - allow the manager to work in read-only mode
+        });
     }
 
     async initializeBackupTables() {
@@ -59,8 +63,10 @@ class ServerlessBackupManager {
             `);
 
             await this.loadBackupStatus();
+            this.initialized = true;
         } catch (error) {
             console.error('Error initializing backup tables:', error);
+            throw error;
         }
     }
 
@@ -365,7 +371,10 @@ class ServerlessBackupManager {
 
     async getBackupStatus() {
         try {
-            await this.loadBackupStatus();
+            // Try to load backup status if initialized, otherwise skip
+            if (this.initialized) {
+                await this.loadBackupStatus();
+            }
             
             // Get recent backups
             const backupsResult = await this.dbPool.query(`
