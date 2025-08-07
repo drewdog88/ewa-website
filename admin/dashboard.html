@@ -214,20 +214,20 @@
                     
                     <div class="dashboard-card">
                         <h3>Total Officers</h3>
-                        <div class="stat-number">67</div>
+                        <div class="stat-number" id="totalOfficers">Loading...</div>
                         <div class="stat-label">Registered officers</div>
                     </div>
                     
                     <div class="dashboard-card">
                         <h3>Pending Documents</h3>
-                        <div class="stat-number">8</div>
+                        <div class="stat-number" id="pendingDocuments">Loading...</div>
                         <div class="stat-label">1099 forms due</div>
                     </div>
                     
                     <div class="dashboard-card">
                         <h3>Site Visitors</h3>
-                        <div class="stat-number">1,247</div>
-                        <div class="stat-label">This month</div>
+                        <div class="stat-number" id="siteVisitors">N/A</div>
+                        <div class="stat-label">Analytics not configured</div>
                     </div>
                 </div>
                 
@@ -1377,7 +1377,40 @@
         });
             
             console.log('Admin dashboard loaded');
+            
+            // Load dashboard statistics
+            loadDashboardStats();
         });
+        
+        // Load dashboard statistics from API
+        async function loadDashboardStats() {
+            try {
+                console.log('📊 Loading dashboard statistics...');
+                const response = await fetch('/api/dashboard/stats');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    
+                    // Update dashboard cards with real data
+                    document.getElementById('totalOfficers').textContent = stats.totalOfficers;
+                    document.getElementById('pendingDocuments').textContent = stats.pendingDocuments;
+                    document.getElementById('siteVisitors').textContent = stats.siteVisitors;
+                    
+                    console.log('✅ Dashboard stats loaded:', stats);
+                } else {
+                    console.error('❌ Failed to load dashboard stats:', result.message);
+                    // Show error state
+                    document.getElementById('totalOfficers').textContent = 'Error';
+                    document.getElementById('pendingDocuments').textContent = 'Error';
+                }
+            } catch (error) {
+                console.error('❌ Error loading dashboard stats:', error);
+                // Show error state
+                document.getElementById('totalOfficers').textContent = 'Error';
+                document.getElementById('pendingDocuments').textContent = 'Error';
+            }
+        }
         
         // Set up role-based access control
         function setupRoleBasedAccess(userData) {
