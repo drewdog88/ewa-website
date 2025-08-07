@@ -375,6 +375,27 @@ class ServerlessBackupManager {
                 LIMIT 10
             `);
 
+            // Get total backup count and size
+            const statsResult = await this.dbPool.query(`
+                SELECT COUNT(*) as total_count, COALESCE(SUM(file_size), 0) as total_size
+                FROM backup_metadata 
+                WHERE status = 'success'
+            `);
+
+            const totalCount = parseInt(statsResult.rows[0].total_count);
+            const totalSize = parseInt(statsResult.rows[0].total_size);
+
+            // Update the backup status with current data
+            this.backupStatus.backupCount = totalCount;
+            this.backupStatus.totalBackupSize = totalSize;
+
+            // Update the last backup info if we have backups
+            if (backupsResult.rows.length > 0) {
+                const latestBackup = backupsResult.rows[0];
+                this.backupStatus.lastBackup = latestBackup.timestamp;
+                this.backupStatus.lastBackupStatus = 'success';
+            }
+
             const backups = backupsResult.rows.map(row => ({
                 timestamp: row.timestamp,
                 duration: row.duration_ms,
