@@ -22,12 +22,12 @@ async function getOfficers() {
     if (!sql) return [];
     
     try {
-        const officers = await sql`
-            SELECT o.*, bc.name as clubName 
-            FROM officers o 
-            LEFT JOIN booster_clubs bc ON o.club_id = bc.id 
-            ORDER BY o.created_at
-        `;
+                        const officers = await sql`
+                    SELECT o.id, o.name, o.position, o.email, o.phone, o.club_id, o.created_at, o.updated_at, bc.name as boosterclubname 
+                    FROM officers o 
+                    LEFT JOIN booster_clubs bc ON o.club_id = bc.id 
+                    ORDER BY o.created_at
+                `;
         return officers;
     } catch (error) {
         console.error('❌ Database error getting officers:', {
