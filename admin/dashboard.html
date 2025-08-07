@@ -3749,7 +3749,7 @@
             .then(data => {
                 if (data.success) {
                     updateStatusDisplay(data);
-                    loadBackupHistory();
+                    loadBackupHistory(data.data.backups);
                 } else {
                     console.error('Error loading backup status:', data.message);
                 }
@@ -3763,10 +3763,10 @@
     // Update status display
     function updateStatusDisplay(statusData) {
         // Handle the response structure from getBackupStatus()
-        const status = statusData.status || statusData;
-        const nextScheduled = statusData.nextScheduledBackup || statusData.nextScheduled;
+        const status = statusData.data.status || statusData.status || statusData;
+        const nextScheduled = statusData.data.nextScheduledBackup || statusData.nextScheduledBackup || statusData.nextScheduled;
         
-        document.getElementById('lastBackupTime').textContent = status.lastBackup || 'Never';
+        document.getElementById('lastBackupTime').textContent = status.lastBackup ? new Date(status.lastBackup).toLocaleString() : 'Never';
         document.getElementById('backupStatus').textContent = status.lastBackupStatus || 'Unknown';
         document.getElementById('nextScheduledBackup').textContent = nextScheduled ? new Date(nextScheduled).toLocaleString() : 'Not scheduled';
         document.getElementById('totalBackups').textContent = status.backupCount || '0';
@@ -3775,19 +3775,24 @@
     }
 
     // Load backup history
-    function loadBackupHistory() {
-        fetch('/api/backup/list')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    displayBackupHistory(data.backups);
-                } else {
-                    console.error('Error loading backup history:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    function loadBackupHistory(backups) {
+        if (backups) {
+            displayBackupHistory(backups);
+        } else {
+            // Fallback to API call if backups not provided
+            fetch('/api/backup/list')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayBackupHistory(data.backups);
+                    } else {
+                        console.error('Error loading backup history:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     }
 
     // Display backup history in table
@@ -3804,14 +3809,18 @@
 
         backups.forEach(backup => {
             const row = document.createElement('tr');
+            const databaseSize = backup.database?.size ? `${Math.round(backup.database.size / 1024 / 1024)} MB` : '0 MB';
+            const blobSize = backup.blob?.size ? `${Math.round(backup.blob.size / 1024 / 1024)} MB` : '0 MB';
+            const totalSize = backup.totalSize ? `${Math.round(backup.totalSize / 1024 / 1024)} MB` : '0 MB';
+            
             row.innerHTML = `
                 <td>${new Date(backup.timestamp).toLocaleString()}</td>
                 <td>${backup.duration}ms</td>
-                <td>${backup.databaseSize}</td>
-                <td>${backup.blobSize}</td>
-                <td>${backup.totalSize}</td>
+                <td>${databaseSize}</td>
+                <td>${blobSize}</td>
+                <td>${totalSize}</td>
                 <td>
-                    <button class="action-btn small" onclick="downloadBackup('${backup.filename}')">Download</button>
+                    <button class="action-btn small" onclick="downloadBackup('${backup.file}')">Download</button>
                     <button class="action-btn small secondary" onclick="restoreBackup('${backup.timestamp}')">Restore</button>
                 </td>
             `;
