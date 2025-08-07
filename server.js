@@ -102,9 +102,16 @@ const {
 // Initialize backup system
 let backupManager;
 try {
-    const BackupManager = require('./backup/backup-manager');
-    backupManager = new BackupManager();
-    console.log('💾 Backup system initialized');
+    // Use serverless backup manager for production, file-based for local development
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+        const ServerlessBackupManager = require('./backup/backup-manager-serverless');
+        backupManager = new ServerlessBackupManager();
+        console.log('💾 Serverless backup system initialized');
+    } else {
+        const BackupManager = require('./backup/backup-manager');
+        backupManager = new BackupManager();
+        console.log('💾 Local backup system initialized');
+    }
 } catch (error) {
     console.error('⚠️ Backup system initialization failed:', error.message);
 }
