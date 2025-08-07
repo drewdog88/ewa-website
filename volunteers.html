@@ -64,8 +64,8 @@
     
     <!-- Preload Critical Resources -->
     <link rel="preload" href="../assets/ewa-wolf.jpg" as="image">
-    <link rel="preload" href="index.html" as="document">
-    <link rel="preload" href="team.html" as="document">
+    <link rel="preload" href="index.html" as="fetch">
+    <link rel="preload" href="team.html" as="fetch">
     
     <!-- DNS Prefetch -->
     <link rel="dns-prefetch" href="//ewa-website.com">
@@ -441,7 +441,7 @@
             };
             
             try {
-                const response = await fetch('/volunteers', {
+                const response = await fetch('/api/volunteers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
