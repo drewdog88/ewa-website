@@ -392,7 +392,7 @@ class ServerlessBackupManager {
                     blobCount: row.blob_count
                 },
                 totalSize: row.file_size,
-                file: `backup-${row.timestamp.replace(/[:.]/g, '-')}.json`,
+                file: `backup-${row.timestamp.toISOString().replace(/[:.]/g, '-')}.json`,
                 fileSize: 0,
                 age: Date.now() - new Date(row.timestamp).getTime()
             }));
