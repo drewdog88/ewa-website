@@ -98,6 +98,16 @@ const {
 } = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
+
+// Initialize backup system
+let backupManager;
+try {
+    const BackupManager = require('./backup/backup-manager');
+    backupManager = new BackupManager();
+    console.log('💾 Backup system initialized');
+} catch (error) {
+    console.error('⚠️ Backup system initialization failed:', error.message);
+}
 let blob;
 if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
@@ -929,9 +939,10 @@ app.post('/api/1099/upload-w9', async (req, res) => {
     try {
         // Check if blob storage is available
         if (!blob) {
-            return res.status(500).json({
+            console.error('❌ Blob storage not available - BLOB_READ_WRITE_TOKEN not configured');
+            return res.status(503).json({
                 success: false,
-                message: 'File storage not available'
+                message: 'File storage is currently unavailable. Please check your configuration.'
             });
         }
 
@@ -2021,6 +2032,141 @@ app.delete('/api/documents/:documentId', async (req, res) => {
     }
 });
 
+// Backup Management API Routes
+if (backupManager) {
+    // Get backup status
+    app.get('/api/backup/status', async (req, res) => {
+        try {
+            const status = await backupManager.getBackupStatus();
+            res.json({
+                success: true,
+                data: status
+            });
+        } catch (error) {
+            console.error('Error getting backup status:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to get backup status'
+            });
+        }
+    });
+
+    // Perform manual backup
+    app.post('/api/backup/perform', async (req, res) => {
+        try {
+            console.log('🔄 Manual backup requested');
+            const result = await backupManager.performFullBackup();
+            res.json({
+                success: true,
+                message: 'Backup completed successfully',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error performing backup:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Backup failed: ' + error.message
+            });
+        }
+    });
+
+    // Cleanup old backups
+    app.post('/api/backup/cleanup', async (req, res) => {
+        try {
+            console.log('🧹 Manual cleanup requested');
+            const result = await backupManager.cleanupOldBackups();
+            res.json({
+                success: true,
+                message: 'Cleanup completed successfully',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error cleaning up backups:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Cleanup failed: ' + error.message
+            });
+        }
+    });
+
+    // Restore from backup
+    app.post('/api/backup/restore', async (req, res) => {
+        try {
+            const { backupTimestamp } = req.body;
+            
+            if (!backupTimestamp) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Backup timestamp is required'
+                });
+            }
+
+            console.log(`🔄 Manual restore requested for: ${backupTimestamp}`);
+            const result = await backupManager.restoreFromBackup(backupTimestamp);
+            res.json({
+                success: true,
+                message: 'Restore completed successfully',
+                data: result
+            });
+        } catch (error) {
+            console.error('Error restoring from backup:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Restore failed: ' + error.message
+            });
+        }
+    });
+
+    // List available backups
+    app.get('/api/backup/list', async (req, res) => {
+        try {
+            const status = await backupManager.getBackupStatus();
+            res.json({
+                success: true,
+                data: status.backups
+            });
+        } catch (error) {
+            console.error('Error listing backups:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to list backups'
+            });
+        }
+    });
+
+    // Download backup file
+    app.get('/api/backup/download/:filename', async (req, res) => {
+        try {
+            const { filename } = req.params;
+            const filePath = path.join(backupManager.backupDir, filename);
+            
+            // Check if file exists
+            try {
+                await fs.promises.access(filePath);
+            } catch (error) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Backup file not found'
+                });
+            }
+
+            // Set headers for download
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+            
+            // Stream the file
+            const fileStream = require('fs').createReadStream(filePath);
+            fileStream.pipe(res);
+        } catch (error) {
+            console.error('Error downloading backup:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to download backup'
+            });
+        }
+    });
+}
+
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
     try {
@@ -2079,6 +2225,15 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
+// Handle Vercel-specific scripts in development (these are served by Vercel CDN in production)
+app.get('/_vercel/insights/script.js', (req, res) => {
+    res.status(404).send('Vercel Insights script not available in development');
+});
+
+app.get('/_vercel/speed-insights/script.js', (req, res) => {
+    res.status(404).send('Vercel Speed Insights script not available in development');
+});
+
 // Serve static files from the root directory with enhanced caching
 app.use(express.static('.', {
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
@@ -2103,6 +2258,12 @@ app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'index.html'));
     }
 });
+
+// Start scheduled backups
+if (backupManager) {
+    backupManager.startScheduledBackups();
+    console.log('💾 Scheduled backups enabled');
+}
 
 // Start server
 app.listen(PORT, async () => {

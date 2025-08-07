@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Management - EWA Admin</title>
+    <link rel="stylesheet" href="../admin/dashboard.css">
+    <style>
+        .backup-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .backup-status {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .status-card h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #212529;
+        }
+
+        .status-card .success { color: #28a745; }
+        .status-card .warning { color: #ffc107; }
+        .status-card .danger { color: #dc3545; }
+
+        .backup-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .backup-history {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .backup-history h2 {
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .backup-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .backup-table th,
+        .backup-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .backup-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .backup-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .backup-actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <div class="backup-container">
+        <h1>🔒 Backup Management</h1>
+        
+        <div id="alert-container"></div>
+
+        <!-- Backup Status -->
+        <div class="backup-status">
+            <h2>📊 Backup Status</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3>Last Backup</h3>
+                    <div class="value" id="last-backup">Loading...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Backup Status</h3>
+                    <div class="value" id="backup-status">Loading...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Next Scheduled</h3>
+                    <div class="value" id="next-backup">Loading...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Total Backups</h3>
+                    <div class="value" id="total-backups">Loading...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Total Size</h3>
+                    <div class="value" id="total-size">Loading...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Storage Used</h3>
+                    <div class="value" id="storage-used">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup Actions -->
+        <div class="backup-actions">
+            <button class="action-btn btn-primary" onclick="performBackup()">
+                🔄 Perform Backup
+            </button>
+            <button class="action-btn btn-success" onclick="refreshStatus()">
+                🔄 Refresh Status
+            </button>
+            <button class="action-btn btn-warning" onclick="cleanupBackups()">
+                🧹 Cleanup Old Backups
+            </button>
+            <button class="action-btn btn-danger" onclick="showRestoreModal()">
+                ⚠️ Restore from Backup
+            </button>
+        </div>
+
+        <!-- Progress Bar for Operations -->
+        <div id="progress-container" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div id="progress-text">Processing...</div>
+        </div>
+
+        <!-- Backup History -->
+        <div class="backup-history">
+            <h2>📋 Backup History</h2>
+            <table class="backup-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Database Size</th>
+                        <th>Blob Size</th>
+                        <th>Total Size</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="backup-history">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Loading backup history...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Restore Modal -->
+    <div id="restore-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%;">
+            <h3>⚠️ Restore from Backup</h3>
+            <p><strong>Warning:</strong> This will overwrite your current database with the selected backup. This action cannot be undone.</p>
+            
+            <div style="margin: 20px 0;">
+                <label for="restore-select">Select Backup:</label>
+                <select id="restore-select" style="width: 100%; padding: 8px; margin-top: 5px;">
+                    <option value="">Loading backups...</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="hideRestoreModal()" class="action-btn btn-warning">Cancel</button>
+                <button onclick="performRestore()" class="action-btn btn-danger">Restore</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let backupData = null;
+
+        // Load backup status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBackupStatus();
+            loadBackupHistory();
+        });
+
+        async function loadBackupStatus() {
+            try {
+                const response = await fetch('/api/backup/status');
+                const result = await response.json();
+                
+                if (result.success) {
+                    backupData = result.data;
+                    updateStatusDisplay();
+                } else {
+                    showAlert('Failed to load backup status', 'danger');
+                }
+            } catch (error) {
+                console.error('Error loading backup status:', error);
+                showAlert('Error loading backup status', 'danger');
+            }
+        }
+
+        function updateStatusDisplay() {
+            if (!backupData) return;
+
+            // Update status cards
+            document.getElementById('last-backup').textContent = 
+                backupData.status.lastBackup ? 
+                new Date(backupData.status.lastBackup).toLocaleString() : 
+                'Never';
+
+            const statusElement = document.getElementById('backup-status');
+            statusElement.textContent = backupData.status.lastBackupStatus || 'Unknown';
+            statusElement.className = 'value ' + (backupData.status.lastBackupStatus === 'success' ? 'success' : 'danger');
+
+            document.getElementById('next-backup').textContent = 
+                backupData.nextScheduledBackup ? 
+                new Date(backupData.nextScheduledBackup).toLocaleString() : 
+                'Not scheduled';
+
+            document.getElementById('total-backups').textContent = backupData.status.backupCount || 0;
+
+            const totalSizeMB = (backupData.status.totalBackupSize / 1024 / 1024).toFixed(2);
+            document.getElementById('total-size').textContent = totalSizeMB + ' MB';
+
+            // Calculate storage usage (assuming 1GB limit for demo)
+            const storageLimit = 1024; // 1GB in MB
+            const usagePercent = Math.min((totalSizeMB / storageLimit) * 100, 100);
+            document.getElementById('storage-used').textContent = usagePercent.toFixed(1) + '%';
+        }
+
+        async function loadBackupHistory() {
+            try {
+                const response = await fetch('/api/backup/list');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayBackupHistory(result.data);
+                } else {
+                    showAlert('Failed to load backup history', 'danger');
+                }
+            } catch (error) {
+                console.error('Error loading backup history:', error);
+                showAlert('Error loading backup history', 'danger');
+            }
+        }
+
+        function displayBackupHistory(backups) {
+            const tbody = document.getElementById('backup-history');
+            
+            if (backups.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No backups found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = backups.map(backup => {
+                const date = new Date(backup.timestamp).toLocaleString();
+                const duration = backup.duration ? (backup.duration / 1000).toFixed(1) + 's' : 'N/A';
+                const dbSize = backup.database ? (backup.database.size / 1024).toFixed(2) + ' KB' : 'N/A';
+                const blobSize = backup.blob ? (backup.blob.size / 1024 / 1024).toFixed(2) + ' MB' : 'N/A';
+                const totalSize = (backup.totalSize / 1024 / 1024).toFixed(2) + ' MB';
+                const age = Math.floor(backup.age / (1000 * 60 * 60 * 24)) + ' days ago';
+
+                return `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${duration}</td>
+                        <td>${dbSize}</td>
+                        <td>${blobSize}</td>
+                        <td>${totalSize}</td>
+                        <td class="backup-actions-cell">
+                            <button class="action-btn btn-sm btn-primary" onclick="downloadBackup('${backup.file}')">
+                                📥 Download
+                            </button>
+                            <button class="action-btn btn-sm btn-danger" onclick="restoreBackup('${backup.timestamp}')">
+                                🔄 Restore
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function performBackup() {
+            if (!confirm('Start a new backup? This may take several minutes.')) return;
+
+            showProgress('Starting backup...');
+            
+            try {
+                const response = await fetch('/api/backup/perform', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Backup completed successfully!', 'success');
+                    await loadBackupStatus();
+                    await loadBackupHistory();
+                } else {
+                    showAlert('Backup failed: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error performing backup:', error);
+                showAlert('Error performing backup', 'danger');
+            } finally {
+                hideProgress();
+            }
+        }
+
+        async function cleanupBackups() {
+            if (!confirm('Delete backups older than 30 days? This action cannot be undone.')) return;
+
+            showProgress('Cleaning up old backups...');
+            
+            try {
+                const response = await fetch('/api/backup/cleanup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(`Cleanup completed: ${result.data.deletedCount} files deleted, ${(result.data.freedSpace / 1024 / 1024).toFixed(2)} MB freed`, 'success');
+                    await loadBackupStatus();
+                    await loadBackupHistory();
+                } else {
+                    showAlert('Cleanup failed: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error cleaning up backups:', error);
+                showAlert('Error cleaning up backups', 'danger');
+            } finally {
+                hideProgress();
+            }
+        }
+
+        async function refreshStatus() {
+            await loadBackupStatus();
+            await loadBackupHistory();
+            showAlert('Status refreshed', 'success');
+        }
+
+        function showRestoreModal() {
+            document.getElementById('restore-modal').style.display = 'block';
+            populateRestoreSelect();
+        }
+
+        function hideRestoreModal() {
+            document.getElementById('restore-modal').style.display = 'none';
+        }
+
+        function populateRestoreSelect() {
+            const select = document.getElementById('restore-select');
+            select.innerHTML = '<option value="">Select a backup...</option>';
+            
+            if (backupData && backupData.backups) {
+                backupData.backups.forEach(backup => {
+                    const option = document.createElement('option');
+                    option.value = backup.timestamp;
+                    option.textContent = `${new Date(backup.timestamp).toLocaleString()} (${(backup.totalSize / 1024 / 1024).toFixed(2)} MB)`;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        async function performRestore() {
+            const timestamp = document.getElementById('restore-select').value;
+            if (!timestamp) {
+                showAlert('Please select a backup to restore from', 'warning');
+                return;
+            }
+
+            if (!confirm('Are you absolutely sure? This will overwrite your current database with the selected backup. This action cannot be undone.')) return;
+
+            showProgress('Restoring from backup...');
+            hideRestoreModal();
+            
+            try {
+                const response = await fetch('/api/backup/restore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ backupTimestamp: timestamp })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Restore completed successfully!', 'success');
+                    await loadBackupStatus();
+                    await loadBackupHistory();
+                } else {
+                    showAlert('Restore failed: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error restoring from backup:', error);
+                showAlert('Error restoring from backup', 'danger');
+            } finally {
+                hideProgress();
+            }
+        }
+
+        function restoreBackup(timestamp) {
+            if (confirm('Restore from this backup? This will overwrite your current database.')) {
+                document.getElementById('restore-select').value = timestamp;
+                performRestore();
+            }
+        }
+
+        function downloadBackup(filename) {
+            window.open(`/api/backup/download/${filename}`, '_blank');
+        }
+
+        function showProgress(message) {
+            document.getElementById('progress-container').style.display = 'block';
+            document.getElementById('progress-text').textContent = message;
+            document.getElementById('progress-fill').style.width = '50%';
+        }
+
+        function hideProgress() {
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('progress-fill').style.width = '0%';
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
