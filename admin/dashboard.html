@@ -3162,6 +3162,9 @@
             return;
         }
         
+        // Handle hash navigation for direct links
+        const hash = window.location.hash.substring(1); // Remove the # symbol
+        
         // Only load default data if no specific section is requested
         if (!hash) {
             // Load 1099 data automatically for dashboard overview
@@ -3170,9 +3173,6 @@
             // Load insurance data automatically
             loadInsuranceData();
         }
-        
-        // Handle hash navigation for direct links
-        const hash = window.location.hash.substring(1); // Remove the # symbol
         if (hash) {
             // Check if user is logged in and not logging out before loading data
             const currentUser = userSession.currentUser || {};
@@ -3748,7 +3748,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    updateStatusDisplay(data.status);
+                    updateStatusDisplay(data);
                     loadBackupHistory();
                 } else {
                     console.error('Error loading backup status:', data.message);
@@ -3761,13 +3761,17 @@
     }
 
     // Update status display
-    function updateStatusDisplay(status) {
+    function updateStatusDisplay(statusData) {
+        // Handle the response structure from getBackupStatus()
+        const status = statusData.status || statusData;
+        const nextScheduled = statusData.nextScheduledBackup || statusData.nextScheduled;
+        
         document.getElementById('lastBackupTime').textContent = status.lastBackup || 'Never';
-        document.getElementById('backupStatus').textContent = status.status || 'Unknown';
-        document.getElementById('nextScheduledBackup').textContent = status.nextScheduled || 'Not scheduled';
-        document.getElementById('totalBackups').textContent = status.totalBackups || '0';
-        document.getElementById('totalBackupSize').textContent = status.totalSize || '0 MB';
-        document.getElementById('storageUsed').textContent = status.storageUsed || '0 MB';
+        document.getElementById('backupStatus').textContent = status.lastBackupStatus || 'Unknown';
+        document.getElementById('nextScheduledBackup').textContent = nextScheduled ? new Date(nextScheduled).toLocaleString() : 'Not scheduled';
+        document.getElementById('totalBackups').textContent = status.backupCount || '0';
+        document.getElementById('totalBackupSize').textContent = status.totalBackupSize ? `${Math.round(status.totalBackupSize / 1024 / 1024)} MB` : '0 MB';
+        document.getElementById('storageUsed').textContent = status.totalBackupSize ? `${Math.round(status.totalBackupSize / 1024 / 1024)} MB` : '0 MB';
     }
 
     // Load backup history
