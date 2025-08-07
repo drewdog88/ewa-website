@@ -3,7 +3,14 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // Import Neon database functions
-const { getUsers } = require('../database/neon-functions');
+const { 
+    getUsers, 
+    getForm1099, 
+    addForm1099, 
+    updateForm1099, 
+    updateForm1099Status, 
+    deleteForm1099 
+} = require('../database/neon-functions');
 
 module.exports = async (req, res) => {
     // Set CORS headers
@@ -41,11 +48,8 @@ module.exports = async (req, res) => {
 
 // Handle GET requests
 async function handleGetRequest(req, res, urlParts) {
-    const dataPath = path.join(__dirname, '../data/1099.json');
-    
     try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        let submissions = JSON.parse(data);
+        let submissions = await getForm1099();
         
         // Filter by club if specified
         if (urlParts.length > 1) {
@@ -53,21 +57,30 @@ async function handleGetRequest(req, res, urlParts) {
             submissions = submissions.filter(sub => sub.booster_club === club);
         }
         
-        res.json({ success: true, submissions });
+        // Transform database format to match expected frontend format
+        const transformedSubmissions = submissions.map(sub => ({
+            id: sub.id,
+            recipient_name: sub.recipient_name,
+            recipient_tin: sub.recipient_tin,
+            amount: sub.amount,
+            description: sub.description,
+            booster_club: sub.booster_club || '',
+            tax_year: sub.tax_year,
+            w9_filename: sub.w9_filename,
+            status: sub.status,
+            submitted_by: sub.submitted_by,
+            created_at: sub.created_at
+        }));
+        
+        res.json({ success: true, submissions: transformedSubmissions });
     } catch (error) {
-        if (error.code === 'ENOENT') {
-            // File doesn't exist, return empty array
-            res.json({ success: true, submissions: [] });
-        } else {
-            throw error;
-        }
+        console.error('Error getting 1099 data:', error);
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 }
 
 // Handle POST requests
 async function handlePostRequest(req, res, urlParts) {
-    const dataPath = path.join(__dirname, '../data/1099.json');
-    
     if (urlParts.length > 1 && urlParts[1] === 'export') {
         await handleExportRequest(req, res);
         return;
@@ -87,12 +100,8 @@ async function handlePostRequest(req, res, urlParts) {
     }
     
     try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        let submissions = JSON.parse(data);
-        
-        // Create new submission
+        // Create new submission object for database
         const newSubmission = {
-            id: Date.now().toString(),
             recipient_name: body.recipientName,
             recipient_tin: body.recipientTin,
             amount: parseFloat(body.amount),
@@ -100,41 +109,21 @@ async function handlePostRequest(req, res, urlParts) {
             booster_club: body.boosterClub,
             tax_year: parseInt(body.taxYear),
             status: 'pending',
-            w9_filename: body.w9Filename || '',
-            w9_blob_url: body.w9BlobUrl || '',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            w9_filename: body.w9Filename || null,
+            submitted_by: body.submittedBy || 'admin'
         };
         
-        submissions.push(newSubmission);
+        // Add to database
+        const result = await addForm1099(newSubmission);
         
-        // Save to file
-        await fs.writeFile(dataPath, JSON.stringify(submissions, null, 2));
-        
-        res.json({ success: true, message: '1099 submission created successfully', submission: newSubmission });
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            // File doesn't exist, create it
-            const newSubmission = {
-                id: Date.now().toString(),
-                recipient_name: body.recipientName,
-                recipient_tin: body.recipientTin,
-                amount: parseFloat(body.amount),
-                description: body.description || '',
-                booster_club: body.boosterClub,
-                tax_year: parseInt(body.taxYear),
-                status: 'pending',
-                w9_filename: body.w9Filename || '',
-                w9_blob_url: body.w9BlobUrl || '',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
-            
-            await fs.writeFile(dataPath, JSON.stringify([newSubmission], null, 2));
-            res.json({ success: true, message: '1099 submission created successfully', submission: newSubmission });
+        if (result) {
+            res.json({ success: true, message: '1099 form submitted successfully', submission: result });
         } else {
-            throw error;
+            res.status(500).json({ success: false, message: 'Failed to save 1099 form' });
         }
+    } catch (error) {
+        console.error('Error adding 1099 form:', error);
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 }
 
@@ -151,25 +140,17 @@ async function handlePutRequest(req, res, urlParts) {
         return res.status(400).json({ success: false, message: 'Status is required' });
     }
     
-    const dataPath = path.join(__dirname, '../data/1099.json');
-    
     try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        let submissions = JSON.parse(data);
+        const result = await updateForm1099Status(submissionId, status);
         
-        const submissionIndex = submissions.findIndex(sub => sub.id === submissionId);
-        if (submissionIndex === -1) {
-            return res.status(404).json({ success: false, message: 'Submission not found' });
+        if (result) {
+            res.json({ success: true, message: 'Status updated successfully' });
+        } else {
+            res.status(404).json({ success: false, message: 'Submission not found' });
         }
-        
-        submissions[submissionIndex].status = status;
-        submissions[submissionIndex].updated_at = new Date().toISOString();
-        
-        await fs.writeFile(dataPath, JSON.stringify(submissions, null, 2));
-        
-        res.json({ success: true, message: 'Status updated successfully' });
     } catch (error) {
-        throw error;
+        console.error('Error updating 1099 status:', error);
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 }
 
@@ -181,24 +162,17 @@ async function handleDeleteRequest(req, res, urlParts) {
         return res.status(400).json({ success: false, message: 'Submission ID is required' });
     }
     
-    const dataPath = path.join(__dirname, '../data/1099.json');
-    
     try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        let submissions = JSON.parse(data);
+        const result = await deleteForm1099(submissionId);
         
-        const submissionIndex = submissions.findIndex(sub => sub.id === submissionId);
-        if (submissionIndex === -1) {
-            return res.status(404).json({ success: false, message: 'Submission not found' });
+        if (result) {
+            res.json({ success: true, message: 'Submission deleted successfully' });
+        } else {
+            res.status(404).json({ success: false, message: 'Submission not found' });
         }
-        
-        submissions.splice(submissionIndex, 1);
-        
-        await fs.writeFile(dataPath, JSON.stringify(submissions, null, 2));
-        
-        res.json({ success: true, message: 'Submission deleted successfully' });
     } catch (error) {
-        throw error;
+        console.error('Error deleting 1099 form:', error);
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 }
 
@@ -210,11 +184,8 @@ async function handleExportRequest(req, res) {
         return res.status(400).json({ success: false, message: 'Submission IDs are required' });
     }
     
-    const dataPath = path.join(__dirname, '../data/1099.json');
-    
     try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        const allSubmissions = JSON.parse(data);
+        const allSubmissions = await getForm1099();
         
         // Filter submissions by IDs
         const selectedSubmissions = allSubmissions.filter(sub => submissionIds.includes(sub.id));
@@ -228,7 +199,8 @@ async function handleExportRequest(req, res) {
             res.json({ success: true, submissions: selectedSubmissions });
         }
     } catch (error) {
-        throw error;
+        console.error('Error exporting 1099 data:', error);
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 }
 
@@ -240,11 +212,8 @@ async function handleDownloadW9Request(req, res) {
         return res.status(400).json({ success: false, message: 'Submission IDs are required' });
     }
     
-    const dataPath = path.join(__dirname, '../data/1099.json');
-    
     try {
-        const data = await fs.readFile(dataPath, 'utf8');
-        const allSubmissions = JSON.parse(data);
+        const allSubmissions = await getForm1099();
         
         // Filter submissions by IDs
         const selectedSubmissions = allSubmissions.filter(sub => submissionIds.includes(sub.id));
@@ -252,7 +221,7 @@ async function handleDownloadW9Request(req, res) {
         // For now, return the W9 file information
         // In a full implementation, this would create a zip file with all W9 files
         const files = selectedSubmissions
-            .filter(sub => sub.w9_blob_url)
+            .filter(sub => sub.w9_filename)
             .map(sub => ({
                 id: sub.id,
                 w9Filename: sub.w9_filename,
@@ -261,7 +230,8 @@ async function handleDownloadW9Request(req, res) {
         
         res.json({ success: true, files });
     } catch (error) {
-        throw error;
+        console.error('Error downloading W9 files:', error);
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 }
 
