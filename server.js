@@ -1458,6 +1458,32 @@ app.get('/api/officers', async (req, res) => {
     }
 });
 
+// Download officer import template
+app.get('/api/officers/template', (req, res) => {
+    try {
+        const templatePath = path.join(__dirname, 'data', 'officer_import_template.csv');
+        
+        if (!fs.existsSync(templatePath)) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Template file not found' 
+            });
+        }
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="officer_import_template.csv"');
+        
+        const fileStream = fs.createReadStream(templatePath);
+        fileStream.pipe(res);
+    } catch (error) {
+        console.error('Error downloading template:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
+    }
+});
+
 // Get officers by club
 app.get('/api/officers/:club', async (req, res) => {
     try {
@@ -1607,32 +1633,6 @@ app.delete('/api/officers/:id', async (req, res) => {
         }
     } catch (error) {
         console.error('Error deleting officer:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
-        });
-    }
-});
-
-// Download officer import template
-app.get('/api/officers/template', (req, res) => {
-    try {
-        const templatePath = path.join(__dirname, 'data', 'officer_import_template.csv');
-        
-        if (!fs.existsSync(templatePath)) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Template file not found' 
-            });
-        }
-
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="officer_import_template.csv"');
-        
-        const fileStream = fs.createReadStream(templatePath);
-        fileStream.pipe(res);
-    } catch (error) {
-        console.error('Error downloading template:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Internal server error' 
