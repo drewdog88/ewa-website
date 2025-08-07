@@ -191,9 +191,9 @@
                             <li><a href="#1099" class="nav-link" data-section="1099">1099 Information</a></li>
             <li><a href="#profile" class="nav-link" data-section="profile">Security Settings</a></li>
             <li class="admin-only"><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
-            <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
-                            <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
-                <li class="admin-only"><a href="#backup" class="nav-link" data-section="backup">Backup Management</a></li>
+                                           <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
+                               <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
+                               <li class="admin-only"><a href="#backup" class="nav-link" data-section="backup">Backup Management</a></li>
             </ul>
         </div>
         
@@ -1054,126 +1054,7 @@
                 </div>
             </div>
             
-            <!-- Backup Management Section -->
-            <div id="backup" class="content-section">
-                <div class="section-header">
-                    <h2>Backup Management</h2>
-                    <p>Manage database and file storage backups for the EWA website system.</p>
-                </div>
-                
-                <div class="backup-status-section">
-                    <h3>Backup Status</h3>
-                    <div class="status-grid">
-                        <div class="status-card">
-                            <div class="status-icon">💿</div>
-                            <div class="status-info">
-                                <div class="status-label">Last Backup</div>
-                                <div class="status-value" id="lastBackupTime">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-icon">✅</div>
-                            <div class="status-info">
-                                <div class="status-label">Status</div>
-                                <div class="status-value" id="backupStatus">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-icon">⏰</div>
-                            <div class="status-info">
-                                <div class="status-label">Next Scheduled</div>
-                                <div class="status-value" id="nextScheduledBackup">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-icon">📊</div>
-                            <div class="status-info">
-                                <div class="status-label">Total Backups</div>
-                                <div class="status-value" id="totalBackups">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-icon">📁</div>
-                            <div class="status-info">
-                                <div class="status-label">Total Size</div>
-                                <div class="status-value" id="totalBackupSize">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-icon">💿</div>
-                            <div class="status-info">
-                                <div class="status-label">Storage Used</div>
-                                <div class="status-value" id="storageUsed">Loading...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="backup-actions-section">
-                    <h3>Backup Actions</h3>
-                    <div class="action-buttons">
-                        <button class="action-btn" onclick="performBackup()">Perform Backup</button>
-                        <button class="action-btn" onclick="refreshStatus()">Refresh Status</button>
-                        <button class="action-btn" onclick="cleanupBackups()">Cleanup Old Backups</button>
-                        <button class="action-btn" onclick="showRestoreModal()">Restore from Backup</button>
-                    </div>
-                </div>
-                
-                <div class="backup-history-section">
-                    <h3>Backup History</h3>
-                    <div id="backupHistoryContainer">
-                        <table class="data-table" id="backupHistoryTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Duration</th>
-                                    <th>Database Size</th>
-                                    <th>Blob Size</th>
-                                    <th>Total Size</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="backupHistoryTableBody">
-                                <!-- Backup history will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Restore Modal -->
-                <div id="restoreModal" class="modal" style="display: none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Restore from Backup</h3>
-                            <span class="close" onclick="hideRestoreModal()">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <p><strong>Warning:</strong> This will overwrite current data. Make sure you have a recent backup before proceeding.</p>
-                            <div class="form-group">
-                                <label for="restoreSelect">Select Backup to Restore:</label>
-                                <select id="restoreSelect">
-                                    <option value="">Select a backup...</option>
-                                </select>
-                            </div>
-                            <div class="modal-actions">
-                                <button class="action-btn" onclick="performRestore()">Restore</button>
-                                <button class="action-btn secondary" onclick="hideRestoreModal()">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div id="progressContainer" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="progress-text" id="progressText">Processing...</div>
-                </div>
-                
-                <!-- Alert Container -->
-                <div id="alertContainer"></div>
-            </div>
+
         </div>
     </div>
 
@@ -1246,7 +1127,7 @@
             
             // Filter volunteers based on selected criteria
             let filteredVolunteers = volunteers.filter(volunteer => {
-                const clubMatch = !clubFilter || volunteer.boosterClub === clubFilter;
+                const clubMatch = !clubFilter || volunteer.club === clubFilter;
                 const statusMatch = !statusFilter || volunteer.status === statusFilter;
                 return clubMatch && statusMatch;
             });
@@ -1256,10 +1137,10 @@
             filteredVolunteers.forEach(volunteer => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${new Date(volunteer.submittedAt).toLocaleDateString()}</td>
-                    <td>${getClubDisplayName(volunteer.boosterClub)}</td>
-                    <td>${volunteer.volunteerName}</td>
-                    <td>${volunteer.childName || ''}</td>
+                    <td>${new Date(volunteer.created_at).toLocaleDateString()}</td>
+                    <td>${volunteer.club}</td>
+                    <td>${volunteer.name}</td>
+                    <td>${volunteer.interests || ''}</td>
                     <td>${volunteer.email}</td>
                     <td>${volunteer.phone || ''}</td>
                     <td><span class="status-${volunteer.status === 'pending' ? 'active' : volunteer.status === 'contacted' ? 'warning' : volunteer.status === 'confirmed' ? 'success' : 'inactive'}">${volunteer.status}</span></td>
@@ -3230,25 +3111,14 @@
                     case 'profile':
                         checkFirstLogin();
                         break;
-                    case 'backup':
-                        loadBackupStatus();
-                        break;
+
                 }
             }
         }
         
         console.log('✅ Page initialization complete');
         
-        // Add event listener for backup section navigation
-        const backupLink = document.querySelector('a[data-section="backup"]');
-        if (backupLink) {
-            backupLink.addEventListener('click', function() {
-                // Load backup status when backup section is accessed
-                setTimeout(() => {
-                    loadBackupStatus();
-                }, 100);
-            });
-        }
+
         
         // Listen for hash changes (browser back/forward buttons, programmatic changes)
         window.addEventListener('hashchange', function() {
@@ -3311,9 +3181,7 @@
                         case 'profile':
                             checkFirstLogin();
                             break;
-                        case 'backup':
-                            loadBackupStatus();
-                            break;
+
                     }
                 }
             }
@@ -3740,303 +3608,7 @@
         }
     }
 
-    // ===== BACKUP MANAGEMENT FUNCTIONS =====
-    
-    // Load backup status and history
-    function loadBackupStatus() {
-        fetch('/api/backup/status')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateStatusDisplay(data);
-                    loadBackupHistory(data.data.backups);
-                } else {
-                    console.error('Error loading backup status:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error loading backup status', 'error');
-            });
-    }
 
-    // Update status display
-    function updateStatusDisplay(statusData) {
-        // Handle the response structure from getBackupStatus()
-        const status = statusData.data.status || statusData.status || statusData;
-        const nextScheduled = statusData.data.nextScheduledBackup || statusData.nextScheduledBackup || statusData.nextScheduled;
-        
-        document.getElementById('lastBackupTime').textContent = status.lastBackup ? new Date(status.lastBackup).toLocaleString() : 'Never';
-        document.getElementById('backupStatus').textContent = status.lastBackupStatus || 'Unknown';
-        document.getElementById('nextScheduledBackup').textContent = nextScheduled ? new Date(nextScheduled).toLocaleString() : 'Not scheduled';
-        document.getElementById('totalBackups').textContent = status.backupCount || '0';
-        document.getElementById('totalBackupSize').textContent = status.totalBackupSize ? `${Math.round(status.totalBackupSize / 1024 / 1024)} MB` : '0 MB';
-        document.getElementById('storageUsed').textContent = status.totalBackupSize ? `${Math.round(status.totalBackupSize / 1024 / 1024)} MB` : '0 MB';
-    }
-
-    // Load backup history
-    function loadBackupHistory(backups) {
-        if (backups) {
-            displayBackupHistory(backups);
-        } else {
-            // Fallback to API call if backups not provided
-            fetch('/api/backup/list')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayBackupHistory(data.backups);
-                    } else {
-                        console.error('Error loading backup history:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    }
-
-    // Display backup history in table
-    function displayBackupHistory(backups) {
-        const tbody = document.getElementById('backupHistoryTableBody');
-        if (!tbody) return;
-
-        tbody.innerHTML = '';
-
-        if (!backups || backups.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No backups found</td></tr>';
-            return;
-        }
-
-        backups.forEach(backup => {
-            const row = document.createElement('tr');
-            const databaseSize = backup.database?.size ? `${Math.round(backup.database.size / 1024 / 1024)} MB` : '0 MB';
-            const blobSize = backup.blob?.size ? `${Math.round(backup.blob.size / 1024 / 1024)} MB` : '0 MB';
-            const totalSize = backup.totalSize ? `${Math.round(backup.totalSize / 1024 / 1024)} MB` : '0 MB';
-            
-            row.innerHTML = `
-                <td>${new Date(backup.timestamp).toLocaleString()}</td>
-                <td>${backup.duration}ms</td>
-                <td>${databaseSize}</td>
-                <td>${blobSize}</td>
-                <td>${totalSize}</td>
-                <td>
-                    <button class="action-btn small" onclick="downloadBackup('${backup.file}')">Download</button>
-                    <button class="action-btn small secondary" onclick="restoreBackup('${backup.timestamp}')">Restore</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Perform manual backup
-    async function performBackup() {
-        showProgress('Creating backup...');
-        
-        try {
-            const response = await fetch('/api/backup/perform', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                showAlert('Backup completed successfully!', 'success');
-                loadBackupStatus(); // Refresh status
-            } else {
-                showAlert('Backup failed: ' + data.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error performing backup:', error);
-            showAlert('Error performing backup', 'error');
-        } finally {
-            hideProgress();
-        }
-    }
-
-    // Cleanup old backups
-    async function cleanupBackups() {
-        if (!confirm('This will delete backups older than 30 days. Continue?')) {
-            return;
-        }
-
-        showProgress('Cleaning up old backups...');
-        
-        try {
-            const response = await fetch('/api/backup/cleanup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                showAlert(`Cleanup completed: ${data.deletedCount} backups removed`, 'success');
-                loadBackupStatus(); // Refresh status
-            } else {
-                showAlert('Cleanup failed: ' + data.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error cleaning up backups:', error);
-            showAlert('Error cleaning up backups', 'error');
-        } finally {
-            hideProgress();
-        }
-    }
-
-    // Refresh status
-    function refreshStatus() {
-        loadBackupStatus();
-        showAlert('Status refreshed', 'info');
-    }
-
-    // Show restore modal
-    function showRestoreModal() {
-        const modal = document.getElementById('restoreModal');
-        if (modal) {
-            populateRestoreSelect();
-            modal.style.display = 'block';
-        }
-    }
-
-    // Hide restore modal
-    function hideRestoreModal() {
-        const modal = document.getElementById('restoreModal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-    }
-
-    // Populate restore select dropdown
-    function populateRestoreSelect() {
-        const select = document.getElementById('restoreSelect');
-        if (!select) return;
-
-        fetch('/api/backup/list')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.backups) {
-                    select.innerHTML = '<option value="">Select a backup...</option>';
-                    data.backups.forEach(backup => {
-                        const option = document.createElement('option');
-                        option.value = backup.timestamp;
-                        option.textContent = `${new Date(backup.timestamp).toLocaleString()} (${backup.totalSize})`;
-                        select.appendChild(option);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error loading backups for restore:', error);
-            });
-    }
-
-    // Perform restore
-    async function performRestore() {
-        const timestamp = document.getElementById('restoreSelect').value;
-        if (!timestamp) {
-            showAlert('Please select a backup to restore', 'error');
-            return;
-        }
-
-        if (!confirm('This will overwrite all current data. Are you sure you want to continue?')) {
-            return;
-        }
-
-        showProgress('Restoring from backup...');
-        
-        try {
-            const response = await fetch('/api/backup/restore', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ timestamp })
-            });
-
-            const data = await response.json();
-            
-            if (data.success) {
-                showAlert('Restore completed successfully!', 'success');
-                hideRestoreModal();
-                // Optionally reload the page to reflect restored data
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                showAlert('Restore failed: ' + data.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error restoring backup:', error);
-            showAlert('Error restoring backup', 'error');
-        } finally {
-            hideProgress();
-        }
-    }
-
-    // Restore specific backup
-    function restoreBackup(timestamp) {
-        if (confirm(`Restore from backup created on ${new Date(timestamp).toLocaleString()}?`)) {
-            document.getElementById('restoreSelect').value = timestamp;
-            performRestore();
-        }
-    }
-
-    // Download backup
-    function downloadBackup(filename) {
-        window.open(`/api/backup/download/${filename}`, '_blank');
-    }
-
-    // Show progress bar
-    function showProgress(message) {
-        const container = document.getElementById('progressContainer');
-        const text = document.getElementById('progressText');
-        if (container && text) {
-            text.textContent = message;
-            container.style.display = 'block';
-        }
-    }
-
-    // Hide progress bar
-    function hideProgress() {
-        const container = document.getElementById('progressContainer');
-        if (container) {
-            container.style.display = 'none';
-        }
-    }
-
-    // Show alert
-    function showAlert(message, type = 'info') {
-        const container = document.getElementById('alertContainer');
-        if (!container) return;
-
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
-        alert.textContent = message;
-        
-        container.appendChild(alert);
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (alert.parentNode) {
-                alert.parentNode.removeChild(alert);
-            }
-        }, 5000);
-    }
-
-    // Add event listener for backup section navigation (moved to main DOMContentLoaded)
-    const backupLink = document.querySelector('a[data-section="backup"]');
-    if (backupLink) {
-        backupLink.addEventListener('click', function() {
-            // Load backup status when backup section is accessed
-            setTimeout(() => {
-                loadBackupStatus();
-            }, 100);
-        });
-    }
 </script>
 </body>
 </html> 

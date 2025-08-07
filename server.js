@@ -499,7 +499,8 @@ app.post('/api/volunteers', async (req, res) => {
 
         console.log('Adding new volunteer:', newVolunteer);
         
-        if (await addVolunteer(newVolunteer)) {
+        const result = await addVolunteer(newVolunteer);
+        if (result) {
             console.log('Volunteer saved successfully');
             res.json({ 
                 success: true, 
@@ -507,10 +508,10 @@ app.post('/api/volunteers', async (req, res) => {
                 volunteer: newVolunteer
             });
         } else {
-            console.error('Failed to save volunteer data');
-            res.status(500).json({ 
+            console.error('Failed to save volunteer data - database not available');
+            res.status(503).json({ 
                 success: false, 
-                message: 'Failed to save volunteer data' 
+                message: 'Volunteer system temporarily unavailable. Please try again later or contact support.' 
             });
         }
     } catch (error) {
