@@ -2338,7 +2338,7 @@
                 row.innerHTML = `
                     <td>${officer.name}</td>
                     <td>${officer.position}</td>
-                    <td>${officer.clubName || 'No club assigned'}</td>
+                    <td>${officer.boosterclubname || 'No club assigned'}</td>
                     <td>${officer.email}</td>
                     <td>${officer.phone}</td>
                     <td>
@@ -2495,7 +2495,7 @@
             // Set the current club value
             const clubSelect = document.getElementById('editOfficerClub');
             if (clubSelect) {
-                clubSelect.value = officer.clubName || '';
+                clubSelect.value = officer.boosterclubname || '';
             }
             
             // Add form submit handler
