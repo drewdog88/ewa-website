@@ -64,19 +64,31 @@
     
     <!-- Preload Critical Resources -->
     <link rel="preload" href="../assets/ewa-wolf.jpg" as="image">
-    <link rel="preload" href="index.html" as="fetch">
-    <link rel="preload" href="team.html" as="fetch">
     
     <!-- DNS Prefetch -->
     <link rel="dns-prefetch" href="//ewa-website.com">
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     
-    <!-- Vercel Analytics -->
-    <script defer src="/_vercel/insights/script.js"></script>
+    <!-- Vercel Analytics (production only) -->
+    <script>
+        if (window.location.hostname !== 'localhost') {
+            const insightsScript = document.createElement('script');
+            insightsScript.src = '/_vercel/insights/script.js';
+            insightsScript.defer = true;
+            document.head.appendChild(insightsScript);
+        }
+    </script>
     
-    <!-- Vercel Speed Insights -->
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+    <!-- Vercel Speed Insights (production only) -->
+    <script>
+        if (window.location.hostname !== 'localhost') {
+            const speedScript = document.createElement('script');
+            speedScript.src = '/_vercel/speed-insights/script.js';
+            speedScript.defer = true;
+            document.head.appendChild(speedScript);
+        }
+    </script>
     
     <style>
         /* Reset and Base Styles */
