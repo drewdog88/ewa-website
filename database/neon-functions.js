@@ -130,7 +130,7 @@ async function addVolunteer(volunteer) {
     try {
         const result = await sql`
             INSERT INTO volunteers (name, email, phone, club, club_name, interests, availability)
-            VALUES (${volunteer.name}, ${volunteer.email}, ${volunteer.phone}, ${volunteer.club}, ${volunteer.clubName}, ${volunteer.interests}, ${volunteer.availability})
+            VALUES (${volunteer.volunteerName}, ${volunteer.email}, ${volunteer.phone}, ${volunteer.boosterClub}, ${volunteer.boosterClub}, ${volunteer.childName || ''}, ${volunteer.message || ''})
             RETURNING *
         `;
         return result[0];
