@@ -549,6 +549,9 @@
                 </div>
             </section>
         </div>
+        <div class="content-right">
+            <div id="clubsMount"></div>
+        </div>
         
     </main>
     
@@ -872,6 +875,25 @@
 
     <script src="assets/user-session.js"></script>
     <script>
+        // Move clubs section into right column mount point at runtime to ensure consistent placement
+        (function mountClubsRightColumn(){
+            const src = document.querySelectorAll('.clubs-section');
+            const mount = document.getElementById('clubsMount');
+            if (!mount || src.length === 0) return;
+            // Use the first visible clubs section or the first one
+            const visible = Array.from(src).find(el => el.style.display !== 'none') || src[0];
+            // If our visible section is not the first, clone its children into a new container
+            const container = document.createElement('section');
+            container.className = 'clubs-section';
+            // Gather all club cards from the DOM (including those after main)
+            const cards = document.querySelectorAll('.club-card');
+            const h2 = document.createElement('h2');
+            h2.textContent = 'Clubs associated with EWA';
+            container.appendChild(h2);
+            cards.forEach(card => container.appendChild(card));
+            mount.replaceChildren(container);
+        })();
+
         // Accordion functionality for booster clubs with accessibility
         document.querySelectorAll('.club-header').forEach(header => {
             header.addEventListener('click', () => {
