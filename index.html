@@ -193,27 +193,28 @@
         
         .quick-links h2 {
             color: #dc3545;
-            margin-bottom: 16px;
-            font-size: 2.5rem;
+            margin-bottom: 12px;
+            font-size: 1.6rem;
             font-weight: normal;
         }
         
         .links-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
         }
         
         .link-card {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 14px;
             border-radius: 6px;
             border-left: 4px solid #007bff;
         }
         
         .link-card h3 {
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 1rem;
         }
         
         .link-card a {
@@ -548,52 +549,12 @@
                 </div>
             </section>
         </div>
-        <div class="content-right">
-            <!-- Move Clubs section here to appear alongside the intro -->
-            <section class="clubs-section">
-                <h2>Clubs associated with EWA</h2>
-                
-                <!-- Existing clubs markup moved from below -->
-                <div class="club-card">
-                    <div class="club-header">
-                        <div class="club-name">EWA Eastlake Wolfpack Association</div>
-                        <div class="club-toggle">+</div>
-                    </div>
-                    <div class="club-content">
-                        <div class="club-description">The main Eastlake Wolfpack Association organization that coordinates all booster clubs and activities. We support Eastlake High School athletics and activities by providing resources, organizing events, and fostering a community of volunteers and supporters. Our mission is to enhance the overall experience for students and promote the values of teamwork, sportsmanship, and dedication.</div>
-                        <div class="club-actions">
-                            <a href="payment.html?club=EWA%20Eastlake%20Wolfpack%20Association" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                            <a href="https://ewa-website.vercel.app" target="_blank" class="club-website-btn">Visit Website</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="club-card">
-                    <div class="club-header">
-                        <div class="club-name">EHS Band Boosters</div>
-                        <div class="club-toggle">+</div>
-                    </div>
-                    <div class="club-content">
-                        <div class="club-description">The EHS Band Boosters is dedicated to supporting the Eastlake High School band program. Our mission is to enhance the musical experience for students by providing financial support, organizing events, and fostering a community of enthusiastic supporters. We aim to ensure that every band member has the resources and opportunities to excel in their musical journey.</div>
-                        <div class="club-actions">
-                            <a href="payment.html?club=EHS%20Band%20Boosters" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                            <a href="https://ehsbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- The rest of the club cards remain unchanged below -->
-            </section>
-        </div>
+        
     </main>
-
-
-
-    <!-- Quick Links Section moved under intro -->
-
-    <!-- Clubs list continues in right column; remove duplicate top two cards from bottom section -->
-    <!-- Clubs Section -->
-    <div class="clubs-section">
+    
+    <!-- Clubs Section moved entirely into right column above -->
+    <!-- Removing bottom duplicate wrapper to keep cards contiguous in right column -->
+    <div class="clubs-section" style="display:none;">
 
         <div class="club-card">
             <div class="club-header">
