@@ -140,6 +140,10 @@
             margin-bottom: 15px;
             line-height: 1.8;
         }
+
+        .stripe-links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+        .stripe-btn { background-color: #635bff; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; display: inline-block; }
+        .stripe-btn:hover { background-color: #5446ff; }
         
         .payment-section code {
             background-color: #f8f9fa;
@@ -229,6 +233,8 @@
         <div class="payment-section">
             <h3>Credit Card Payments</h3>
             <p>Credit card payments are processed through Stripe.</p>
+            <!-- Stripe UI is injected here only for Eastlake Robotics Club -->
+            <div id="stripeContainer" style="display:none;"></div>
         </div>
         
         <a href="javascript:history.back()" class="back-button">← Back to Previous Page</a>
@@ -257,11 +263,43 @@
                 document.getElementById('selectedClub').textContent = decodeURIComponent(clubName);
                 document.getElementById('checkClubName').textContent = decodeURIComponent(clubName);
             }
+            return clubName;
+        }
+        
+        function renderStripeIfRobotics(clubName) {
+            const normalized = (clubName || '').trim();
+            if (normalized.toLowerCase() !== 'eastlake robotics club') return;
+
+            const container = document.getElementById('stripeContainer');
+            if (!container) return;
+
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class=\"stripe-links\">
+                  <a class=\"stripe-btn\" href=\"https://buy.stripe.com/28EaEY7Bf4ah0al24LbQY01\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Pay with credit card via Stripe\">
+                    Pay with Card (Stripe)
+                  </a>
+                </div>
+                <stripe-buy-button
+                  buy-button-id=\"buy_btn_1Ru0H5Jatwh4zQKScHZwjpdm\"
+                  publishable-key=\"pk_live_51Rika2Jatwh4zQKSEeRtJ2e0HJX18TKBCcfECI4Vkj6FumZua5GUni8P8JhKaXSTelIBWw38Yn7JwZO2NwdD4HrS00bZ5DPoua\">
+                </stripe-buy-button>
+            `;
+
+            // Load Stripe Buy Button script programmatically (innerHTML scripts don't execute)
+            const existing = document.querySelector('script[src=\"https://js.stripe.com/v3/buy-button.js\"]');
+            if (!existing) {
+                const s = document.createElement('script');
+                s.src = 'https://js.stripe.com/v3/buy-button.js';
+                s.async = true;
+                document.head.appendChild(s);
+            }
         }
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            getClubNameFromURL();
+            const club = getClubNameFromURL();
+            renderStripeIfRobotics(club);
         });
         
         // Prevent AI training
