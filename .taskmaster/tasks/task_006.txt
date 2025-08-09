@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Develop Volunteer Signup & Management APIs
+# Status: pending
+# Dependencies: 2, 3, 4
+# Priority: medium
+# Description: Create endpoints for volunteer signup and management with minimal PII collection and validation.
+# Details:
+Implement POST /api/volunteers and related GET endpoints. Validate input, restrict PII to essentials. Enforce club association and role-based access.
+
+# Test Strategy:
+Test volunteer signup with valid/invalid data, verify minimal PII storage, and check access controls.

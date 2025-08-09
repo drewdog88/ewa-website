@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Initialize Project Repository and Environment
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Set up the project repository, configure environment files for local and production, and prepare Vercel/Neon PostgreSQL integration.
+# Details:
+Create a Git repository. Add .env.local for local development and configure Vercel environment variables for production. Set up Neon PostgreSQL connection using environment variables. Scaffold Node.js/Express backend and static HTML frontend structure.
+
+# Test Strategy:
+Verify repository initialization, environment variable loading, and successful connection to Neon PostgreSQL in both local and Vercel environments.

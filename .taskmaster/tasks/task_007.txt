@@ -1,0 +1,11 @@
+# Task ID: 7
+# Title: Implement 1099/W-9 Workflow APIs and Secure File Handling
+# Status: pending
+# Dependencies: 2, 3, 4, 5
+# Priority: high
+# Description: Develop endpoints for 1099 management, secure W-9 upload via Vercel Blob, and admin review tools.
+# Details:
+Implement GET /api/1099, POST /api/1099/upload-w9, and admin review endpoints. Validate file type/size, scan for malware, store metadata in DB. Join officer/club data for 1099 records. Ensure no raw SSN exposure in logs/UI.
+
+# Test Strategy:
+Test W-9 upload with allowed/disallowed files, verify malware scan, check admin review completeness, and confirm SSN masking.

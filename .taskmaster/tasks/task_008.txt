@@ -1,0 +1,11 @@
+# Task ID: 8
+# Title: Implement Frontend Static HTML & Vanilla JS Pages
+# Status: pending
+# Dependencies: 3, 4, 5, 6, 7
+# Priority: medium
+# Description: Build responsive, accessible HTML pages for all user flows with semantic markup and minimal JS.
+# Details:
+Create public, volunteer, officer, and admin pages. Use semantic HTML, ARIA attributes, and vanilla JS for interactivity. Ensure forms have validation and clear feedback. Avoid heavy JS frameworks.
+
+# Test Strategy:
+Manual and automated accessibility tests (WCAG), responsiveness checks, and form validation tests.

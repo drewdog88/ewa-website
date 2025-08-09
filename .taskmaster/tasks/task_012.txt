@@ -1,0 +1,11 @@
+# Task ID: 12
+# Title: Documentation and Accessibility Compliance
+# Status: pending
+# Dependencies: 8, 9, 10, 11
+# Priority: medium
+# Description: Maintain up-to-date documentation and ensure accessibility compliance across the site.
+# Details:
+Update README.md, ENV_SETUP.md, backup/logging docs as features evolve. Perform accessibility audit and remediate issues. Document API endpoints, roles, and workflows.
+
+# Test Strategy:
+Review documentation for completeness and accuracy. Run accessibility audit tools and manual checks to ensure WCAG compliance.

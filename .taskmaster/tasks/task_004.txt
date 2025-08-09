@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: Develop Booster Club CRUD APIs
+# Status: pending
+# Dependencies: 2, 3
+# Priority: high
+# Description: Create RESTful endpoints for managing booster clubs with validation and referential integrity.
+# Details:
+Implement GET/POST/PUT/DELETE /api/clubs endpoints in Express. Validate input, enforce normalized relationships, and use parameterized queries. Ensure only authorized users (Admin/Club Officer) can modify clubs.
+
+# Test Strategy:
+Unit and integration tests for all CRUD operations. Validate input, check referential integrity, and verify role restrictions.
