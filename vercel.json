@@ -20,6 +20,10 @@
     {
       "src": "data/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "zelle-standardized/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
