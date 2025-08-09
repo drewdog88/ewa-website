@@ -275,25 +275,12 @@
 
             container.style.display = 'block';
             container.innerHTML = `
-                <div class=\"stripe-links\">
-                  <a class=\"stripe-btn\" href=\"https://buy.stripe.com/28EaEY7Bf4ah0al24LbQY01\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Pay with credit card via Stripe\">
-                    Pay with Card (Stripe)
+                <div class="stripe-links">
+                  <a class="stripe-btn" href="https://buy.stripe.com/3cIbJ2g7L0Y59KVeRxbQY02" target="_blank" rel="noopener noreferrer" aria-label="Donate or pay now via Stripe">
+                    Donate/Pay Now (Stripe)
                   </a>
                 </div>
-                <stripe-buy-button
-                  buy-button-id=\"buy_btn_1Ru0H5Jatwh4zQKScHZwjpdm\"
-                  publishable-key=\"pk_live_51Rika2Jatwh4zQKSEeRtJ2e0HJX18TKBCcfECI4Vkj6FumZua5GUni8P8JhKaXSTelIBWw38Yn7JwZO2NwdD4HrS00bZ5DPoua\">
-                </stripe-buy-button>
             `;
-
-            // Load Stripe Buy Button script programmatically (innerHTML scripts don't execute)
-            const existing = document.querySelector('script[src=\"https://js.stripe.com/v3/buy-button.js\"]');
-            if (!existing) {
-                const s = document.createElement('script');
-                s.src = 'https://js.stripe.com/v3/buy-button.js';
-                s.async = true;
-                document.head.appendChild(s);
-            }
         }
         
         // Initialize page
