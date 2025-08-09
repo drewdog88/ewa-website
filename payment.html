@@ -141,6 +141,10 @@
             line-height: 1.8;
         }
 
+        /* Zelle QR styling */
+        .zelle-qr { margin: 12px 0 18px; text-align: center; }
+        .zelle-qr img { max-width: 320px; width: 100%; height: auto; border: 1px solid #dee2e6; border-radius: 8px; }
+
         .stripe-links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
         .stripe-btn { background-color: #635bff; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; display: inline-block; }
         .stripe-btn:hover { background-color: #5446ff; }
@@ -216,6 +220,7 @@
         
         <div class="payment-section">
             <h3>Zelle® Payments</h3>
+            <div id="zelleQRContainer" class="zelle-qr" style="display:none;" aria-hidden="true"></div>
             <p>Please make sure to include the student name, student number and a short description of the purpose. Indicate if this is a <strong>donation</strong>, <strong>service</strong> or <strong>product</strong>, include your email address so that we can send you a tax-receipt</p>
             
             <p>Example: <code>donation: 123456, Jane Doe, donor_email@gmail.com</code></p>
@@ -282,11 +287,26 @@
                 </div>
             `;
         }
+
+        function renderZelleQRIfRobotics(clubName) {
+            const normalized = (clubName || '').trim();
+            if (normalized.toLowerCase() !== 'eastlake robotics club') return;
+
+            const qrContainer = document.getElementById('zelleQRContainer');
+            if (!qrContainer) return;
+
+            qrContainer.style.display = 'block';
+            qrContainer.setAttribute('aria-hidden', 'false');
+            qrContainer.innerHTML = `
+                <img src="zelle-standardized/robotics.jpg" alt="Zelle QR code for Eastlake Robotics Club" loading="lazy">
+            `;
+        }
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             const club = getClubNameFromURL();
             renderStripeIfRobotics(club);
+            renderZelleQRIfRobotics(club);
         });
         
         // Prevent AI training
