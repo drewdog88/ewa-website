@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Design and Implement Database Schema & Migrations
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create normalized PostgreSQL schema for clubs, officers, volunteers, forms_1099, and indexes. Implement safe, reversible migrations.
+# Details:
+Define tables: booster_clubs, officers, volunteers, forms_1099 with UUID PKs and FKs. Add indexes on club_id, officer_id, tax_year. Use migration tool (e.g., Prisma, Drizzle, or node-pg-migrate) for schema changes. Include pre/post verification scripts for integrity.
+
+# Test Strategy:
+Run migrations locally and on staging. Validate referential integrity, rollback capability, and index presence. Check for data consistency after migration.

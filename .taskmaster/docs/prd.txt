@@ -1,0 +1,109 @@
+﻿EWA Website (Eastlake Wolfpack Association) - Product Requirements Document
+
+1. Overview
+- Purpose: Modernize and maintain the EWA website to manage booster clubs, officers, volunteers, and 1099 tax workflows with strong security and privacy controls.
+- Users: Public visitors, Volunteers, Club Officers, Site Admins.
+- Platforms: Desktop and mobile web. Deployed on Vercel with Neon PostgreSQL.
+- Scope: Backend APIs (Node.js/Express), PostgreSQL schema/migrations, static/HTML frontend with vanilla JS, secure file handling (W-9), admin workflows, logging and backups.
+
+2. Goals
+- Provide secure role-based management for clubs, officers, and volunteers.
+- Support 1099 processing with W-9 upload/storage and officer data integrity.
+- Maintain strong PII protections and compliance with US/Washington state privacy laws.
+- Ensure reliable backups and easy rollback with tested migrations.
+- Keep the site responsive, accessible (WCAG), and performant.
+
+3. Non-Goals
+- No heavy frontend frameworks (React/Vue). Use vanilla JS and semantic HTML.
+- No client-side storage of sensitive data beyond necessary session tokens.
+
+4. Technical Stack & Constraints
+- Node.js LTS, Express for RESTful APIs.
+- Neon PostgreSQL with parameterized queries; UUID primary keys.
+- Vercel serverless deployment; Vercel Blob for secure file uploads (W-9s).
+- Environment separation: .env.local for local, production env vars on Vercel.
+- Logging via centralized logger; audit-critical actions logged.
+- Backups: automated, restorable; integrity verified.
+
+5. Roles & Permissions
+- Public Visitor: View public pages only.
+- Volunteer: Sign up, view volunteer info relevant to a club; minimal PII access.
+- Club Officer: Manage own club's officers, volunteers, and 1099/W-9 submissions for their club; no cross-club access.
+- Admin: Global management of clubs, officers, volunteers, 1099, and system settings.
+
+6. Core Functional Requirements
+6.1 Booster Club Management
+- CRUD clubs with normalized relationships (use club_id).
+- Assign officers to clubs with start/end dates and roles.
+- Maintain referential integrity and indexing on commonly queried fields.
+
+6.2 Officers & Volunteers
+- Officers: Create/update with validated PII (e.g., email, phone; SSN never exposed in plaintext).
+- Volunteers: Signup forms with input validation and minimal PII collection.
+- Import officers from CSV with server-side validation and duplicate detection.
+
+6.3 1099 / W-9 Workflow
+- Secure W-9 file upload via Vercel Blob with type/size validation and malware scan hook.
+- Officer information is the single source of truth; 1099 records join via club_id and officer identifiers.
+- Admin review screen to verify completeness and flags (missing W-9, invalid data).
+- Export data needed for 1099 filing without exposing raw SSN in logs or UI.
+
+6.4 Authentication & Authorization
+- Login for Admin/Officers with secure session tokens/cookies; role checks on all protected routes.
+- Session expiration and CSRF protection for form submissions.
+
+6.5 Security, Privacy, Compliance
+- Validate and sanitize all inputs; enforce parameterized SQL.
+- Do not log PII/SSN; mask sensitive fields where display is necessary.
+- Strict access controls; least-privilege principle across roles.
+
+6.6 Backups & Migrations
+- Automated nightly backups of critical tables and blobs; integrity checks.
+- Safe, reversible migrations with pre/post verification scripts; tested both locally and on production (staging first if available).
+
+6.7 Observability & Error Handling
+- Structured logging with correlation IDs for API requests.
+- Clear error messages without leaking sensitive details.
+- Health check endpoint for uptime monitoring.
+
+6.8 Frontend UX
+- Accessible, responsive HTML pages; clear form validation and user feedback.
+- Avoid heavy JS; keep bundle small and fast.
+
+7. API Endpoints (Illustrative)
+- Auth: POST /api/login, GET /api/health.
+- Clubs: GET/POST /api/clubs, GET/PUT /api/clubs/:id.
+- Officers: GET/POST /api/officers, PUT /api/officers/:id.
+- Volunteers: POST /api/volunteers.
+- 1099: GET /api/1099, POST /api/1099/upload-w9 (blob upload), admin review endpoints.
+
+8. Data Model (High Level)
+- booster_clubs(id uuid, name, ...)
+- officers(id uuid, club_id uuid FK, name, email, phone, ssn_hash_or_token, w9_blob_ref, ...)
+- volunteers(id uuid, club_id uuid FK, name, email, phone, ...)
+- forms_1099(id uuid, officer_id uuid FK, club_id uuid FK, tax_year, status, ...)
+- Indexes on club_id, officer_id, tax_year where appropriate.
+
+9. Acceptance Criteria (High Level)
+- CRUD flows for clubs/officers/volunteers function with validation and role checks.
+- W-9 upload only accepts allowed MIME types, max size, and stores via Vercel Blob; metadata stored in DB.
+- Admin can review 1099 readiness; exports do not expose SSN.
+- All DB queries parameterized; no SQL injection vectors detected.
+- Automated backups verifiable and restorable.
+- App passes basic performance budget and mobile responsiveness checks.
+
+10. Milestones
+- M1: Initialize tasks, baseline schema verification, health checks, logging.
+- M2: Club and officer CRUD + CSV import with validation.
+- M3: Volunteer signup and management.
+- M4: 1099/W-9 secure upload and admin review tools.
+- M5: Backups, migrations hardening, documentation, and accessibility pass.
+
+11. Risks & Mitigations
+- PII exposure: Strict input validation, masking, avoid logging sensitive data.
+- Data integrity: FK constraints, migrations tested, backups verified.
+- Performance: Indexing hot paths, simple frontend, efficient queries.
+- Compliance: Follow applicable state and federal privacy regulations.
+
+12. Documentation
+- Update README.md, ENV_SETUP.md, backup and logging docs as features evolve.

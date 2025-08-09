@@ -1,0 +1,192 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Project Repository and Environment",
+        "description": "Set up the project repository, configure environment files for local and production, and prepare Vercel/Neon PostgreSQL integration.",
+        "details": "Create a Git repository. Add .env.local for local development and configure Vercel environment variables for production. Set up Neon PostgreSQL connection using environment variables. Scaffold Node.js/Express backend and static HTML frontend structure.",
+        "testStrategy": "Verify repository initialization, environment variable loading, and successful connection to Neon PostgreSQL in both local and Vercel environments.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Design and Implement Database Schema & Migrations",
+        "description": "Create normalized PostgreSQL schema for clubs, officers, volunteers, forms_1099, and indexes. Implement safe, reversible migrations.",
+        "details": "Define tables: booster_clubs, officers, volunteers, forms_1099 with UUID PKs and FKs. Add indexes on club_id, officer_id, tax_year. Use migration tool (e.g., Prisma, Drizzle, or node-pg-migrate) for schema changes. Include pre/post verification scripts for integrity.",
+        "testStrategy": "Run migrations locally and on staging. Validate referential integrity, rollback capability, and index presence. Check for data consistency after migration.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Role-Based Authentication & Authorization",
+        "description": "Develop secure login for Admin/Officers, session management, and enforce role checks on protected routes.",
+        "details": "Use Express middleware for authentication. Store session tokens/cookies securely. Implement CSRF protection for forms. Enforce role-based access control for all API endpoints. Mask sensitive fields in responses.",
+        "testStrategy": "Test login/logout flows, session expiration, CSRF protection, and access restrictions for each role. Attempt privilege escalation and verify denial.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Develop Booster Club CRUD APIs",
+        "description": "Create RESTful endpoints for managing booster clubs with validation and referential integrity.",
+        "details": "Implement GET/POST/PUT/DELETE /api/clubs endpoints in Express. Validate input, enforce normalized relationships, and use parameterized queries. Ensure only authorized users (Admin/Club Officer) can modify clubs.",
+        "testStrategy": "Unit and integration tests for all CRUD operations. Validate input, check referential integrity, and verify role restrictions.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Develop Officer Management APIs & CSV Import",
+        "description": "Create endpoints for officer CRUD, PII validation, and CSV import with duplicate detection.",
+        "details": "Implement GET/POST/PUT /api/officers and CSV import endpoint. Validate officer data (email, phone), never expose SSN in plaintext. Detect duplicates server-side. Assign officers to clubs with start/end dates and roles.",
+        "testStrategy": "Test CRUD flows, input validation, CSV import with valid/invalid data, and duplicate detection. Ensure SSN is never exposed.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Develop Volunteer Signup & Management APIs",
+        "description": "Create endpoints for volunteer signup and management with minimal PII collection and validation.",
+        "details": "Implement POST /api/volunteers and related GET endpoints. Validate input, restrict PII to essentials. Enforce club association and role-based access.",
+        "testStrategy": "Test volunteer signup with valid/invalid data, verify minimal PII storage, and check access controls.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3,
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement 1099/W-9 Workflow APIs and Secure File Handling",
+        "description": "Develop endpoints for 1099 management, secure W-9 upload via Vercel Blob, and admin review tools.",
+        "details": "Implement GET /api/1099, POST /api/1099/upload-w9, and admin review endpoints. Validate file type/size, scan for malware, store metadata in DB. Join officer/club data for 1099 records. Ensure no raw SSN exposure in logs/UI.",
+        "testStrategy": "Test W-9 upload with allowed/disallowed files, verify malware scan, check admin review completeness, and confirm SSN masking.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Frontend Static HTML & Vanilla JS Pages",
+        "description": "Build responsive, accessible HTML pages for all user flows with semantic markup and minimal JS.",
+        "details": "Create public, volunteer, officer, and admin pages. Use semantic HTML, ARIA attributes, and vanilla JS for interactivity. Ensure forms have validation and clear feedback. Avoid heavy JS frameworks.",
+        "testStrategy": "Manual and automated accessibility tests (WCAG), responsiveness checks, and form validation tests.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Integrate Structured Logging and Audit Trails",
+        "description": "Set up centralized logging for API requests, audit-critical actions, and error handling with correlation IDs.",
+        "details": "Use a logging library (e.g., Winston, Pino) to log API requests, errors, and critical actions. Mask PII in logs. Assign correlation IDs to requests for traceability. Store logs securely.",
+        "testStrategy": "Trigger API requests and critical actions, verify logs contain correlation IDs, and confirm no PII leakage. Test error logging and audit trails.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Automate Backups and Migration Integrity Checks",
+        "description": "Implement nightly backups of critical tables and blobs, with integrity verification and restore capability.",
+        "details": "Schedule automated backups using Neon PostgreSQL and Vercel Blob APIs. Implement integrity checks post-backup. Provide restore scripts and test on staging before production.",
+        "testStrategy": "Run backup jobs, verify integrity checks, and perform restore tests on staging. Validate backup completeness and data consistency.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Health Check Endpoint and Error Messaging",
+        "description": "Create a health check endpoint for uptime monitoring and ensure clear, non-sensitive error messages throughout the app.",
+        "details": "Add GET /api/health endpoint. Standardize error responses to avoid leaking sensitive details. Monitor uptime and error rates.",
+        "testStrategy": "Test health check endpoint under normal and failure conditions. Review error messages for clarity and absence of sensitive info.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Documentation and Accessibility Compliance",
+        "description": "Maintain up-to-date documentation and ensure accessibility compliance across the site.",
+        "details": "Update README.md, ENV_SETUP.md, backup/logging docs as features evolve. Perform accessibility audit and remediate issues. Document API endpoints, roles, and workflows.",
+        "testStrategy": "Review documentation for completeness and accuracy. Run accessibility audit tools and manual checks to ensure WCAG compliance.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-09T00:01:44.976Z",
+      "updated": "2025-08-09T00:01:44.976Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

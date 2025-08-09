@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Implement Role-Based Authentication & Authorization
+# Status: pending
+# Dependencies: 1, 2
+# Priority: high
+# Description: Develop secure login for Admin/Officers, session management, and enforce role checks on protected routes.
+# Details:
+Use Express middleware for authentication. Store session tokens/cookies securely. Implement CSRF protection for forms. Enforce role-based access control for all API endpoints. Mask sensitive fields in responses.
+
+# Test Strategy:
+Test login/logout flows, session expiration, CSRF protection, and access restrictions for each role. Attempt privilege escalation and verify denial.

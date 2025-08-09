@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Develop Officer Management APIs & CSV Import
+# Status: pending
+# Dependencies: 2, 3, 4
+# Priority: high
+# Description: Create endpoints for officer CRUD, PII validation, and CSV import with duplicate detection.
+# Details:
+Implement GET/POST/PUT /api/officers and CSV import endpoint. Validate officer data (email, phone), never expose SSN in plaintext. Detect duplicates server-side. Assign officers to clubs with start/end dates and roles.
+
+# Test Strategy:
+Test CRUD flows, input validation, CSV import with valid/invalid data, and duplicate detection. Ensure SSN is never exposed.
