@@ -155,8 +155,8 @@
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: center;
+            gap: 40px;
+            align-items: start;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -176,20 +176,9 @@
             margin: 0;
         }
         
-        .content-right {
-            text-align: center;
-        }
+        .content-right { align-self: start; }
         
-        .wolf-logo {
-            width: 400px;
-            height: 400px;
-            background: url('../assets/ewa-wolf.jpg') no-repeat center;
-            background-size: contain;
-            /* Performance optimization: will-change for GPU acceleration */
-            will-change: transform;
-            /* Optimize for animations */
-            transform: translateZ(0);
-        }
+        .wolf-logo { display: none; }
         
 
         
@@ -237,12 +226,7 @@
         }
         
         /* Clubs Section */
-        .clubs-section {
-            margin-top: 100px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+        .clubs-section { margin-top: 0; }
         
         .clubs-section h2 {
             font-size: 2.5rem;
@@ -489,17 +473,14 @@
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
-                gap: 40px;
+                gap: 24px;
             }
             
             .content-left h1 {
                 font-size: 2.5rem;
             }
             
-            .wolf-logo {
-                width: 300px;
-                height: 300px;
-            }
+            .wolf-logo { display: none; }
             
             .header {
                 flex-direction: column;
@@ -540,9 +521,43 @@
             <p>The Eastlake Wolfpack Association (EWA) is dedicated to supporting and enhancing the athletic programs at Eastlake High School. We work closely with booster clubs, coaches, and the community to provide resources, funding, and opportunities for our student-athletes to excel both on and off the field.</p>
         </div>
         <div class="content-right">
-            <div class="wolf-logo"></div>
+            <!-- Move Clubs section here to appear alongside the intro -->
+            <section class="clubs-section">
+                <h2>Clubs associated with EWA</h2>
+                
+                <!-- Existing clubs markup moved from below -->
+                <div class="club-card">
+                    <div class="club-header">
+                        <div class="club-name">EWA Eastlake Wolfpack Association</div>
+                        <div class="club-toggle">+</div>
+                    </div>
+                    <div class="club-content">
+                        <div class="club-description">The main Eastlake Wolfpack Association organization that coordinates all booster clubs and activities. We support Eastlake High School athletics and activities by providing resources, organizing events, and fostering a community of volunteers and supporters. Our mission is to enhance the overall experience for students and promote the values of teamwork, sportsmanship, and dedication.</div>
+                        <div class="club-actions">
+                            <a href="payment.html?club=EWA%20Eastlake%20Wolfpack%20Association" class="club-donate-btn">Pay Fees/Membership/Donate</a>
+                            <a href="https://ewa-website.vercel.app" target="_blank" class="club-website-btn">Visit Website</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="club-card">
+                    <div class="club-header">
+                        <div class="club-name">EHS Band Boosters</div>
+                        <div class="club-toggle">+</div>
+                    </div>
+                    <div class="club-content">
+                        <div class="club-description">The EHS Band Boosters is dedicated to supporting the Eastlake High School band program. Our mission is to enhance the musical experience for students by providing financial support, organizing events, and fostering a community of enthusiastic supporters. We aim to ensure that every band member has the resources and opportunities to excel in their musical journey.</div>
+                        <div class="club-actions">
+                            <a href="payment.html?club=EHS%20Band%20Boosters" class="club-donate-btn">Pay Fees/Membership/Donate</a>
+                            <a href="https://ehsbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- The rest of the club cards remain unchanged below -->
+            </section>
         </div>
-    </div>
+    </main>
 
 
 
@@ -573,37 +588,9 @@
         </div>
     </div>
 
+    <!-- Clubs list continues in right column; remove duplicate top two cards from bottom section -->
     <!-- Clubs Section -->
     <div class="clubs-section">
-        <h2>Clubs associated with EWA</h2>
-        
-        <div class="club-card">
-            <div class="club-header">
-                <div class="club-name">EWA Eastlake Wolfpack Association</div>
-                <div class="club-toggle">+</div>
-            </div>
-            <div class="club-content">
-                <div class="club-description">The main Eastlake Wolfpack Association organization that coordinates all booster clubs and activities. We support Eastlake High School athletics and activities by providing resources, organizing events, and fostering a community of volunteers and supporters. Our mission is to enhance the overall experience for students and promote the values of teamwork, sportsmanship, and dedication.</div>
-                <div class="club-actions">
-                    <a href="payment.html?club=EWA%20Eastlake%20Wolfpack%20Association" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://ewa-website.vercel.app" target="_blank" class="club-website-btn">Visit Website</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="club-card">
-            <div class="club-header">
-                <div class="club-name">EHS Band Boosters</div>
-                <div class="club-toggle">+</div>
-            </div>
-            <div class="club-content">
-                <div class="club-description">The EHS Band Boosters is dedicated to supporting the Eastlake High School band program. Our mission is to enhance the musical experience for students by providing financial support, organizing events, and fostering a community of enthusiastic supporters. We aim to ensure that every band member has the resources and opportunities to excel in their musical journey.</div>
-                <div class="club-actions">
-                    <a href="payment.html?club=EHS%20Band%20Boosters" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://ehsbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
-                </div>
-            </div>
-        </div>
 
         <div class="club-card">
             <div class="club-header">
