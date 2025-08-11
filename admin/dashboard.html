@@ -1149,6 +1149,11 @@
                 
                 // Update URL hash for proper browser navigation
                 window.location.hash = sectionId;
+                
+                // Load security dashboard data when that section is shown
+                if (sectionId === 'security-dashboard') {
+                    loadSecurityDashboardData();
+                }
             });
         });
         
@@ -3708,6 +3713,186 @@
             alert('Error deleting submission. Please try again.');
         }
     }
+
+    // ===== SECURITY DASHBOARD FUNCTIONS =====
+    
+    // Load dashboard data
+    async function loadSecurityDashboard() {
+        try {
+            const response = await fetch('/api/security/dashboard');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateSecurityScore(data.data.securityScore);
+                updateVulnerabilities(data.data.vulnerabilities);
+                updateRecommendations(data.data.recommendations);
+                updateLastScan(data.data.lastScan);
+            }
+        } catch (error) {
+            console.error('Error loading security dashboard:', error);
+        }
+    }
+
+    // Update security score
+    function updateSecurityScore(score) {
+        const scoreElement = document.getElementById('securityScore');
+        if (scoreElement) {
+            scoreElement.textContent = score;
+        }
+    }
+
+    // Update vulnerabilities
+    function updateVulnerabilities(vulns) {
+        const countElement = document.getElementById('vulnerabilityCount');
+        const criticalElement = document.getElementById('criticalCount');
+        const highElement = document.getElementById('highCount');
+        const moderateElement = document.getElementById('moderateCount');
+        const lowElement = document.getElementById('lowCount');
+        
+        if (vulns) {
+            const total = (vulns.critical || 0) + (vulns.high || 0) + (vulns.moderate || 0) + (vulns.low || 0);
+            
+            if (countElement) countElement.textContent = total;
+            if (criticalElement) criticalElement.textContent = vulns.critical || 0;
+            if (highElement) highElement.textContent = vulns.high || 0;
+            if (moderateElement) moderateElement.textContent = vulns.moderate || 0;
+            if (lowElement) lowElement.textContent = vulns.low || 0;
+        }
+    }
+
+    // Update recommendations
+    function updateRecommendations(recommendations) {
+        const container = document.getElementById('securityRecommendations');
+        
+        if (!recommendations || recommendations.length === 0) {
+            container.innerHTML = '<p>No recommendations available.</p>';
+            return;
+        }
+
+        let html = '<ul>';
+        recommendations.forEach(rec => {
+            html += `
+                <li>
+                    <strong>${rec.priority.toUpperCase()}: ${rec.category}</strong><br>
+                    ${rec.message}<br>
+                    <em>Action: ${rec.action}</em>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        
+        container.innerHTML = html;
+    }
+
+    // Update last scan time
+    function updateLastScan(timestamp) {
+        if (timestamp) {
+            const date = new Date(timestamp);
+            console.log('Last security scan:', date.toLocaleString());
+        }
+    }
+
+    // Run security scan
+    async function runSecurityScan() {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '🔍 Scanning...';
+        button.disabled = true;
+
+        try {
+            const response = await fetch('/api/security/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Security scan completed successfully!');
+                loadSecurityDashboard(); // Refresh dashboard
+            } else {
+                alert('Security scan failed: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error running security scan:', error);
+            alert('Error running security scan');
+        } finally {
+            button.textContent = originalText;
+            button.disabled = false;
+        }
+    }
+
+    // Run test coverage
+    async function runTestCoverage() {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '🧪 Running Tests...';
+        button.disabled = true;
+
+        try {
+            const response = await fetch('/api/security/test-coverage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(`Test coverage completed!\nPassed: ${data.data.passedTests}\nFailed: ${data.data.failedTests}\nCoverage: ${data.data.coverage}%`);
+                loadCoverageData();
+            } else {
+                alert('Test coverage failed: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error running test coverage:', error);
+            alert('Error running test coverage');
+        } finally {
+            button.textContent = originalText;
+            button.disabled = false;
+        }
+    }
+
+    // Load coverage data
+    async function loadCoverageData() {
+        try {
+            const response = await fetch('/api/security/coverage');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateCoverage(data.data.overallCoverage);
+            }
+        } catch (error) {
+            console.error('Error loading coverage:', error);
+        }
+    }
+
+    // Update coverage display
+    function updateCoverage(coverage) {
+        const container = document.getElementById('codeCoverage');
+        if (container) {
+            container.textContent = coverage + '%';
+        }
+    }
+
+    // View security report
+    function viewSecurityReport() {
+        window.open('/api/security/report', '_blank');
+    }
+
+    // Load security dashboard data when section is shown
+    function loadSecurityDashboardData() {
+        loadSecurityDashboard();
+        loadCoverageData();
+    }
+
+    // Add event listener for security dashboard section
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check if we're on the security dashboard section
+        const securitySection = document.getElementById('security-dashboard');
+        if (securitySection && securitySection.style.display !== 'none') {
+            loadSecurityDashboardData();
+        }
+    });
 
 
 </script>
