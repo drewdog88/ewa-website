@@ -22,7 +22,6 @@ const requireAdmin = (req, res, next) => {
 // Get security dashboard data
 app.get('/api/security/dashboard', requireAdmin, async (req, res) => {
   try {
-    const reportPath = path.join(__dirname, '..', 'security-report.json');
     let securityData = {
       lastScan: null,
       vulnerabilities: { critical: 0, high: 0, moderate: 0, low: 0 },
@@ -31,7 +30,27 @@ app.get('/api/security/dashboard', requireAdmin, async (req, res) => {
       recommendations: []
     };
 
-    // Load existing report if available
+    // Try to get security data from Vercel Blob first
+    try {
+      const blob = await get('security-report.json');
+      if (blob) {
+        const response = await fetch(blob.url);
+        const reportData = await response.json();
+        
+        securityData = {
+          lastScan: reportData.summary.timestamp,
+          vulnerabilities: reportData.details.dependencies.severityCounts || { critical: 0, high: 0, moderate: 0, low: 0 },
+          codeIssues: reportData.summary.totalIssues,
+          securityScore: calculateSecurityScore(reportData),
+          recommendations: reportData.details.recommendations || []
+        };
+      }
+    } catch (blobError) {
+      console.log('No security data found in Blob, trying local fallback');
+    }
+
+    // Fallback: Load existing report from local file if available
+    const reportPath = path.join(__dirname, '..', 'security-report.json');
     if (fs.existsSync(reportPath)) {
       const reportData = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
       securityData = {
@@ -67,6 +86,22 @@ app.post('/api/security/scan', requireAdmin, async (req, res) => {
     
     const securityScore = scanner.getSecurityScore();
     
+    // Store security report in Vercel Blob
+    try {
+      const blob = await put('security-report.json', JSON.stringify(report, null, 2), {
+        access: 'public',
+        addRandomSuffix: false
+      });
+      
+      console.log('Security report stored in Blob:', blob.url);
+    } catch (blobError) {
+      console.error('Failed to store security report in Blob:', blobError);
+    }
+    
+    // Also save locally as fallback
+    const reportPath = path.join(__dirname, '..', 'security-report.json');
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+    
     res.json({
       success: true,
       message: 'Security scan completed',
@@ -89,6 +124,24 @@ app.post('/api/security/scan', requireAdmin, async (req, res) => {
 // Get detailed security report
 app.get('/api/security/report', requireAdmin, async (req, res) => {
   try {
+    // Try to get security report from Vercel Blob first
+    try {
+      const blob = await get('security-report.json');
+      if (blob) {
+        const response = await fetch(blob.url);
+        const reportData = await response.json();
+        
+        res.json({
+          success: true,
+          data: reportData
+        });
+        return;
+      }
+    } catch (blobError) {
+      console.log('No security report found in Blob, trying local fallback');
+    }
+    
+    // Fallback: Load from local file
     const reportPath = path.join(__dirname, '..', 'security-report.json');
     
     if (!fs.existsSync(reportPath)) {
