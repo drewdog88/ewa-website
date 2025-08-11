@@ -190,6 +190,7 @@
                 <li><a href="#insurance" class="nav-link" data-section="insurance">Insurance Forms</a></li>
                             <li><a href="#1099" class="nav-link" data-section="1099">1099 Information</a></li>
             <li><a href="#profile" class="nav-link" data-section="profile">Security Settings</a></li>
+            <li class="admin-only"><a href="#security-dashboard" class="nav-link" data-section="security-dashboard">Security Dashboard</a></li>
             <li class="admin-only"><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
                                            <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
                                <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
@@ -968,6 +969,73 @@
                             </div>
                         </div>
                         <button class="action-btn" onclick="resetPassword()">Reset Password</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Dashboard Section -->
+            <div id="security-dashboard" class="content-section">
+                <div class="section-header">
+                    <h2>Security Dashboard</h2>
+                    <p>Monitor security posture, vulnerabilities, and code coverage for the EWA website.</p>
+                </div>
+                
+                <div class="security-overview">
+                    <div class="security-metrics">
+                        <div class="metric-card">
+                            <h3>Security Score</h3>
+                            <div class="metric-value" id="securityScore">Loading...</div>
+                            <div class="metric-label">Overall security rating</div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <h3>Vulnerabilities</h3>
+                            <div class="metric-value" id="vulnerabilityCount">Loading...</div>
+                            <div class="metric-label">Total issues found</div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <h3>Code Coverage</h3>
+                            <div class="metric-value" id="codeCoverage">Loading...</div>
+                            <div class="metric-label">Test coverage percentage</div>
+                        </div>
+                    </div>
+                    
+                    <div class="security-actions">
+                        <button class="action-btn" onclick="runSecurityScan()">🔍 Run Security Scan</button>
+                        <button class="action-btn" onclick="runTestCoverage()">🧪 Run Test Coverage</button>
+                        <button class="action-btn secondary" onclick="viewSecurityReport()">📄 View Full Report</button>
+                    </div>
+                </div>
+                
+                <div class="security-details">
+                    <div class="vulnerability-breakdown">
+                        <h3>Vulnerability Breakdown</h3>
+                        <div class="vuln-stats">
+                            <div class="vuln-item critical">
+                                <span class="vuln-label">Critical:</span>
+                                <span class="vuln-count" id="criticalCount">0</span>
+                            </div>
+                            <div class="vuln-item high">
+                                <span class="vuln-label">High:</span>
+                                <span class="vuln-count" id="highCount">0</span>
+                            </div>
+                            <div class="vuln-item moderate">
+                                <span class="vuln-label">Moderate:</span>
+                                <span class="vuln-count" id="moderateCount">0</span>
+                            </div>
+                            <div class="vuln-item low">
+                                <span class="vuln-label">Low:</span>
+                                <span class="vuln-count" id="lowCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendations">
+                        <h3>Security Recommendations</h3>
+                        <div id="securityRecommendations" class="recommendations-list">
+                            <p>Run a security scan to see recommendations.</p>
+                        </div>
                     </div>
                 </div>
             </div>
