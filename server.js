@@ -2351,6 +2351,10 @@ app.use(express.static('.', {
     immutable: process.env.NODE_ENV === 'production'
 }));
 
+// Security API routes
+const securityRoutes = require('./api/security');
+app.use('/api/security', securityRoutes);
+
 // Dashboard statistics endpoint
 app.get('/api/dashboard/stats', async (req, res) => {
     try {
