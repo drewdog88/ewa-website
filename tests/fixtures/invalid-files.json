@@ -1,0 +1,20 @@
+{
+  "exe": {
+    "filename": "malicious.exe",
+    "content": "MZ\x90\x00\x03\x00\x00\x00\x04\x00\x00\x00\xff\xff\x00\x00\xb8\x00\x00\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x00\x00\x00\x0e\x1f\xba\x0e\x00\xb4\t\xcd!\xb8\x01L\xcd!This program cannot be run in DOS mode.\r\r\n$\x00\x00\x00\x00\x00\x00\x00",
+    "mimeType": "application/x-msdownload",
+    "size": 128
+  },
+  "oversized": {
+    "filename": "large-file.pdf",
+    "content": "A".repeat(10 * 1024 * 1024), // 10MB
+    "mimeType": "application/pdf",
+    "size": 10 * 1024 * 1024
+  },
+  "empty": {
+    "filename": "empty.txt",
+    "content": "",
+    "mimeType": "text/plain",
+    "size": 0
+  }
+}

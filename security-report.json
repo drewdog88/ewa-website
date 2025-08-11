@@ -1,12 +1,12 @@
 {
   "summary": {
-    "timestamp": "2025-08-11T05:20:58.818Z",
+    "timestamp": "2025-08-11T18:36:59.194Z",
     "totalVulnerabilities": 0,
     "totalIssues": 0,
     "recommendations": 3
   },
   "details": {
-    "timestamp": "2025-08-11T05:20:58.818Z",
+    "timestamp": "2025-08-11T18:36:59.194Z",
     "vulnerabilities": [],
     "dependencies": {
       "vulnerabilities": {},
@@ -20,12 +20,12 @@
           "total": 0
         },
         "dependencies": {
-          "prod": 156,
-          "dev": 493,
-          "optional": 27,
-          "peer": 0,
+          "prod": 209,
+          "dev": 566,
+          "optional": 59,
+          "peer": 1,
           "peerOptional": 0,
-          "total": 674
+          "total": 801
         }
       },
       "advisories": {},
@@ -37,7 +37,7 @@
       }
     },
     "codeIssues": {
-      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ENOBUFS",
+      "error": "Command failed: npx eslint . --format json",
       "totalIssues": 0,
       "issues": [],
       "securityIssues": []
