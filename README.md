@@ -1,6 +1,6 @@
 # EWA Website
 
-A comprehensive website for the Eastlake Wolves Association (EWA) with admin panel, volunteer management, and file storage capabilities.
+A comprehensive website for the Eastlake Wolves Association (EWA) with admin panel, volunteer management, file storage capabilities, and complete backup management system.
 
 ## 🚀 Features
 
@@ -9,13 +9,14 @@ A comprehensive website for the Eastlake Wolves Association (EWA) with admin pan
 - **Dynamic team member loading** with Neon PostgreSQL database
 - **Enhanced session management** with secure authentication and dynamic user buttons
 - **Vercel Blob** file storage for documents and images
-- **Volunteer interest submission** and management
+- **Volunteer interest submission** and management with real-time dashboard updates
 - **Complete 1099 form management** with W9 file upload, CSV export, and bulk operations
 - **Insurance form management** with blob storage
 - **Document upload and management** with blob storage
-- **Analytics and reporting** capabilities
+- **Analytics and reporting** capabilities with dynamic dashboard statistics
 - **Comprehensive logging** and error handling
-- **Database backup and restore** functionality
+- **Advanced backup and restore** functionality with integrated dashboard management
+- **Officer management** with booster club relationships and bulk import capabilities
 - **Advanced navigation system** with hash-based routing and browser history support
 
 ## 🛠 Tech Stack
@@ -27,6 +28,7 @@ A comprehensive website for the Eastlake Wolves Association (EWA) with admin pan
 - **Deployment**: Vercel (serverless functions)
 - **Logging**: Structured JSON logging with size limits
 - **Environment**: Development and production configurations
+- **Backup System**: Dual-mode (local file system and Vercel Blob storage)
 
 ## 📋 Prerequisites
 
@@ -111,6 +113,7 @@ curl http://localhost:3000/api/officers
 - `GET /api/health` - Health check
 - `GET /api/officers` - Get all officers
 - `GET /api/officers/:club` - Get officers by club
+- `GET /api/officers/template` - Download officer import template
 
 ### Admin Endpoints
 - `POST /api/login` - Admin authentication
@@ -131,6 +134,19 @@ curl http://localhost:3000/api/officers
 - `PUT /api/1099/:id` - Update 1099 form data
 - `DELETE /api/1099/:id` - Delete 1099 form
 
+### Dashboard & Statistics
+- `GET /api/dashboard/stats` - Get dynamic dashboard statistics (officers, volunteers, forms)
+- `PUT /api/officers/:id` - Update officer information
+- `DELETE /api/officers/:id` - Delete officer
+
+### Backup Management
+- `GET /api/backup/status` - Get backup system status and statistics
+- `POST /api/backup/perform` - Perform manual backup
+- `GET /api/backup/list` - List all available backups
+- `GET /api/backup/download/:filename` - Download specific backup file
+- `POST /api/backup/restore` - Restore from backup
+- `POST /api/backup/cleanup` - Clean up old backups
+
 ### File Management
 - `POST /api/upload` - Upload files to Vercel Blob
 - `GET /api/documents` - Get all documents (admin only)
@@ -149,7 +165,27 @@ The 1099 module includes comprehensive form management:
 
 ## 🔧 Database Management
 
-### Backup and Restore
+### Backup and Restore System
+The backup system provides comprehensive data protection with dual-mode operation:
+
+**Local Development Mode**
+- Uses local file system for backup storage
+- SQL format backups with metadata
+- Direct file access for restore operations
+
+**Production Mode (Vercel)**
+- Uses Vercel Blob storage for backup files
+- JSON format backups with metadata
+- Secure blob URLs for download and restore
+
+**Features**
+- Automated scheduled backups (configurable)
+- Manual backup triggers
+- Backup history and status tracking
+- File size and storage usage monitoring
+- One-click restore functionality
+- Backup cleanup and retention management
+
 ```bash
 # Create backup
 node database/backup.js
@@ -200,6 +236,28 @@ vercel logs --since=1h
 - **Smart Navigation**: Automatic section switching with hash-based routing
 - **Browser History**: Full back/forward button support for all admin sections
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Real-time Statistics**: Dynamic dashboard with live data from database
+
+### Backup Management Interface
+- **Integrated Dashboard**: Seamless backup management within main admin panel
+- **Status Monitoring**: Real-time backup status, last backup time, and storage usage
+- **Manual Operations**: One-click backup creation and restore functionality
+- **History Display**: Complete backup history with file sizes and timestamps
+- **Download Support**: Direct download of backup files (local and blob storage)
+
+### Volunteer Management
+- **Interest Submission**: Public volunteer signup form with booster club selection
+- **Dashboard Integration**: Real-time volunteer data display in admin panel
+- **Status Tracking**: Pending/approved status management
+- **Data Export**: CSV export capabilities for volunteer data
+- **Club Association**: Automatic linking to booster club information
+
+### Officer Management
+- **Booster Club Integration**: Officers linked to specific booster clubs
+- **Bulk Import**: CSV template download and bulk officer import
+- **Edit Functionality**: In-place editing of officer information
+- **Club Assignment**: Dynamic club selection and assignment
+- **Data Validation**: Input validation and error handling
 
 ### 1099 Management Interface
 - **Bulk Operations**: Select all checkboxes with individual selection
@@ -225,12 +283,19 @@ vercel logs --since=1h
 - `.env.local` file ignored by Git
 - Production variables set in Vercel dashboard
 
+### Data Protection
+- **PII Handling**: Secure handling of sensitive personal information
+- **Input Validation**: Comprehensive validation and sanitization
+- **SQL Injection Prevention**: Parameterized queries throughout
+- **File Upload Security**: Type and size validation for all uploads
+
 ## 📁 Project Structure
 
 ```
 ewa_website/
 ├── admin/                 # Admin panel files
 │   ├── dashboard.html     # Main admin dashboard with dynamic UI
+│   ├── backup-management.html # Standalone backup management page
 │   └── login.html         # Admin login page
 ├── api/                   # Vercel serverless functions
 │   ├── 1099.js           # 1099 form management API
@@ -240,10 +305,15 @@ ewa_website/
 │   └── officers.js       # Officer management API
 ├── assets/               # Static assets (images, etc.)
 │   └── user-session.js   # Dynamic user session management
+├── backup/               # Backup system files
+│   ├── backup-manager.js # Local backup manager
+│   ├── backup-manager-serverless.js # Vercel backup manager
+│   └── backups/          # Local backup storage
 ├── data/                 # JSON data files (fallback)
 │   ├── 1099.json         # 1099 form data
 │   ├── officers.json     # Officer data
-│   └── volunteers.json   # Volunteer data
+│   ├── volunteers.json   # Volunteer data
+│   └── officer_import_template.csv # Officer import template
 ├── database/             # Database utilities
 │   ├── backup.js         # Backup and restore functionality
 │   ├── migrate-neon.js   # Database migration script
@@ -273,6 +343,11 @@ ewa_website/
 - Verify Vercel Blob service status
 - Check for rate limits or quotas
 
+**Backup System Issues**
+- Verify backup manager initialization
+- Check blob storage permissions
+- Review backup metadata table structure
+
 **Function Errors**
 - Check Vercel function logs
 - Verify environment variables
@@ -284,17 +359,26 @@ ewa_website/
 3. Test functions locally with same environment
 4. Check environment variable configuration
 5. Verify database and blob service status
+6. Use backup system for data recovery if needed
 
 ## 📈 Recent Updates
 
-### Major UI/UX Improvements (Latest)
+### Latest Major Features (Current)
+- **Integrated Backup Management**: Complete backup system with dashboard integration, status monitoring, and dual-mode operation (local/Vercel)
+- **Dynamic Dashboard Statistics**: Real-time statistics for officers, volunteers, and form counts
+- **Volunteer Management**: Enhanced volunteer system with 35 test volunteers across all booster clubs
+- **Officer Management**: Fixed club display and edit functionality with proper database relationships
+- **Template Download**: Officer import template download functionality for bulk operations
+- **Enhanced Error Handling**: Improved error responses and user feedback throughout the system
+
+### Previous Major Updates
 - **Dynamic Admin Button**: Replaced static logout with user name dropdown (Security Settings, Logout)
 - **1099 Functionality**: Complete overhaul with select all, CSV export, W9 download, and bulk operations
 - **Navigation System**: Comprehensive hash-based routing with browser history support
 - **Session Management**: Enhanced with proper logout error prevention and session validation
 - **Security Settings**: Renamed Profile Management for clarity and improved navigation
 
-### Previous Updates
+### Database & Infrastructure
 - **Neon Migration**: Migrated from Redis to Neon PostgreSQL for better reliability and backup capabilities
 - **Comprehensive Logging**: Implemented Vercel-friendly logging with size limits and structured format
 - **Error Handling**: Enhanced error handling with user-friendly messages and detailed logging
@@ -309,7 +393,7 @@ ewa_website/
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Test thoroughly (locally and on Vercel)
 5. Submit a pull request
 
 ## 📄 License

@@ -1,6 +1,8 @@
 {
-  "currentTag": "master",
-  "lastSwitched": "2025-08-08T23:57:05.773Z",
-  "branchTagMapping": {},
+  "currentTag": "security-audit",
+  "lastSwitched": "2025-08-11T04:52:55.062Z",
+  "branchTagMapping": {
+    "feature/stripe-robotics-payment": "feature-stripe-robotics-payment"
+  },
   "migrationNoticeShown": false
 }
