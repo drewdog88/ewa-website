@@ -73,7 +73,10 @@ class SecurityScanner {
     
     try {
       // Run ESLint with security rules
-      const eslintResult = execSync('npx eslint . --format json', { encoding: 'utf8' });
+      const eslintResult = execSync('npx eslint . --format json', { 
+        encoding: 'utf8',
+        maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+      });
       const eslintData = JSON.parse(eslintResult);
       
       this.scanResults.codeIssues = {
