@@ -44,27 +44,6 @@
     "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^3.0.2"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "server.js",
-      "api/**/*.js",
-      "database/**/*.js",
-      "utils/**/*.js",
-      "!**/node_modules/**",
-      "!**/coverage/**"
-    ],
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "html"
-    ],
-    "coverageDirectory": "coverage",
-    "testMatch": [
-      "**/__tests__/**/*.js",
-      "**/?(*.)+(spec|test).js"
-    ]
-  },
   "keywords": [
     "ewa",
     "eastlake",

@@ -2416,14 +2416,20 @@ if (backupManager) {
     console.log('💾 Scheduled backups enabled');
 }
 
-// Start server
-app.listen(PORT, async () => {
-    console.log('🚀 EWA Website server started successfully!');
-console.log(`📍 Server running on http://localhost:${PORT}`);
-console.log(`💾 Storage: Neon PostgreSQL (production)`);
-console.log(`🔐 Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
-console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    
-    // Initialize database connection
-    await initializeDatabase();
-}); 
+// Only start server if this is the main module (not imported for testing)
+if (require.main === module) {
+    // Start server
+    app.listen(PORT, async () => {
+        console.log('🚀 EWA Website server started successfully!');
+        console.log(`📍 Server running on http://localhost:${PORT}`);
+        console.log(`💾 Storage: Neon PostgreSQL (production)`);
+        console.log(`🔐 Orchestra Booster login: orchestra_booster / ewa_orchestra_2025`);
+        console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+        
+        // Initialize database connection
+        await initializeDatabase();
+    });
+}
+
+// Export the app for testing
+module.exports = app; 

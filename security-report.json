@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "timestamp": "2025-08-11T05:11:40.200Z",
+    "totalVulnerabilities": 0,
+    "totalIssues": 0,
+    "recommendations": 3
+  },
+  "details": {
+    "timestamp": "2025-08-11T05:11:40.200Z",
+    "vulnerabilities": [],
+    "dependencies": {
+      "vulnerabilities": {},
+      "metadata": {
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        },
+        "dependencies": {
+          "prod": 156,
+          "dev": 493,
+          "optional": 27,
+          "peer": 0,
+          "peerOptional": 0,
+          "total": 674
+        }
+      },
+      "advisories": {},
+      "severityCounts": {
+        "critical": 0,
+        "high": 0,
+        "moderate": 0,
+        "low": 0
+      }
+    },
+    "codeIssues": {
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ENOBUFS",
+      "totalIssues": 0,
+      "issues": [],
+      "securityIssues": []
+    },
+    "recommendations": [
+      {
+        "priority": "medium",
+        "category": "general",
+        "message": "Enable Content Security Policy headers",
+        "action": "Add CSP headers to prevent XSS attacks"
+      },
+      {
+        "priority": "medium",
+        "category": "general",
+        "message": "Implement rate limiting",
+        "action": "Add rate limiting to prevent brute force attacks"
+      },
+      {
+        "priority": "high",
+        "category": "general",
+        "message": "Enable HTTPS only",
+        "action": "Configure HSTS headers and redirect HTTP to HTTPS"
+      }
+    ]
+  }
+}
