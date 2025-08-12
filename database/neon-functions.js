@@ -413,6 +413,8 @@ async function updateNews(newsId, updates) {
   if (!sql) return null;
     
   try {
+    console.log('🔍 updateNews called with:', { newsId, updates });
+    
     // Only allow updating specific fields
     const allowedFields = ['title', 'content', 'status'];
     const updateFields = {};
@@ -427,24 +429,44 @@ async function updateNews(newsId, updates) {
       throw new Error('No valid fields to update');
     }
     
-    // Build dynamic update query
-    const setClauses = Object.keys(updateFields).map((field, index) => `${field} = $${index + 2}`);
-    const values = Object.values(updateFields);
+    console.log('🔍 Update fields:', updateFields);
     
-    const result = await sql.unsafe(`
-            UPDATE news 
-            SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $1
-            RETURNING *
-        `, [newsId, ...values]);
+    // Build dynamic update query using sql.unsafe() like the working test script
+    let updateQuery = 'UPDATE news SET updated_at = CURRENT_TIMESTAMP';
+    const params = [newsId];
+    let paramIndex = 2;
+    
+    if (updateFields.title !== undefined) {
+      updateQuery += `, title = $${paramIndex++}`;
+      params.push(updateFields.title);
+    }
+    if (updateFields.content !== undefined) {
+      updateQuery += `, content = $${paramIndex++}`;
+      params.push(updateFields.content);
+    }
+    if (updateFields.status !== undefined) {
+      updateQuery += `, status = $${paramIndex++}`;
+      params.push(updateFields.status);
+    }
+    
+    updateQuery += ` WHERE id = $1 RETURNING *`;
+    
+    console.log('🔍 SQL Query:', updateQuery);
+    console.log('🔍 Parameters:', params);
+    
+    const result = await sql.unsafe(updateQuery, params);
+    
+    console.log('🔍 Query result:', result);
     
     if (result.length === 0) {
+      console.log('❌ News article not found in database');
       return null; // News not found
     }
     
+    console.log('✅ News article updated successfully');
     return result[0];
   } catch (error) {
-    console.error('Error updating news:', error);
+    console.error('❌ Error updating news:', error);
     throw error;
   }
 }
