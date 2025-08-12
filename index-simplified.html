@@ -596,7 +596,7 @@
                 <div class="club-content">
                     <div class="club-description">${club.description || 'Supporting Eastlake students and programs.'}</div>
                     <div class="club-actions">
-                        <a href="payment.html?club=${encodeURIComponent(club.name)}" class="club-donate-btn">Pay Fees/Membership/Donate</a>
+                        <a href="payment.html?id=${club.id}&club=${encodeURIComponent(club.name)}" class="club-donate-btn">Pay Fees/Membership/Donate</a>
                         <a href="${club.website_url}" target="_blank" class="club-website-btn">Visit Website</a>
                     </div>
                 </div>
