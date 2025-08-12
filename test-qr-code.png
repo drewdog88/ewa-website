@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eastlake Wolfpack Association - Supporting Eastlake High School Athletics</title>
+    <meta name="description" content="Eastlake Wolfpack Association - Supporting Eastlake High School athletics and booster clubs in Kirkland, WA.">
+    <link rel="icon" type="image/jpeg" href="./assets/ewa-wolf.jpg">
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            padding: 40px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 80px;
+            padding: 20px 0;
+            border-bottom: 2px solid #dc3545;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-left a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-right: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: url('./assets/ewa-wolf.jpg') no-repeat center;
+            background-size: contain;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .admin-link {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .admin-link:hover { background-color: #218838; }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .content-left h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: normal;
+        }
+        
+        .content-left p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            line-height: 1.8;
+            margin: 0;
+        }
+        
+        .quick-links {
+            margin: 24px 0 0;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quick-links h2 {
+            color: #dc3545;
+            margin-bottom: 12px;
+            font-size: 1.6rem;
+            font-weight: normal;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .link-card {
+            background: #f8f9fa;
+            padding: 14px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .link-card h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .link-card a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .link-card a:hover { text-decoration: underline; }
+        
+        .clubs-section h2 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            font-weight: normal;
+        }
+        
+        .club-card {
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            background-color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .club-card:hover { background-color: #f8f9fa; }
+        
+        .club-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .club-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .club-toggle {
+            color: #dc3545;
+            font-size: 1.2rem;
+        }
+        
+        .club-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .club-content.active {
+            padding: 20px;
+            max-height: 500px;
+        }
+        
+        .club-description {
+            color: #6c757d;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .club-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .club-donate-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .club-donate-btn:hover {
+            background-color: #c82333;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .club-website-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+        }
+        
+        .club-website-btn:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .footer-banner { margin-top: 50px; }
+        
+        .footer-main {
+            background-color: #dc3545;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left .association-name {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .footer-link:hover { text-decoration: underline; }
+        
+        .footer-copyright {
+            background-color: #c82333;
+            padding: 8px 50px;
+            text-align: center;
+        }
+        
+        .footer-copyright span {
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+                overflow-x: hidden;
+                max-width: 100vw;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 0;
+                margin-bottom: 40px;
+                text-align: center;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                width: 100%;
+            }
+            
+            .header-left a {
+                margin-right: 0;
+                margin-bottom: 5px;
+                text-align: center;
+                width: 100%;
+                padding: 8px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 0 10px;
+                max-width: 100%;
+            }
+            
+            .content-left h1 {
+                font-size: 2rem;
+                text-align: center;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .club-actions {
+                flex-direction: column;
+            }
+            
+            .club-donate-btn,
+            .club-website-btn {
+                width: 100%;
+                text-align: center;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="header-left">
+            <div class="logo"></div>
+            <a href="index.html">Home</a>
+            <a href="team.html">EWA Team</a>
+            <a href="news.html">News</a>
+            <a href="gallery.html">Photo Gallery</a>
+            <a href="links.html">Resources</a>
+            <a href="volunteers.html">Volunteer Signup</a>
+        </nav>
+        <div class="header-right">
+            <a href="admin/login.html" class="admin-link">Admin</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="content-left">
+            <h1>Eastlake Wolfpack Association</h1>
+            <p>The Eastlake Wolfpack Association (EWA) is dedicated to supporting and enhancing the athletic programs at Eastlake High School. We work closely with booster clubs, coaches, and the community to provide resources, funding, and opportunities for our student-athletes to excel both on and off the field.</p>
+
+            <section class="quick-links">
+                <h2>Quick Links & Resources</h2>
+                <div class="links-grid">
+                    <div class="link-card">
+                        <h3>Athletics Calendar</h3>
+                        <a href="https://www.lwsd.org/schools/eastlake/athletics" target="_blank">Eastlake Athletics Schedule</a>
+                    </div>
+                    <div class="link-card">
+                        <h3>LWSD Athletics</h3>
+                        <a href="https://www.lwsd.org/athletics" target="_blank">Lake Washington School District Athletics</a>
+                    </div>
+                    <div class="link-card">
+                        <h3>Photo Gallery</h3>
+                        <a href="gallery.html">View Team Photos & Events</a>
+                    </div>
+                    <div class="link-card">
+                        <h3>Admin Portal</h3>
+                        <a href="admin/login.html">Secure Login for Booster Clubs</a>
+                    </div>
+                    <div class="link-card">
+                        <h3>Volunteer Opportunities</h3>
+                        <a href="volunteers.html">Express Interest in Volunteering</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="content-right">
+            <section class="clubs-section">
+                <h2>Clubs Associated with EWA</h2>
+                <div id="clubs-loading" class="loading">Loading booster clubs...</div>
+                <div id="clubs-container"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer-banner">
+        <div class="footer-main">
+            <div class="footer-left">
+                <span class="association-name">Eastlake Wolfpack Association</span>
+            </div>
+            <nav class="footer-right">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="team.html" class="footer-link">EWA Team</a>
+            </nav>
+        </div>
+        <div class="footer-copyright">
+            <span>© 2025 Eastlake Wolfpack Association</span>
+        </div>
+    </footer>
+
+    <script src="assets/user-session.js"></script>
+    <script>
+        async function loadBoosterClubs() {
+            try {
+                const response = await fetch('/api/booster-clubs');
+                const result = await response.json();
+
+                const loadingElement = document.getElementById('clubs-loading');
+                const container = document.getElementById('clubs-container');
+                
+                if (result.success) {
+                    loadingElement.style.display = 'none';
+                    container.innerHTML = '';
+                    
+                    result.data.forEach(club => {
+                        if (club.is_active && club.website_url && club.website_url.trim() !== '') {
+                            const card = createClubCard(club);
+                            container.appendChild(card);
+                        }
+                    });
+                    
+                    initializeAccordion();
+                } else {
+                    loadingElement.innerHTML = 'Failed to load booster clubs';
+                }
+            } catch (error) {
+                console.error('Error loading booster clubs:', error);
+                document.getElementById('clubs-loading').innerHTML = 'Error loading booster clubs';
+            }
+        }
+
+        function createClubCard(club) {
+            const card = document.createElement('div');
+            card.className = 'club-card';
+            
+            card.innerHTML = `
+                <div class="club-header">
+                    <div class="club-name">${club.name}</div>
+                    <div class="club-toggle">+</div>
+                </div>
+                <div class="club-content">
+                    <div class="club-description">${club.description || 'Supporting Eastlake students and programs.'}</div>
+                    <div class="club-actions">
+                        <a href="payment.html?club=${encodeURIComponent(club.name)}" class="club-donate-btn">Pay Fees/Membership/Donate</a>
+                        <a href="${club.website_url}" target="_blank" class="club-website-btn">Visit Website</a>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function initializeAccordion() {
+            document.querySelectorAll('.club-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const toggle = this.querySelector('.club-toggle');
+                    
+                    if (content.classList.contains('active')) {
+                        content.classList.remove('active');
+                        toggle.textContent = '+';
+                    } else {
+                        content.classList.add('active');
+                        toggle.textContent = '−';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadBoosterClubs);
+    </script>
+</body>
+</html>

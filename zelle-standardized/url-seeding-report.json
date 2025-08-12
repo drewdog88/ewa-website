@@ -1,0 +1,90 @@
+{
+  "timestamp": "2025-08-12T20:30:45.715Z",
+  "totalUrls": 16,
+  "totalClubs": 23,
+  "processedClubs": 16,
+  "successful": 16,
+  "failed": 0,
+  "results": [
+    {
+      "club": "EHS Band Boosters",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgVk9MTEVZQkFMTCBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlaHN2YmFsbEBob3RtYWlsLmNvbSJ9",
+      "success": true
+    },
+    {
+      "club": "EHS DECA Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIFdSRVNUTElORyBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlaHN3cmVzdGxlQGxpdmUuY29tIn0",
+      "success": true
+    },
+    {
+      "club": "EHS Orchestra Boosters Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgUk9CT1RJQ1MgQk9PU1RFUiBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "success": true
+    },
+    {
+      "club": "EHS Track and Field Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIE9SQ0hFU1RSQSBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlaHNvcmNoZXN0cmFzQG91dGxvb2suY29tIn0",
+      "success": true
+    },
+    {
+      "club": "EHS Wrestling Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiVGhlIEVhc3RsYWtlIFdvbGZwYWNrIEFzc29jaWF0aW9uIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiZ2lybHNnb2xmdHJlYXN1cmVyQGdtYWlsLmNvbSJ9",
+      "success": true
+    },
+    {
+      "club": "EWA Eastlake Wolfpack Association",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgVk9MTEVZQkFMTCBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlaHN2YmFsbEBob3RtYWlsLmNvbSJ9",
+      "success": true
+    },
+    {
+      "club": "Eastlake Baseball Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgVFJBQ0sgQU5EIEZJRUxEIEJPT1NURVIgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6ImVhc3RsYWtld29sdmVzdGZAZ21haWwuY29tIn0",
+      "success": true
+    },
+    {
+      "club": "Eastlake Boys Basketball Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgVFJBQ0sgQU5EIEZJRUxEIEJPT1NURVIgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6ImVhc3RsYWtld29sdmVzdGZAZ21haWwuY29tIn0",
+      "success": true
+    },
+    {
+      "club": "Eastlake Boys Golf Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgR0lSTFMgU09DQ0VSIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoidHJlYXN1cmVyQGVhc3RsYWtlZ2lybHNzb2NjZXIuY29tIn0",
+      "success": true
+    },
+    {
+      "club": "Eastlake Boys Soccer",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIEJPWVMgU1dJTSAmIERJVkUgQk9PU1RFUiBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiZWhzYm95c3N3aXZlQGdtYWlsLmNvbSJ9",
+      "success": true
+    },
+    {
+      "club": "Eastlake Boys Swim & Dive Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgR0lSTFMgQkFTS0VUQkFMTCBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlYXN0bGFrZWxhZHl3b2x2ZXNAZ21haWwuY29tIn0",
+      "success": true
+    },
+    {
+      "club": "Eastlake Cheer Booster Club",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIENIRUVSIEJPT1NURVIgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6ImVoc2NoZWVyX2Jvb3N0ZXJAb3V0bG9vay5jb20ifQ",
+      "success": true
+    },
+    {
+      "club": "Eastlake Choir",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQkFTRUJBTEwgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6InRyZWFzdXJlckBlYXN0bGFrZXdvbHZlc2Jhc2ViYWxsLmNvbSJ9",
+      "success": true
+    },
+    {
+      "club": "Eastlake Cross-Country Boosters",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgREFOQ0UgVEVBTSBCT09TVEVSUyIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6ImVoc2RhbmNldHJlYXN1cnlAZ21haWwuY29tIn0",
+      "success": true
+    },
+    {
+      "club": "Eastlake Dance Team Boosters",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIEJPWVMgU09DQ0VSIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiZWhzYm95c29jY2VyQG91dGxvb2suY29tIn0",
+      "success": true
+    },
+    {
+      "club": "Eastlake Drama",
+      "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIEJBTkQgQk9PU1RFUlMiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlaHNiYW5kYm9vc3RlcnN0cmVhc3VyZXJAb3V0bG9vay5jb20ifQ",
+      "success": true
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 {
   "summary": {
-    "timestamp": "2025-08-11T18:36:59.194Z",
+    "timestamp": "2025-08-12T20:11:31.120Z",
     "totalVulnerabilities": 0,
     "totalIssues": 0,
     "recommendations": 3
   },
   "details": {
-    "timestamp": "2025-08-11T18:36:59.194Z",
+    "timestamp": "2025-08-12T20:11:31.120Z",
     "vulnerabilities": [],
     "dependencies": {
       "vulnerabilities": {},
@@ -20,12 +20,12 @@
           "total": 0
         },
         "dependencies": {
-          "prod": 209,
-          "dev": 566,
+          "prod": 211,
+          "dev": 620,
           "optional": 59,
-          "peer": 1,
+          "peer": 0,
           "peerOptional": 0,
-          "total": 801
+          "total": 856
         }
       },
       "advisories": {},
