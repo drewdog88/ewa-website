@@ -2,7 +2,7 @@ const express = require('express');
 const SecurityScanner = require('../utils/security-scanner');
 const fs = require('fs');
 const path = require('path');
-const { put, get, del } = require('@vercel/blob');
+const { put, get } = require('@vercel/blob');
 
 const app = express();
 app.use(express.json());
@@ -242,6 +242,7 @@ app.post('/api/security/test-coverage', requireAdmin, async (req, res) => {
         message: 'Test coverage completed (fallback)',
         data: {
           coverage: 85,
+          timestamp: new Date().toISOString(),
           testsPassed: false,
           error: testError.message
         }

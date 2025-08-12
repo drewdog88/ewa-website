@@ -40,7 +40,7 @@ function extractNameParts(basename) {
   const cleaned = normalizeWhitespace(
     basename
       .replace(/®/g, '')
-      .replace(/[\(\)\[\]\{\}]/g, ' ')
+      .replace(/[()[\]{}]/g, ' ')
       .replace(/[-]+/g, ' ')
   );
 

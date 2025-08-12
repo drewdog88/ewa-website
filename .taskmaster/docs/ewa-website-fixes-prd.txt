@@ -1,0 +1,145 @@
+# Eastlake Wolfpack Website - Critical Bug Fixes PRD
+
+## Project Overview
+Fix all broken functionality on the Eastlake Wolfpack Association website (eastlakewolfpack.org) deployed on Vercel. The site is a Node.js/Express application with PostgreSQL database managing booster clubs, officers, volunteers, 1099 forms, and user administration.
+
+## Critical Issues to Fix
+
+### 1. Admin Dashboard - Volunteer Status Update
+**Issue**: Changing status of volunteer submissions shows "Error Updating Volunteer Status: Volunteer Not found"
+**Impact**: Admin cannot manage volunteer applications
+**Priority**: High
+**Technical Details**: 
+- Investigate volunteer status update API endpoint
+- Check database queries and volunteer lookup logic
+- Verify volunteer ID handling and database schema
+- Test volunteer status update functionality
+
+### 2. News & Announcements - Publish Functionality
+**Issue**: "Publish News" button does nothing when clicked
+**Impact**: Cannot publish news items to the website
+**Priority**: High
+**Technical Details**:
+- Investigate publish news API endpoint
+- Check frontend JavaScript event handlers
+- Verify form submission and data validation
+- Test news publishing workflow
+
+### 3. News Management - Edit/Delete Operations
+**Issue**: Edit and delete buttons for existing news items do nothing
+**Impact**: Cannot modify or remove published news
+**Priority**: High
+**Technical Details**:
+- Investigate edit/delete news API endpoints
+- Check frontend event handlers for edit/delete buttons
+- Verify news item ID handling
+- Test news editing and deletion workflow
+
+### 4. Links and Resources - Add/Edit/Delete Operations
+**Issue**: Add Link button and edit/delete operations for existing URLs do nothing
+**Impact**: Cannot manage links and resources
+**Priority**: Medium
+**Technical Details**:
+- Investigate links management API endpoints
+- Check frontend JavaScript for link operations
+- Verify form submission and data handling
+- Test link management workflow
+
+### 5. Insurance Forms - Event Submission Error
+**Issue**: Adding events shows "Error submitting form: Missing required fields: club, eventName, eventDate, eventDescription"
+**Impact**: Cannot submit insurance event forms
+**Priority**: High
+**Technical Details**:
+- Investigate insurance form submission API
+- Check form field validation logic
+- Verify required field handling
+- Test insurance form submission with valid data
+
+### 6. Front Page - Missing Band Booster Card
+**Issue**: Band booster card is completely missing from the front page
+**Impact**: Band booster club not visible to visitors
+**Priority**: High
+**Technical Details**:
+- Investigate front page card rendering logic
+- Check database for band booster club data
+- Verify card display conditions
+- Test band booster card visibility
+
+### 7. Content Management - Description Updates
+**Issue**: "Update Description" button in Content Management does nothing
+**Impact**: Cannot update card descriptions on home page
+**Priority**: Medium
+**Technical Details**:
+- Investigate content management update API
+- Check frontend update description functionality
+- Verify form submission and data processing
+- Test description update workflow
+
+### 8. Admin Login - Booster Club Admin Access
+**Issue**: Cannot login as Booster Club Admins (e.g., orchestra_booster)
+**Impact**: Booster club admins cannot access admin panel
+**Priority**: Critical
+**Technical Details**:
+- Investigate admin login authentication system
+- Check user role and permission handling
+- Verify booster club admin user accounts
+- Test admin login with different user types
+
+### 9. Backup Management - Missing Interface
+**Issue**: Backup Management is completely gone/blank in admin panel
+**Impact**: Cannot manage database backups
+**Priority**: High
+**Technical Details**:
+- Investigate backup management page rendering
+- Check backup management API endpoints
+- Verify backup management UI components
+- Test backup management functionality
+
+## Technical Requirements
+
+### Environment
+- Local development: Windows with Node.js and PostgreSQL
+- Production: Vercel serverless functions with Neon PostgreSQL
+- Database: PostgreSQL with proper schema and relationships
+
+### Security Considerations
+- Maintain secure authentication and authorization
+- Protect sensitive data (PII, SSNs, contact information)
+- Validate all user inputs
+- Follow security best practices for admin functions
+
+### Testing Requirements
+- Test all fixes locally before deployment
+- Verify functionality on production environment
+- Test with different user roles and permissions
+- Ensure no regression in existing functionality
+
+### Database Considerations
+- Verify database schema integrity
+- Check foreign key relationships
+- Ensure proper indexing for performance
+- Maintain data consistency
+
+## Success Criteria
+- All 9 critical issues are resolved
+- Admin dashboard functions properly for all user types
+- News and content management works correctly
+- Volunteer management is functional
+- Insurance forms can be submitted successfully
+- All booster club cards display on front page
+- Backup management is accessible and functional
+- No new bugs introduced during fixes
+
+## Implementation Approach
+1. Investigate each issue systematically
+2. Identify root cause and required changes
+3. Implement fixes with proper error handling
+4. Test thoroughly in local environment
+5. Deploy to production and verify fixes
+6. Document changes and update documentation
+
+## Risk Mitigation
+- Create database backups before any schema changes
+- Test all fixes in isolation before integration
+- Maintain rollback capability for each fix
+- Monitor production logs for any new errors

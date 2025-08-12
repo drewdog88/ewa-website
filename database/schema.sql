@@ -72,6 +72,33 @@ CREATE TABLE IF NOT EXISTS form_1099 (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- News table for announcements and updates
+CREATE TABLE IF NOT EXISTS news (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    slug VARCHAR(255) UNIQUE,
+    status VARCHAR(50) DEFAULT 'draft',
+    published_at TIMESTAMP WITH TIME ZONE,
+    created_by VARCHAR(100) REFERENCES users(username),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Links table for external resources
+CREATE TABLE IF NOT EXISTS links (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    category VARCHAR(100) DEFAULT 'other',
+    order_index INTEGER DEFAULT 0,
+    is_visible BOOLEAN DEFAULT TRUE,
+    click_count INTEGER DEFAULT 0,
+    created_by VARCHAR(100) REFERENCES users(username),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Documents table for file storage metadata
 CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -91,6 +118,12 @@ CREATE INDEX IF NOT EXISTS idx_volunteers_club ON volunteers(club);
 CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by);
 CREATE INDEX IF NOT EXISTS idx_1099_submitted_by ON form_1099(submitted_by);
 CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club);
+CREATE INDEX IF NOT EXISTS idx_news_status ON news(status);
+CREATE INDEX IF NOT EXISTS idx_news_published_at ON news(published_at);
+CREATE INDEX IF NOT EXISTS idx_news_slug ON news(slug);
+CREATE INDEX IF NOT EXISTS idx_links_category ON links(category);
+CREATE INDEX IF NOT EXISTS idx_links_order_index ON links(order_index);
+CREATE INDEX IF NOT EXISTS idx_links_is_visible ON links(is_visible);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()

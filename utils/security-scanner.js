@@ -51,7 +51,7 @@ class SecurityScanner {
       };
 
       Object.values(auditData.vulnerabilities || {}).forEach(vuln => {
-        if (severityCounts.hasOwnProperty(vuln.severity)) {
+        if (Object.prototype.hasOwnProperty.call(severityCounts, vuln.severity)) {
           severityCounts[vuln.severity]++;
         }
       });

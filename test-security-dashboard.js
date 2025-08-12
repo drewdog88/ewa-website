@@ -78,7 +78,7 @@ async function testSecurityDashboard() {
     console.log('2. Testing Report Generation...');
     const report = await scanner.generateReport();
     console.log('✅ Security report generated');
-    console.log(`   - Report saved to: security-report.json`);
+    console.log('   - Report saved to: security-report.json');
     console.log(`   - Summary: ${JSON.stringify(report.summary, null, 2)}\n`);
 
     // Test 3: Test API Endpoints
