@@ -100,7 +100,13 @@ const {
   addNews,
   updateNews,
   publishNews,
-  deleteNews
+  deleteNews,
+  getLinks,
+  getAllLinks,
+  addLink,
+  updateLink,
+  deleteLink,
+  incrementLinkClicks
 } = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
@@ -2564,6 +2570,177 @@ app.delete('/api/news/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error deleting news article:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Links Management API Endpoints
+
+// Get all links (for admin)
+app.get('/api/links', async (req, res) => {
+  try {
+    const links = await getAllLinks();
+    res.json({ success: true, links });
+  } catch (error) {
+    console.error('Error getting links:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get visible links (for public website)
+app.get('/api/links/visible', async (req, res) => {
+  try {
+    const links = await getLinks();
+    res.json({ success: true, links });
+  } catch (error) {
+    console.error('Error getting visible links:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Add new link
+app.post('/api/links', async (req, res) => {
+  try {
+    const { title, url, category, orderIndex, isVisible, createdBy } = req.body;
+    
+    // Validate required fields
+    if (!title || !url) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title and URL are required'
+      });
+    }
+    
+    // Add link
+    const link = await addLink({
+      title: title.trim(),
+      url: url.trim(),
+      category: category || 'general',
+      orderIndex: orderIndex || 0,
+      isVisible: isVisible !== false,
+      createdBy: createdBy || 'admin'
+    });
+    
+    if (link) {
+      res.json({
+        success: true,
+        message: 'Link created successfully',
+        link
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create link'
+      });
+    }
+  } catch (error) {
+    console.error('Error creating link:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Update link
+app.put('/api/links/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, url, category, orderIndex, isVisible } = req.body;
+    
+    const updates = {};
+    if (title !== undefined) updates.title = title.trim();
+    if (url !== undefined) updates.url = url.trim();
+    if (category !== undefined) updates.category = category;
+    if (orderIndex !== undefined) updates.orderIndex = orderIndex;
+    if (isVisible !== undefined) updates.isVisible = isVisible;
+    
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid fields to update'
+      });
+    }
+    
+    const updatedLink = await updateLink(id, updates);
+    
+    if (!updatedLink) {
+      return res.status(404).json({
+        success: false,
+        message: 'Link not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Link updated successfully',
+      link: updatedLink
+    });
+  } catch (error) {
+    console.error('Error updating link:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Delete link
+app.delete('/api/links/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const deleted = await deleteLink(id);
+    
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: 'Link not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Link deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting link:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Increment link clicks
+app.post('/api/links/:id/click', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const success = await incrementLinkClicks(id);
+    
+    if (success) {
+      res.json({
+        success: true,
+        message: 'Link click recorded'
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Link not found'
+      });
+    }
+  } catch (error) {
+    console.error('Error recording link click:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
