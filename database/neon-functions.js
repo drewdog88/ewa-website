@@ -760,7 +760,20 @@ async function getBoosterClubs() {
     
   try {
     const clubs = await sql`
-      SELECT id, name, description, website_url, donation_url, is_active, created_at, updated_at
+      SELECT 
+        id, 
+        name, 
+        description, 
+        website_url, 
+        donation_url, 
+        is_active, 
+        is_payment_enabled,
+        zelle_url,
+        stripe_urls,
+        payment_instructions,
+        qr_code_settings,
+        created_at, 
+        updated_at
       FROM booster_clubs 
       ORDER BY name
     `;
@@ -782,7 +795,20 @@ async function getBoosterClubByName(clubName) {
     
   try {
     const result = await sql`
-      SELECT id, name, description, website_url, donation_url, is_active, created_at, updated_at
+      SELECT 
+        id, 
+        name, 
+        description, 
+        website_url, 
+        donation_url, 
+        is_active, 
+        is_payment_enabled,
+        zelle_url,
+        stripe_urls,
+        payment_instructions,
+        qr_code_settings,
+        created_at, 
+        updated_at
       FROM booster_clubs 
       WHERE name = ${clubName}
     `;
