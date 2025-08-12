@@ -198,7 +198,14 @@ async function getInsurance() {
   if (!sql) return [];
     
   try {
-    const forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at`;
+    const forms = await sql`
+      SELECT 
+        i.*,
+        bc.name as booster_club_name
+      FROM insurance_forms i
+      LEFT JOIN booster_clubs bc ON i.club_id = bc.id
+      ORDER BY i.created_at
+    `;
     return forms;
   } catch (error) {
     console.error('Error getting insurance forms:', error);
@@ -212,8 +219,8 @@ async function addInsurance(form) {
     
   try {
     const result = await sql`
-            INSERT INTO insurance_forms (event_name, event_date, event_description, participant_count, submitted_by, status)
-            VALUES (${form.eventName}, ${form.eventDate}, ${form.eventDescription}, ${form.participantCount}, ${form.submittedBy}, ${form.status})
+            INSERT INTO insurance_forms (event_name, event_date, event_description, participant_count, submitted_by, status, club_id)
+            VALUES (${form.eventName}, ${form.eventDate}, ${form.eventDescription}, ${form.participantCount}, ${form.submittedBy}, ${form.status}, ${form.clubId || null})
             RETURNING *
         `;
     return result[0];

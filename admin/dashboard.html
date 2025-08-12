@@ -616,6 +616,35 @@
                 <div class="form-section">
                     <h3>Submit Insurance Form</h3>
                     <div class="form-group">
+                        <label for="insuranceBoosterClub">Booster Club *</label>
+                        <select id="insuranceBoosterClub" required>
+                            <option value="">Select Booster Club</option>
+                            <option value="5c5d9238-dc96-4ad0-b6fe-6282b06573bc">EHS Band Boosters</option>
+                            <option value="f2efccc3-4dbe-4eeb-b65e-ba7e7149c740">EWA Eastlake Wolfpack Association</option>
+                            <option value="99367bd3-c24a-42cd-b581-35f36a29ef49">Eastlake Baseball Club</option>
+                            <option value="bc3e4b83-e9a7-47ca-b7a9-56e1b4843f66">Eastlake Boys Basketball Booster Club</option>
+                            <option value="c8e4f06d-c49a-4126-93aa-fcf10c5858aa">Eastlake Boys Lacrosse Booster Club</option>
+                            <option value="47d6a7c1-128d-4719-b002-ae34d9012619">Eastlake Boys Soccer Booster Club</option>
+                            <option value="4d60931c-5c2a-47d2-ae4a-e37192294f7e">Eastlake Boys Swimming Booster Club</option>
+                            <option value="dd90f01f-bc8d-4e8d-864d-605c01cd37b9">Eastlake Boys Tennis Booster Club</option>
+                            <option value="d2d3fcd3-822b-4466-bbd3-49d55c4fb0bd">Eastlake Cheer Booster Club</option>
+                            <option value="40595908-c00e-4d87-a79a-566aa4869715">Eastlake Choir</option>
+                            <option value="ce376909-2bb7-402e-874a-3f542463602a">Eastlake Cross-Country Boosters</option>
+                            <option value="fb289ef9-3f94-4145-b1df-55fafd4362cb">Eastlake Drama</option>
+                            <option value="40733b78-7d7c-44b8-a713-f5fbfb2ffefb">Eastlake Fastpitch (Girls)</option>
+                            <option value="ffdd6b26-5310-4e97-8dc6-f26031533ef9">Eastlake Football Booster Club</option>
+                            <option value="1dcc6157-a3f6-46f3-a50f-23cde148b58b">Eastlake Girls Basketball Booster Club</option>
+                            <option value="69e7da81-8f14-46dd-b582-26404dfb6662">Eastlake Girls Lacrosse Booster Club</option>
+                            <option value="933845bd-6e1a-47e0-a3df-e3a7123b3260">Eastlake Girls Soccer Booster Club</option>
+                            <option value="4053c0cb-5959-4379-80f0-e82998225318">Eastlake Girls Swimming Booster Club</option>
+                            <option value="dd88e4ea-620e-4c45-833d-dcda2c55bd4a">Eastlake Girls Tennis Booster Club</option>
+                            <option value="05d21d4b-4149-4b7f-9e20-dfa3864f60dd">Eastlake Orchestra Booster Club</option>
+                            <option value="6e69b02b-e467-4879-a7ba-16429e651a53">Eastlake Track & Field Booster Club</option>
+                            <option value="b926f783-1f1e-41ae-a94a-fdccac50e3f8">Eastlake Volleyball Booster Club</option>
+                            <option value="5b09a2d8-a942-473d-9270-49f13c1b36c3">Eastlake Wrestling Booster Club</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="insuranceEventName">Event/Activity Name</label>
                         <input type="text" id="insuranceEventName" placeholder="Event Name">
                     </div>
@@ -641,6 +670,7 @@
                         <thead>
                             <tr>
                                 <th>Date Submitted</th>
+                                <th>Booster Club</th>
                                 <th>Event Name</th>
                                 <th>Event Date</th>
                                 <th>Description</th>
@@ -1821,17 +1851,18 @@
             const currentUser = userSession.currentUser || {};
             
             const participantCountInput = document.getElementById('insuranceParticipantCount');
+            const boosterClubSelect = document.getElementById('insuranceBoosterClub');
             
             const formData = {
-                club: currentUser.club,
+                clubId: boosterClubSelect.value,
                 eventName: document.getElementById('insuranceEventName').value,
                 eventDate: document.getElementById('insuranceEventDate').value,
                 eventDescription: document.getElementById('insuranceEventDescription').value,
                 participantCount: participantCountInput.value
             };
             
-            if (!formData.eventName || !formData.eventDate || !formData.eventDescription) {
-                alert('Please fill in all required fields');
+            if (!formData.clubId || !formData.eventName || !formData.eventDate || !formData.eventDescription) {
+                alert('Please fill in all required fields including Booster Club selection');
                 return;
             }
             
@@ -1853,6 +1884,7 @@
                 if (data.success) {
                     alert('Insurance form submitted successfully!');
                     // Clear form
+                    document.getElementById('insuranceBoosterClub').value = '';
                     document.getElementById('insuranceEventName').value = '';
                     document.getElementById('insuranceEventDate').value = '';
                     document.getElementById('insuranceEventDescription').value = '';
@@ -2027,6 +2059,7 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${new Date(submission.submittedAt).toLocaleDateString()}</td>
+                    <td>${submission.booster_club_name || 'N/A'}</td>
                     <td>${submission.eventName}</td>
                     <td>${submission.eventDate}</td>
                     <td>${submission.eventDescription}</td>
