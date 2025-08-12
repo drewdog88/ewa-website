@@ -781,6 +781,36 @@ async function updateBoosterClubDescription(clubName, description) {
   }
 }
 
+async function updateBoosterClubWebsite(clubName, websiteUrl) {
+  const sql = getSql();
+  if (!sql) return null;
+    
+  try {
+    const result = await sql`
+      UPDATE booster_clubs 
+      SET website_url = ${websiteUrl}, updated_at = CURRENT_TIMESTAMP
+      WHERE name = ${clubName}
+      RETURNING id, name, description, website_url, donation_url, is_active, created_at, updated_at
+    `;
+    
+    if (result.length === 0) {
+      throw new Error(`Booster club '${clubName}' not found`);
+    }
+    
+    return result[0];
+  } catch (error) {
+    console.error('❌ Database error updating booster club website:', {
+      error: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      clubName,
+      websiteUrl: websiteUrl ? websiteUrl.substring(0, 100) + '...' : 'null'
+    });
+    throw error;
+  }
+}
+
 module.exports = {
   getSql,
   getOfficers,
@@ -817,6 +847,7 @@ module.exports = {
   getBoosterClubs,
   getBoosterClubByName,
   updateBoosterClubDescription,
+  updateBoosterClubWebsite,
   initializeDatabase,
   migrateDataFromJson
 }; 

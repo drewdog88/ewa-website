@@ -3324,7 +3324,7 @@
             { club: 'EHS Wrestling Booster Club', url: 'https://ehswrestling.org', enabled: true }
         ];
         
-        function updateWebsiteLink() {
+        async function updateWebsiteLink() {
             const clubSelect = document.getElementById('websiteClubSelect');
             const urlInput = document.getElementById('websiteUrl');
             const enabledCheckbox = document.getElementById('websiteEnabled');
@@ -3334,36 +3334,56 @@
             const enabled = enabledCheckbox.checked;
             
             if (!selectedClub) {
-                alert('Please select a club.');
+                showAlert('Please select a club.', 'warning');
                 return;
             }
             
             if (!newUrl) {
-                alert('Please enter a website URL.');
+                showAlert('Please enter a website URL.', 'warning');
                 return;
             }
             
-            // Update the website links array
-            const linkIndex = websiteLinks.findIndex(link => link.club === selectedClub);
-            if (linkIndex !== -1) {
-                websiteLinks[linkIndex].url = newUrl;
-                websiteLinks[linkIndex].enabled = enabled;
-            } else {
-                websiteLinks.push({
-                    club: selectedClub,
-                    url: newUrl,
-                    enabled: enabled
+            try {
+                // Call the API to update the website URL
+                const response = await fetch(`/api/booster-clubs/${encodeURIComponent(selectedClub)}/website`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ websiteUrl: newUrl })
                 });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update the local array
+                    const linkIndex = websiteLinks.findIndex(link => link.club === selectedClub);
+                    if (linkIndex !== -1) {
+                        websiteLinks[linkIndex].url = newUrl;
+                        websiteLinks[linkIndex].enabled = enabled;
+                    } else {
+                        websiteLinks.push({
+                            club: selectedClub,
+                            url: newUrl,
+                            enabled: enabled
+                        });
+                    }
+                    
+                    // Update the display
+                    displayWebsiteLinks();
+                    
+                    showAlert('Website link updated successfully!', 'success');
+                    
+                    // Clear form
+                    urlInput.value = '';
+                    enabledCheckbox.checked = true;
+                } else {
+                    showAlert('Failed to update website link: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error updating website link:', error);
+                showAlert('Error updating website link', 'danger');
             }
-            
-            // Update the display
-            displayWebsiteLinks();
-            
-            alert('Website link updated successfully!');
-            
-            // Clear form
-            urlInput.value = '';
-            enabledCheckbox.checked = true;
         }
         
         function displayWebsiteLinks() {
@@ -3406,7 +3426,35 @@
             link.enabled = !currentStatus;
             displayWebsiteLinks();
             
-            alert(`Website link for ${clubName} has been ${link.enabled ? 'enabled' : 'disabled'}.`);
+            showAlert(`Website link for ${clubName} has been ${link.enabled ? 'enabled' : 'disabled'}.`, 'success');
+        }
+
+        // Load website links from database
+        async function loadWebsiteLinks() {
+            try {
+                const response = await fetch('/api/booster-clubs');
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update the websiteLinks array with data from database
+                    websiteLinks.length = 0; // Clear the array
+                    result.data.forEach(club => {
+                        websiteLinks.push({
+                            club: club.name,
+                            url: club.website_url || '',
+                            enabled: club.is_active
+                        });
+                    });
+                    
+                    // Update the display
+                    displayWebsiteLinks();
+                } else {
+                    showAlert('Failed to load website links', 'danger');
+                }
+            } catch (error) {
+                console.error('Error loading website links:', error);
+                showAlert('Error loading website links', 'danger');
+            }
         }
         
         // Add event listener for users section
@@ -3746,7 +3794,7 @@
                         loadOfficersData();
                         break;
                     case 'club-websites':
-                        displayWebsiteLinks();
+                        loadWebsiteLinks();
                         break;
                     case 'volunteers':
                         loadVolunteerData();
@@ -3816,7 +3864,7 @@
                             loadOfficersData();
                             break;
                         case 'club-websites':
-                            displayWebsiteLinks();
+                            loadWebsiteLinks();
                             break;
                         case 'volunteers':
                             loadVolunteerData();
