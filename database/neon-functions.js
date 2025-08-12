@@ -431,30 +431,16 @@ async function updateNews(newsId, updates) {
     
     console.log('🔍 Update fields:', updateFields);
     
-    // Build dynamic update query using sql.unsafe() like the working test script
-    let updateQuery = 'UPDATE news SET updated_at = CURRENT_TIMESTAMP';
-    const params = [newsId];
-    let paramIndex = 2;
-    
-    if (updateFields.title !== undefined) {
-      updateQuery += `, title = $${paramIndex++}`;
-      params.push(updateFields.title);
-    }
-    if (updateFields.content !== undefined) {
-      updateQuery += `, content = $${paramIndex++}`;
-      params.push(updateFields.content);
-    }
-    if (updateFields.status !== undefined) {
-      updateQuery += `, status = $${paramIndex++}`;
-      params.push(updateFields.status);
-    }
-    
-    updateQuery += ` WHERE id = $1 RETURNING *`;
-    
-    console.log('🔍 SQL Query:', updateQuery);
-    console.log('🔍 Parameters:', params);
-    
-    const result = await sql.unsafe(updateQuery, params);
+    // Use simple template literal approach like the working test script
+    const result = await sql`
+      UPDATE news 
+      SET title = ${updateFields.title || 'title'},
+          content = ${updateFields.content || 'content'},
+          status = ${updateFields.status || 'status'},
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${newsId}
+      RETURNING *
+    `;
     
     console.log('🔍 Query result:', result);
     
