@@ -800,14 +800,15 @@ app.post('/api/insurance', async (req, res) => {
       });
     }
 
-    const insuranceData = {
-      eventName,
-      eventDate,
-      eventDescription,
-      participantCount: participantCount || 0,
-      submittedBy: submittedBy || 'admin',
-      status: 'pending'
-    };
+                    const insuranceData = {
+                  eventName,
+                  eventDate,
+                  eventDescription,
+                  participantCount: participantCount || 0,
+                  submittedBy: submittedBy || 'admin',
+                  status: 'pending',
+                  clubId: req.body.clubId || null
+                };
 
     const result = await addInsurance(insuranceData);
     
