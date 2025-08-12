@@ -45,6 +45,9 @@
             padding: 40px;
             background-color: #f8f9fa;
             line-height: 1.6;
+            /* Prevent horizontal overflow */
+            overflow-x: hidden;
+            max-width: 100vw;
         }
         
         /* Header Styles */
@@ -72,9 +75,11 @@
         .logo {
             width: 60px;
             height: 60px;
-            background: url('../assets/ewa-wolf.jpg') no-repeat center;
+            background: url('./assets/ewa-wolf.jpg') no-repeat center;
             background-size: contain;
             margin-right: 20px;
+            /* Prevent logo from shrinking */
+            flex-shrink: 0;
         }
         
         .header-right {
@@ -177,6 +182,111 @@
         
         .back-button:hover {
             background-color: #5a6268;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            /* Mobile body constraints */
+            body {
+                padding: 20px 10px;
+                overflow-x: hidden;
+                max-width: 100vw;
+            }
+            
+            /* Mobile header improvements */
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 0;
+                margin-bottom: 40px;
+                width: 100%;
+                max-width: 100%;
+                text-align: center;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                width: 100%;
+            }
+            
+            .header-left a {
+                margin-right: 0;
+                margin-bottom: 5px;
+                text-align: center;
+                width: 100%;
+                padding: 8px;
+                /* Touch-friendly minimum size */
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .header-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            /* Mobile logo improvements */
+            .logo {
+                width: 50px;
+                height: 50px;
+                margin-right: 0;
+                margin-bottom: 10px;
+                background: url('./assets/ewa-wolf.jpg') no-repeat center;
+                background-size: contain;
+            }
+            
+            /* Mobile content improvements */
+            .main-content {
+                padding: 30px 20px;
+                margin: 0 10px;
+                max-width: 100%;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+                text-align: center;
+            }
+            
+            .club-name {
+                font-size: 1.3rem;
+                text-align: center;
+            }
+            
+            .payment-section {
+                margin-bottom: 30px;
+            }
+            
+            .payment-section h3 {
+                font-size: 1.2rem;
+            }
+            
+            .zelle-qr img {
+                max-width: 280px;
+            }
+            
+            .stripe-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stripe-btn {
+                width: 100%;
+                text-align: center;
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .back-button {
+                width: 100%;
+                text-align: center;
+                padding: 12px;
+                font-size: 16px;
+            }
         }
         
         /* Footer */
