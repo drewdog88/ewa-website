@@ -4,5 +4,5 @@
   "branchTagMapping": {
     "feature/stripe-robotics-payment": "feature-stripe-robotics-payment"
   },
-  "migrationNoticeShown": false
+  "migrationNoticeShown": true
 }

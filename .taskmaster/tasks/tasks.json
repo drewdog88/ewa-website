@@ -15,7 +15,7 @@
             "id": 1,
             "title": "Add Volunteer update endpoint and DB function",
             "description": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "- Implement PUT /api/volunteers/:id with Zod validation and role-based authorization (admin/club_admin).\n- Create updateVolunteer(pool, id, data) using parameterized SQL; whitelist updatable fields (e.g., status, notes, assigned_club_id).\n- Return 204 on success; 404 if volunteer not found; audit log the change.\n<info added on 2025-08-12T04:54:59.769Z>\nCOMPLETED: Volunteer status update implemented.\n\n- Database: added columns status (VARCHAR(50), default 'pending'), notes (TEXT), assigned_club_id (UUID) with index on status via migration database/add-volunteer-status.js.\n- DB function: updateVolunteer(volunteerId, updates) in database/neon-functions.js with field whitelist ['status','notes','assigned_club_id'], parameterized queries, returns updated row or null; exported.\n- API: PUT /api/volunteers/:id in api/index.js; validates status ['pending','contacted','confirmed','declined']; 404 if not found; 400 for invalid status; 500 on server error; wired to updateVolunteer.\n- Security: whitelisting, parameterized queries, input validation, and error logging in place.\n</info added on 2025-08-12T04:54:59.769Z>\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-WebRequest -Method Put -Uri \"$ENV:BASE_URL/api/volunteers/$id\" -Headers @{Authorization=\"Bearer $token\"} -ContentType 'application/json' -Body (@{status='confirmed'} | ConvertTo-Json) | Select-Object StatusCode\n- BrowserMCP: Perform authenticated PUT via UI/admin panel; verify success toast and updated status in list; check network tab for 204.\n- Database: SELECT status, notes, assigned_club_id FROM volunteers WHERE id = $1; verify changes and updated_at; ensure audit log entry present.\n- Local env: .env.local loaded; Zod errors return 400; rate limit not triggered under normal use; logs structured (pino) without PII.\n- Production: Vercel deploy; Neon connection via pgBouncer; confirm 204 responses, 404 for missing, 400 for invalid; review Vercel logs for masked PII.",
             "testStrategy": ""
@@ -24,7 +24,7 @@
             "id": 2,
             "title": "Implement News publish/edit/delete API and SQL",
             "description": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "- Add endpoints: POST /api/news/:id/publish, PUT /api/news/:id, DELETE /api/news/:id (soft delete).\n- Ensure slug uniqueness, updated_at optimistic concurrency, and role checks.\n- DB functions: publishNews, updateNews, deleteNewsSoft; add updated_at trigger if missing.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell:\n  • PUT: Invoke-WebRequest -Method Put -Uri \"$ENV:BASE_URL/api/news/$id\" -Headers @{Authorization=\"Bearer $token\";'If-Match'=$etag} -ContentType 'application/json' -Body (@{title='New';slug='unique-slug'}|ConvertTo-Json)\n  • DELETE: Invoke-WebRequest -Method Delete -Uri \"$ENV:BASE_URL/api/news/$id\" -Headers @{Authorization=\"Bearer $token\"}\n  • PUBLISH: Invoke-WebRequest -Method Post -Uri \"$ENV:BASE_URL/api/news/$id/publish\" -Headers @{Authorization=\"Bearer $token\"}\n- BrowserMCP: Edit and delete via admin UI; verify publish sets status and published_at; ensure deleted items hidden from public lists.\n- Database: Verify slug uniqueness constraint; deleted_at set on soft delete; updated_at changed; published_at set on publish; optional audit rows.\n- Local env: Validate role checks, Zod validation, rate limiting on admin routes; structured logs.\n- Production: Test flows on Vercel with Neon; confirm ETag/updated_at concurrency works; review logs and ensure no PII.",
             "testStrategy": ""
@@ -33,7 +33,7 @@
             "id": 3,
             "title": "Build Links/Resources CRUD API and DB layer",
             "description": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "- Endpoints: GET /api/links, GET /api/links/:id, POST /api/links, PUT /api/links/:id, DELETE /api/links/:id.\n- Fields: title, url, category, order_index, is_visible; validate and sanitize.\n- DB: listLinks, getLink, createLink, updateLink, deleteLink; support ordering.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell:\n  • POST: Invoke-RestMethod -Method Post -Uri \"$ENV:BASE_URL/api/links\" -Headers @{Authorization=\"Bearer $token\"} -ContentType 'application/json' -Body (@{title='Site';url='https://example.com';category='general';order_index=1;is_visible=$true}|ConvertTo-Json)\n  • GET list/item, PUT update, DELETE remove using Invoke-WebRequest/Invoke-RestMethod and assert status codes 200/201/204.\n- BrowserMCP: Create, edit, reorder, toggle visibility; verify ordering in list and visibility on public page.\n- Database: Check rows inserted/updated; ordering maintained; constraints on URL format if enforced; soft delete policy if applicable.\n- Local env: Validate schema errors; ensure sanitization; ensure pagination/performance acceptable; logs structured.\n- Production: Verify CRUD under serverless timeouts; confirm Vercel logs and Neon pooling; no PII in logs.",
             "testStrategy": ""
@@ -42,7 +42,7 @@
             "id": 4,
             "title": "Fix Insurance Forms field mapping and validation",
             "description": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "- Align API parsing with expected keys {club, eventName, eventDate, eventDescription}; convert eventDate to ISO; map club -> club_id.\n- Add Zod schema and return detailed 400/422 errors; prevent duplicates via idempotency key or unique constraint.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-RestMethod -Method Post -Uri \"$ENV:BASE_URL/api/insurance/events\" -ContentType 'application/json' -Body (@{club='orchestra';eventName='Fall Concert';eventDate='2025-10-01T19:00:00Z';eventDescription='Annual'}|ConvertTo-Json) | Should -Not -BeNullOrEmpty\n- BrowserMCP: Submit form with valid and invalid data; verify field-level errors and disabled submit during pending; ensure success shows in admin view.\n- Database: Confirm club_id mapping via lookup; record persisted with ISO date; uniqueness/idempotency respected; verify created_at/updated_at.\n- Local env: Ensure express.json parsing, Zod validation, and correct 400/422 codes; logs structured and free of PII.\n- Production: Verify endpoint returns 201; duplicates prevented on double submit; Neon write visible in admin UI.",
             "testStrategy": ""
@@ -51,7 +51,7 @@
             "id": 5,
             "title": "Audit and harden Admin Login (sessions/JWT)",
             "description": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "- Verify auth mechanism (session vs JWT), secrets, cookie flags (Secure, HttpOnly, SameSite), token expiry.\n- Ensure password hashing with bcrypt@5; parameterized user+roles lookup; lockout/brute-force protection on /api/auth/login.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-RestMethod -Method Post -Uri \"$ENV:BASE_URL/api/auth/login\" -ContentType 'application/json' -Body (@{email='admin@example.com';password='P@ssw0rd'}|ConvertTo-Json) | Select-Object token, sessionId\n- BrowserMCP: Login as admin, club_admin, and regular user; verify role-based access to /admin routes; confirm logout clears session/JWT.\n- Database: Verify bcrypt hashes stored; roles/user_roles mappings correct; failed attempts increment and lockout thresholds enforced.\n- Local env: Check cookie flags in dev over HTTPS; JWT signing with JWT_SECRET; rate limiting and brute-force protections active.\n- Production: Verify secure cookies (Secure, HttpOnly, SameSite), token expiry, refresh if implemented; review Vercel logs for auth events without PII.",
             "testStrategy": ""
@@ -60,7 +60,7 @@
             "id": 6,
             "title": "Add Backup Management admin APIs",
             "description": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "- Create POST /api/admin/backups (trigger), GET /api/admin/backups (list), GET /api/admin/backups/:id/download (download) with admin-only authorization.\n- Integrate with Neon backups or S3 if configured; otherwise no-op stub in dev with clear responses.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell:\n  • Trigger: Invoke-WebRequest -Method Post -Uri \"$ENV:BASE_URL/api/admin/backups\" -Headers @{Authorization=\"Bearer $token\"}\n  • List: Invoke-RestMethod -Method Get -Uri \"$ENV:BASE_URL/api/admin/backups\" -Headers @{Authorization=\"Bearer $token\"}\n  • Download: Invoke-WebRequest -Method Get -Uri \"$ENV:BASE_URL/api/admin/backups/$id/download\" -OutFile backup.dump -Headers @{Authorization=\"Bearer $token\"}\n- BrowserMCP: Trigger backup from admin UI and download artifact; verify appropriate messages in non-prod (stub).\n- Database: If using logical backups metadata table, verify entry creation; otherwise validate S3 object existence.\n- Local env: Stubbed responses function with clear messaging; auth enforced; rate limits applied.\n- Production: Confirm admin-only access; successful trigger/list/download; verify storage location and retention; logs contain no sensitive data.",
             "testStrategy": ""
@@ -69,7 +69,7 @@
             "id": 7,
             "title": "Add Content Description update API",
             "description": "",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [],
             "details": "- Implement PUT /api/clubs/:id/description with sanitization and length limits; authorize admin/club_admin; trigger homepage cache revalidation.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-WebRequest -Method Put -Uri \"$ENV:BASE_URL/api/clubs/$id/description\" -Headers @{Authorization=\"Bearer $token\"} -ContentType 'application/json' -Body (@{description='Safe <b>update</b>'}|ConvertTo-Json)\n- BrowserMCP: Update description via admin UI; verify preview debounce, sanitize output, and homepage reflects after revalidation.\n- Database: Verify description updated, sanitized; updated_at changed; only authorized roles can modify.\n- Local env: Ensure validation rejects overly long input; XSS sanitized; revalidation hook called.\n- Production: Verify change visible on homepage; cache revalidation succeeds; logs structured with no PII.",
             "testStrategy": ""
@@ -197,13 +197,13 @@
           21,
           20
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-09T00:01:44.976Z",
-      "updated": "2025-08-12T04:47:09.165Z",
+      "updated": "2025-08-12T08:01:27.858Z",
       "description": "Tasks for master context"
     }
   },

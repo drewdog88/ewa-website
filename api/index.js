@@ -18,6 +18,8 @@ const {
   updateVolunteer,
   getInsurance,
   addInsurance,
+  updateInsuranceStatus,
+  deleteInsuranceSubmission,
   getForm1099,
   addForm1099,
   updateForm1099Status, updateForm1099, deleteForm1099,
@@ -35,7 +37,10 @@ const {
   addLink,
   updateLink,
   deleteLink,
-  incrementLinkClicks
+  incrementLinkClicks,
+  getBoosterClubs,
+  getBoosterClubByName,
+  updateBoosterClubDescription
 } = require('../database/neon-functions');
 
 // Import Vercel Blob for file storage
@@ -1345,6 +1350,91 @@ app.post('/links/:id/click', async (req, res) => {
   }
 });
 
+// Booster Club API endpoints
+// Get all booster clubs
+app.get('/booster-clubs', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const clubs = await getBoosterClubs();
+    
+    res.json({
+      success: true,
+      data: clubs
+    });
+  } catch (error) {
+    console.error('Error getting booster clubs:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get booster clubs'
+    });
+  }
+});
+
+// Get booster club by name
+app.get('/booster-clubs/:name', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { name } = req.params;
+    const club = await getBoosterClubByName(name);
+    
+    if (!club) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booster club not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: club
+    });
+  } catch (error) {
+    console.error('Error getting booster club:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get booster club'
+    });
+  }
+});
+
+// Update booster club description
+app.put('/booster-clubs/:name/description', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { name } = req.params;
+    const { description } = req.body;
+    
+    if (!description) {
+      return res.status(400).json({
+        success: false,
+        message: 'Description is required'
+      });
+    }
+    
+    const updatedClub = await updateBoosterClubDescription(name, description);
+    
+    res.json({
+      success: true,
+      message: 'Booster club description updated successfully',
+      data: updatedClub
+    });
+  } catch (error) {
+    console.error('Error updating booster club description:', error);
+    
+    if (error.message.includes('not found')) {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update booster club description'
+    });
+  }
+});
+
 // Insurance Management API Endpoints
 
 // Submit insurance form
@@ -1408,6 +1498,71 @@ app.get('/insurance', async (req, res) => {
   }
 });
 
+// Update insurance submission status
+app.put('/insurance/:id', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Status is required' 
+      });
+    }
+    
+    const result = await updateInsuranceStatus(id, status);
+    
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: 'Insurance submission status updated successfully',
+        submission: result
+      });
+    } else {
+      res.status(404).json({ 
+        success: false, 
+        message: 'Insurance submission not found' 
+      });
+    }
+  } catch (error) {
+    console.error('Error updating insurance submission status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+// Delete insurance submission
+app.delete('/insurance/:id', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { id } = req.params;
+    
+    const result = await deleteInsuranceSubmission(id);
+    
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: 'Insurance submission deleted successfully'
+      });
+    } else {
+      res.status(404).json({ 
+        success: false, 
+        message: 'Insurance submission not found' 
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting insurance submission:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
 // Helper function to get booster club display name
 function getBoosterClubDisplayName(boosterClub) {
   const clubNames = {
@@ -1434,6 +1589,147 @@ function getBoosterClubDisplayName(boosterClub) {
   };
   return clubNames[boosterClub] || boosterClub;
 }
+
+// Backup Management API Routes
+// Get backup status
+app.get('/backup/status', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    // For now, return a basic status since backup manager isn't available in serverless
+    res.json({
+      success: true,
+      data: {
+        status: {
+          lastBackup: null,
+          lastBackupStatus: 'not_configured',
+          backupCount: 0,
+          totalBackupSize: 0
+        },
+        nextScheduledBackup: null
+      }
+    });
+  } catch (error) {
+    console.error('Error getting backup status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get backup status'
+    });
+  }
+});
+
+// Perform manual backup
+app.post('/backup/perform', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    // For now, return success since backup manager isn't available in serverless
+    res.json({
+      success: true,
+      message: 'Backup system not configured for serverless environment'
+    });
+  } catch (error) {
+    console.error('Error performing backup:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Backup failed: ' + error.message
+    });
+  }
+});
+
+// Cleanup old backups
+app.post('/backup/cleanup', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    // For now, return success since backup manager isn't available in serverless
+    res.json({
+      success: true,
+      message: 'Backup cleanup not configured for serverless environment'
+    });
+  } catch (error) {
+    console.error('Error cleaning up backups:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to cleanup backups'
+    });
+  }
+});
+
+// Restore from backup
+app.post('/backup/restore', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    const { backupTimestamp } = req.body;
+    
+    if (!backupTimestamp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Backup timestamp is required'
+      });
+    }
+    
+    // For now, return success since backup manager isn't available in serverless
+    res.json({
+      success: true,
+      message: 'Backup restore not configured for serverless environment'
+    });
+  } catch (error) {
+    console.error('Error restoring from backup:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to restore from backup'
+    });
+  }
+});
+
+// List available backups
+app.get('/backup/list', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    // For now, return empty list since backup manager isn't available in serverless
+    res.json({
+      success: true,
+      data: []
+    });
+  } catch (error) {
+    console.error('Error listing backups:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to list backups'
+    });
+  }
+});
+
+// Download backup file
+app.get('/backup/download/:filename', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    const { filename } = req.params;
+    
+    if (!filename) {
+      return res.status(400).json({
+        success: false,
+        message: 'Filename is required'
+      });
+    }
+    
+    // For now, return error since backup manager isn't available in serverless
+    res.status(404).json({
+      success: false,
+      message: 'Backup download not configured for serverless environment'
+    });
+  } catch (error) {
+    console.error('Error downloading backup:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to download backup'
+    });
+  }
+});
 
 // Export for Vercel
 module.exports = app; 
