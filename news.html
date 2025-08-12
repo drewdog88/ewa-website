@@ -293,41 +293,10 @@
         <h1>News</h1>
         <p class="subtitle">Stay updated with the latest news and events from the Eastlake Wolfpack Association.</p>
         
-        <article class="news-article">
-            <h2>Welcome to the 2024-2025 School Year</h2>
-            <div class="date">September 1, 2024</div>
-            <div class="content">
-                <p>Welcome back to another exciting year of Eastlake High School athletics! The Eastlake Wolfpack Association is ready to support our student athletes and booster clubs throughout the 2024-2025 school year.</p>
-                <p>We have many exciting events planned, including fundraisers, volunteer opportunities, and community building activities. Stay tuned for updates on how you can get involved and support our programs.</p>
-            </div>
-        </article>
-        
-        <article class="news-article">
-            <h2>Fall Sports Season Begins</h2>
-            <div class="date">August 15, 2024</div>
-            <div class="content">
-                <p>The fall sports season is officially underway! Our football, soccer, volleyball, cross-country, and swimming teams are all in action. Come out and support our Wolfpack athletes as they compete this season.</p>
-                <p>Check our Resources page for game schedules and booster club information. We encourage all families to get involved with their respective booster clubs to help support our programs.</p>
-            </div>
-        </article>
-        
-        <article class="news-article">
-            <h2>Volunteer Opportunities Available</h2>
-            <div class="date">August 10, 2024</div>
-            <div class="content">
-                <p>We're always looking for dedicated volunteers to help support our programs. Whether you can spare a few hours or want to take on a more involved role, there are opportunities for everyone.</p>
-                <p>Visit our Volunteer page to express your interest in helping with concessions, fundraising, event planning, or other areas where we need support. Every volunteer makes a difference!</p>
-            </div>
-        </article>
-        
-        <article class="news-article">
-            <h2>Spring Sports Success</h2>
-            <div class="date">June 15, 2024</div>
-            <div class="content">
-                <p>Congratulations to all our spring sports teams on another successful season! Our baseball, softball, track & field, tennis, and golf teams all had outstanding performances this year.</p>
-                <p>Special recognition goes to our state qualifiers and championship participants. Your hard work and dedication inspire us all. Thank you to the coaches, parents, and booster clubs for your support throughout the season.</p>
-            </div>
-        </article>
+        <div id="news-container">
+            <!-- News articles will be loaded here dynamically -->
+            <div class="loading">Loading news...</div>
+        </div>
     </main>
 
     <footer class="footer-banner" role="contentinfo">
@@ -341,5 +310,67 @@
         </nav>
     </footer>
     <script src="assets/user-session.js"></script>
+    <script>
+        // Load news articles from API
+        async function loadNews() {
+            try {
+                const response = await fetch('/api/news/published');
+                const result = await response.json();
+                
+                const newsContainer = document.getElementById('news-container');
+                
+                if (result.success && result.news && result.news.length > 0) {
+                    // Clear loading message
+                    newsContainer.innerHTML = '';
+                    
+                    // Display each news article
+                    result.news.forEach(article => {
+                        const articleElement = document.createElement('article');
+                        articleElement.className = 'news-article';
+                        
+                        const date = new Date(article.published_at || article.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        
+                        articleElement.innerHTML = `
+                            <h2>${article.title}</h2>
+                            <div class="date">${date}</div>
+                            <div class="content">
+                                <p>${article.content}</p>
+                            </div>
+                        `;
+                        
+                        newsContainer.appendChild(articleElement);
+                    });
+                } else {
+                    // No news articles found
+                    newsContainer.innerHTML = `
+                        <article class="news-article">
+                            <h2>No News Available</h2>
+                            <div class="content">
+                                <p>Check back soon for the latest news and updates from the Eastlake Wolfpack Association.</p>
+                            </div>
+                        </article>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading news:', error);
+                const newsContainer = document.getElementById('news-container');
+                newsContainer.innerHTML = `
+                    <article class="news-article">
+                        <h2>Error Loading News</h2>
+                        <div class="content">
+                            <p>Sorry, we encountered an error while loading the news. Please try again later.</p>
+                        </div>
+                    </article>
+                `;
+            }
+        }
+        
+        // Load news when page loads
+        document.addEventListener('DOMContentLoaded', loadNews);
+    </script>
 </body>
 </html> 
