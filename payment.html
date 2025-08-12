@@ -336,14 +336,7 @@
             <p>Example: <code>donation: 123456, Jane Doe, donor_email@gmail.com</code></p>
         </div>
         
-        <hr>
-        
-        <div class="payment-section">
-            <h3>Check Payments</h3>
-            <p>Please make checks payable to <span id="checkClubName">[Club Name]</span> and mail or drop them off at Eastlake High School main office.</p>
-        </div>
-        
-        <hr>
+
         
         <div class="payment-section">
             <h3>Credit Card Payments</h3>
@@ -377,7 +370,6 @@
             const clubId = urlParams.get('id');
             if (clubName) {
                 document.getElementById('selectedClub').textContent = decodeURIComponent(clubName);
-                document.getElementById('checkClubName').textContent = decodeURIComponent(clubName);
             }
             return { clubName, clubId };
         }
