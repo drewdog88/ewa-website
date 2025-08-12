@@ -1,0 +1,133 @@
+{
+	"meta": {
+		"generatedAt": "2025-08-12T19:09:34.691Z",
+		"tasksAnalyzed": 15,
+		"totalTasks": 15,
+		"analysisCount": 15,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Plan architecture, stack, and security baseline",
+			"complexityScore": 9,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Break down the architecture plan into: 1) Requirements traceability to PRD (functional/non-functional), 2) Frontend baseline (HTML/CSS/JS, accessibility/WCAG 2.1 AA, progressive enhancement, CSP policy draft), 3) Backend services design (Express structure, middleware layering: helmet, cors, rate limiting, logging, error handling), 4) Data model and DB access patterns (Prisma schema conventions, UUID strategy, migrations), 5) Storage strategy (local public folder + optional S3/R2, path conventions, CDN strategy), 6) Security baseline (authN/Z, RBAC 'admin', input validation with zod, output encoding, TLS, headers, audit logging), 7) Performance plan (image pipeline, caching headers, CDN, DB indexes), 8) Monitoring/observability (pino, metrics, Vercel/Neon), 9) Deployment strategy (Vercel static + API, env management, secrets, anti-AI training headers). Produce an ADR per major decision with pros/cons and references.",
+			"reasoning": "System-wide foundational design spanning frontend, backend, DB, storage, security, performance, monitoring, and deployment; high coupling and long-lived impact require multiple ADRs and stakeholder review."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Database migration for payment fields and audit trail",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Create: 1) Prisma schema changes (BoosterClub fields, PaymentAudit model, timestamps, soft delete), 2) Migration scripts (forward/backward) with gen_random_uuid() enablement and index creation (including partial indexes), 3) Data backfill/seed for isPaymentEnabled=false, 4) Referential integrity checks and ON UPDATE/DELETE policies, 5) Performance validation (EXPLAIN on key queries and index verification), 6) Staging rollout/rollback runbook and checklist.",
+			"reasoning": "Non-trivial schema evolution with soft deletes, JSONB audit, partial indexes, and rollback safety; moderate complexity with clear patterns using Prisma."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Secure file upload pipeline for Zelle QR images",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Implement: 1) Endpoint scaffolding with admin auth and rate limiting, 2) Multer memoryStorage config with content-type and size limits, 3) Sharp processing (normalize to PNG, 640x640, strip metadata, compression), 4) Safe path generation and slug sanitization (prevent traversal), 5) Storage write (local public dir; optional S3/R2 abstraction) and cache headers, 6) DB update and PaymentAudit write in a transactional flow, 7) Test matrix (valid/invalid files, oversized, traversal attempts, QR readability QA).",
+			"reasoning": "Security-sensitive media pipeline touching validation, image processing, filesystem/optional S3, transactional DB updates, and audit logging."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "QR code extraction/generation from QRCODES4BOOSTERS.docx",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Deliver: 1) DOCX image extraction script (mammoth/docx) with deterministic ordering and error handling, 2) CSV mapping parser and club slug generation, 3) Sharp normalization to PNG 640x640 and output to public/zelle-standardized, 4) Report generator (JSON) listing processed and missing clubs, 5) Verification steps (count checks, sample QR scan QA, filename/slug validation).",
+			"reasoning": "One-off ETL-like task with file parsing, mapping, and image normalization; moderate complexity with manageable edge cases."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Stripe link validation and storage endpoints",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Build: 1) Zod schemas for allowed Stripe URL patterns and normalization, 2) PUT/GET handlers with RBAC and rate limiting, 3) Sanitization for paymentInstructions (backend), 4) DB write with PaymentAudit before/after payloads, 5) Security hardening (headers, SSRF/XSS protections, CSRF if cookie-based), 6) Unit/integration tests for good/bad URLs and audit creation.",
+			"reasoning": "CRUD endpoints with strict validation, sanitization, and auditing; medium security surface and clear patterns."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Public payment data read API",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Implement: 1) GET handler with UUID param validation and soft-delete filtering, 2) Response shape and null serialization with defensive encoding, 3) Caching headers (Cache-Control, ETag) and rate limiting, 4) Logging (request ID) and minimal fields selection with indexes, 5) Integration tests (200/404/disabled, caching headers, basic load).",
+			"reasoning": "Read-only API with caching and safety checks; moderate effort, straightforward patterns."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Payment page frontend refactor (dynamic, responsive, accessible)",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Deliver: 1) Semantic HTML structure and initial CSS (mobile-first, grid/flex, color contrast AA), 2) JS module to fetch payment-options and update DOM with progressive enhancement and noscript fallback, 3) Accessibility features (labels, alt text, focus management, keyboard nav), 4) Security (DOMPurify config, safe link attributes), 5) Responsive images with srcset (320/480/640), 6) Performance (defer JS, inline critical CSS, lazy-loading), 7) Testing plan (Jest DOM, axe-core, cross-browser, Lighthouse).",
+			"reasoning": "Client refactor with accessibility, security, and performance constraints; moderate to high complexity without frameworks."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Admin dashboard payment management UI",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Implement: 1) Admin route/page scaffolding and RBAC guard, 2) Club search/select with debounced fetch, 3) Form components for Stripe links, instructions, enable toggle with client validation, 4) QR upload widget with preview and replace, 5) Bulk CSV import/export with validation preview and error surfacing, 6) Autosave with debounce and optimistic UI, 7) Security (CSRF if cookies, no inline JS), 8) E2E tests (Cypress) for core flows and negatives.",
+			"reasoning": "Feature-rich admin UI including file uploads, validation, and bulk operations; higher UX and integration complexity."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "API authentication/authorization hardening",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Deliver: 1) Auth middleware (JWT/session) and RBAC 'admin' checks, 2) Rate limiting per IP and per user for admin routes, 3) CSRF protection strategy (cookie-based vs header token), 4) Security headers via helmet and CSP integration, 5) Centralized error responses without sensitive details, 6) Audit logger helper used by upload and payment-links, 7) Auth-focused integration tests (401/403, downgrade, CSRF).",
+			"reasoning": "Cross-cutting security layer with multiple protections and auditability; requires careful middleware orchestration and testing."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Data validation and sanitization layer",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Create: 1) Central zod schemas (PaymentLinks, PaymentInstructions, ClubId), 2) Backend sanitization with sanitize-html allowlists, 3) Output encoding and response headers (content-type, nosniff), 4) Logger redaction of user-supplied fields, 5) Unit tests with edge-case/XSS payloads and fuzz tests, 6) Reusable middleware for validators and sanitizers.",
+			"reasoning": "Shared validation/sanitization infrastructure with security implications and test coverage; moderate complexity."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Performance optimization and caching",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Implement: 1) Sharp-based image variants and build-time/upload-time generation, 2) Server and static compression (gzip/br) verification, 3) Cache strategies (immutable PNGs, API 5m with ETag, client SWR wrapper), 4) DB query optimization and indexes, 5) Performance testing (Lighthouse/WebPageTest, k6) and tuning.",
+			"reasoning": "Applied optimizations across assets, APIs, and DB; moderate due to coordination but follows standard patterns."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Comprehensive testing suite",
+			"complexityScore": 9,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Establish: 1) Unit tests (Jest) for validators/controllers/utils with coverage targets, 2) Integration tests (supertest) for API CRUD/auth/caching, 3) E2E tests (Cypress) for payment page and admin flows, 4) Cross-browser Playwright runs for critical paths, 5) Security scanning (npm audit, optional Snyk, OWASP ZAP baseline), 6) Visual/regression snapshots for mobile layouts, 7) CI pipeline (GitHub Actions matrix, caching, artifacts), 8) Test data/seeding strategy and fixtures.",
+			"reasoning": "Broad scope across layers, tooling, and CI integration; coordination-heavy and high coverage expectations."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Logging, monitoring, and audit dashboards",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Deliver: 1) pino-http configuration with redaction and request correlation, 2) Central error handler returning problem+json, 3) Healthcheck /healthz with DB latency metric, 4) Admin audit trail UI with filters and pagination, 5) Monitoring hooks (Vercel/Neon dashboards; optional Sentry), 6) Fault-injection tests to verify observability and audit flow.",
+			"reasoning": "Combines backend logging/metrics with an admin UI for audits; moderate complexity with integration points."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Deployment pipeline and environment configuration",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Set up: 1) Environment variables and secret management (Vercel envs; local .env handling), 2) Build/deploy configuration for static + API (or Node server), 3) Safe DB migration step (prisma migrate deploy) with gating, 4) Rollout strategy (staging, canary/blue-green if possible) and rollback runbook, 5) Backups (Neon PITR) verification and restore drill, 6) Automated smoke tests post-deploy and promotion criteria.",
+			"reasoning": "CICD and env management with safe migrations and rollback; operationally significant but patternized."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Documentation, training, and handover",
+			"complexityScore": 5,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Produce: 1) Admin guide with screenshots/GIFs for QR upload, Stripe links, bulk CSV, 2) Developer docs (API contracts, validation rules, migrations, image pipeline, caching, logging/audit), 3) Security notes (PCI scope statement, controls checklist, incident response playbook), 4) ADRs and README updates linking to decisions and runbooks, 5) Review cycle with non-developer admin and internal dry-run.",
+			"reasoning": "Documentation and enablement work with structured outputs and reviews; lower technical complexity but cross-team coordination needed."
+		}
+	]
+}

@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Vercel Analytics -->
-    <script defer src="/_vercel/insights/script.js"></script>
+    <!-- Vercel Analytics (only in production) -->
+    <!-- <script defer src="/_vercel/insights/script.js"></script> -->
     
-    <!-- Vercel Speed Insights -->
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+    <!-- Vercel Speed Insights (only in production) -->
+    <!-- <script defer src="/_vercel/speed-insights/script.js"></script> -->
     
     <title>Payment & Donation Information</title>
     
@@ -370,17 +370,196 @@
 
     <script src="assets/user-session.js"></script>
     <script>
-        // Get club name from URL parameter
-        function getClubNameFromURL() {
+        // Get club name and ID from URL parameter
+        function getClubInfoFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const clubName = urlParams.get('club');
+            const clubId = urlParams.get('id');
             if (clubName) {
                 document.getElementById('selectedClub').textContent = decodeURIComponent(clubName);
                 document.getElementById('checkClubName').textContent = decodeURIComponent(clubName);
             }
-            return clubName;
+            return { clubName, clubId };
         }
         
+        // Load club data from database
+        async function loadClubData(clubId) {
+            try {
+                const response = await fetch(`/api/club/${clubId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading club data:', error);
+                return null;
+            }
+        }
+        
+        // Render Zelle QR code dynamically
+        async function renderZelleQR(clubId) {
+            const qrContainer = document.getElementById('zelleQRContainer');
+            if (!qrContainer) return;
+            
+            // Store the current blob URL to revoke it later
+            const currentImg = qrContainer.querySelector('img');
+            const currentBlobUrl = currentImg ? currentImg.src : null;
+            
+            try {
+                // Show loading state
+                qrContainer.style.display = 'block';
+                qrContainer.setAttribute('aria-hidden', 'false');
+                qrContainer.innerHTML = '<p>Loading QR code...</p>';
+                
+                // Fetch QR code from API with cache busting
+                const response = await fetch(`/api/qr-code?clubId=${clubId}&t=${Date.now()}&v=${Math.random()}`);
+                
+                if (response.ok) {
+                    // QR code generated successfully
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    qrContainer.innerHTML = `
+                        <img src="${imageUrl}" alt="Zelle QR code" loading="lazy" style="max-width: 300px; height: auto;">
+                    `;
+                } else if (response.status === 404 || response.status === 400) {
+                    // No QR code available for this club (404) or payment not enabled (400)
+                    qrContainer.innerHTML = `
+                        <div class="no-qr-message" style="
+                            background-color: #f8f9fa;
+                            border: 2px dashed #dee2e6;
+                            border-radius: 8px;
+                            padding: 20px;
+                            text-align: center;
+                            margin: 20px 0;
+                            color: #6c757d;
+                        ">
+                            <p style="font-size: 1.1em; margin-bottom: 10px;">
+                                This club does not use Zelle, Contact your Booster Club for more details.
+                            </p>
+                        </div>
+                    `;
+                    
+                    // Hide the static Zelle instructions text
+                    const zelleSection = qrContainer.closest('.payment-section');
+                    if (zelleSection) {
+                        const staticText = zelleSection.querySelectorAll('p:not(.no-qr-message p)');
+                        staticText.forEach(p => {
+                            p.style.display = 'none';
+                        });
+                    }
+                } else {
+                    // Other error
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+            } catch (error) {
+                console.error('Error loading QR code:', error);
+                qrContainer.innerHTML = `
+                    <div class="qr-error" style="
+                        background-color: #f8d7da;
+                        border: 1px solid #f5c6cb;
+                        border-radius: 4px;
+                        padding: 15px;
+                        text-align: center;
+                        margin: 20px 0;
+                        color: #721c24;
+                    ">
+                        <p>Error loading QR code. Please try again later.</p>
+                    </div>
+                `;
+            } finally {
+                // Revoke the previous blob URL to free memory and prevent caching
+                if (currentBlobUrl && currentBlobUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(currentBlobUrl);
+                }
+            }
+        }
+        
+        // Render Stripe links dynamically
+        async function renderStripeLinks(clubData) {
+            const container = document.getElementById('stripeContainer');
+            if (!container) return;
+            
+            // Check if club has Stripe URLs configured
+            const stripeUrls = clubData.stripe_urls || {};
+            const hasStripeLinks = Object.keys(stripeUrls).length > 0;
+            
+            if (hasStripeLinks) {
+                container.style.display = 'block';
+                let stripeHTML = '<div class="stripe-links">';
+                
+                // Add donation link if available
+                if (stripeUrls.donation) {
+                    stripeHTML += `
+                        <a class="stripe-btn" href="${stripeUrls.donation}" target="_blank" rel="noopener noreferrer" aria-label="Donate via Stripe">
+                            Donate (Stripe)
+                        </a>
+                    `;
+                }
+                
+                // Add membership link if available
+                if (stripeUrls.membership) {
+                    stripeHTML += `
+                        <a class="stripe-btn" href="${stripeUrls.membership}" target="_blank" rel="noopener noreferrer" aria-label="Pay membership via Stripe">
+                            Pay Membership (Stripe)
+                        </a>
+                    `;
+                }
+                
+                // Add fees link if available
+                if (stripeUrls.fees) {
+                    stripeHTML += `
+                        <a class="stripe-btn" href="${stripeUrls.fees}" target="_blank" rel="noopener noreferrer" aria-label="Pay fees via Stripe">
+                            Pay Fees (Stripe)
+                        </a>
+                    `;
+                }
+                
+                stripeHTML += '</div>';
+                container.innerHTML = stripeHTML;
+            } else {
+                // No Stripe links configured
+                container.style.display = 'block';
+                container.innerHTML = `
+                    <div class="no-stripe-message" style="
+                        background-color: #f8f9fa;
+                        border: 2px dashed #dee2e6;
+                        border-radius: 8px;
+                        padding: 20px;
+                        text-align: center;
+                        margin: 20px 0;
+                        color: #6c757d;
+                    ">
+                        <p style="font-size: 1.1em; margin-bottom: 10px;">
+                            <strong>No Stripe Payment Links Available</strong>
+                        </p>
+                        <p>Contact your booster club board to set up online payment options</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            const { clubName, clubId } = getClubInfoFromURL();
+            
+            // If we have a club ID, load dynamic data
+            if (clubId) {
+                const clubData = await loadClubData(clubId);
+                // Always try to render QR code, even if club data failed to load
+                await renderZelleQR(clubId);
+                // Only render Stripe links if we have club data
+                if (clubData) {
+                    await renderStripeLinks(clubData);
+                }
+            } else {
+                // Fallback to old behavior for Robotics club
+                renderStripeIfRobotics(clubName);
+                renderZelleQRIfRobotics(clubName);
+            }
+        });
+        
+        // Legacy functions for backward compatibility
         function renderStripeIfRobotics(clubName) {
             const normalized = (clubName || '').trim();
             if (normalized.toLowerCase() !== 'eastlake robotics club') return;
@@ -411,13 +590,6 @@
                 <img src="zelle-standardized/robotics.jpg" alt="Zelle QR code for Eastlake Robotics Club" loading="lazy">
             `;
         }
-        
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            const club = getClubNameFromURL();
-            renderStripeIfRobotics(club);
-            renderZelleQRIfRobotics(club);
-        });
         
         // Prevent AI training
         document.addEventListener('contextmenu', e => e.preventDefault());

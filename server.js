@@ -318,11 +318,12 @@ setInterval(() => {
   }
 }, RATE_LIMIT_WINDOW);
 
+// Import security configuration
+const { helmetConfig, corsOptions } = require('./utils/security-config');
+
 // Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? true : true,
-  credentials: true
-}));
+app.use(cors(corsOptions));
+app.use(require('helmet')(helmetConfig));
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 
@@ -1859,17 +1860,16 @@ async function generateUsageReport(dateRange) {
 }
 
 async function generateLinksReport(dateRange) {
-  // Mock data - in a real app, you'd query your link tracking database
-  const clubs = [
-    'EHS Band Boosters', 'Eastlake Baseball Club', 'Eastlake Boys Basketball Booster Club',
-    'Eastlake Girls Basketball Booster Club', 'Eastlake Cheer Booster Club', 'Eastlake Choir',
-    'Eastlake Cross-Country Boosters', 'Eastlake Dance Team Boosters', 'EHS DECA Booster Club',
-    'Eastlake Drama', 'Eastlake Fastpitch (Girls)', 'Eastlake Boys Golf Booster Club',
-    'Eastlake Girls Golf Booster Club', 'EHS Orchestra Boosters Club', 'Eastlake Robotics Club',
-    'Eastlake Boys Soccer', 'Eastlake Girls Soccer', 'Eastlake Boys Swim & Dive Booster Club',
-    'Eastlake Girls Swim & Dive Booster Club', 'EHS Track and Field Booster Club',
-    'Eastlake Volleyball Booster Club', 'EHS Wrestling Booster Club'
-  ];
+  // Get clubs from database
+  let clubs = [];
+  try {
+    const clubsData = await getBoosterClubs();
+    clubs = clubsData.map(club => club.name);
+  } catch (error) {
+    console.error('Error getting clubs for links report:', error);
+    // Fallback to empty array if database query fails
+    clubs = [];
+  }
     
   const report = clubs.map(club => ({
     url: `https://${club.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.org`,
@@ -2949,6 +2949,167 @@ app.put('/api/booster-clubs/:name/website', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update booster club website URL'
+    });
+  }
+});
+
+// Payment System API endpoints
+// Get individual booster club data by ID
+app.get('/api/club/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Import the booster-clubs API handler
+    const boosterClubsHandler = require('./api/booster-clubs');
+    
+    // Create a mock request object with query parameters
+    const mockReq = {
+      query: { id },
+      method: 'GET',
+      headers: req.headers
+    };
+    
+    // Call the handler
+    await boosterClubsHandler(mockReq, res);
+    
+  } catch (error) {
+    console.error('Error in booster club API:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get booster club data'
+    });
+  }
+});
+
+// Generate QR code for a booster club
+app.get('/api/qr-code', async (req, res) => {
+  try {
+    // Import the QR code API handler
+    const qrCodeHandler = require('./api/qr-code');
+    
+    // Call the handler
+    await qrCodeHandler(req, res);
+    
+  } catch (error) {
+    console.error('Error in QR code API:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate QR code'
+    });
+  }
+});
+
+// Admin Payment Management API endpoints
+// Get payment status overview
+app.get('/api/admin/payment-status', async (req, res) => {
+  try {
+    // Import the payment status API handler
+    const paymentStatusHandler = require('./api/admin/payment-status');
+    
+    // Call the handler
+    await paymentStatusHandler(req, res);
+    
+  } catch (error) {
+    console.error('Error in payment status API:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get payment status'
+    });
+  }
+});
+
+// Get payment settings for a club
+app.get('/api/admin/payment-settings/club/:clubId', async (req, res) => {
+  try {
+    // Import the payment settings API handler
+    const paymentSettingsHandler = require('./api/admin/payment-settings');
+    
+    // Call the handler
+    await paymentSettingsHandler(req, res);
+    
+  } catch (error) {
+    console.error('Error in payment settings GET API:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get payment settings'
+    });
+  }
+});
+
+// Update payment settings for a club
+app.put('/api/admin/payment-settings/club/:clubId', async (req, res) => {
+  try {
+    // Import the payment settings API handler
+    const paymentSettingsHandler = require('./api/admin/payment-settings');
+    
+    // Call the handler
+    await paymentSettingsHandler(req, res);
+    
+  } catch (error) {
+    console.error('Error in payment settings PUT API:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update payment settings'
+    });
+  }
+});
+
+// Upload QR code for a club
+app.post('/api/admin/payment-settings/club/:clubId/qr-code', async (req, res) => {
+  try {
+    // Import the payment settings API handler
+    const paymentSettingsHandler = require('./api/admin/payment-settings');
+    
+    // Call the handler
+    await paymentSettingsHandler(req, res);
+    
+  } catch (error) {
+    console.error('Error in QR code upload API:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload QR code'
+    });
+  }
+});
+
+// Get all payment settings for admin dashboard
+app.get('/api/admin/payment-settings', async (req, res) => {
+  try {
+    const sql = require('./database/neon-functions').getSql();
+    
+    // Get all active booster clubs with their payment settings
+    const clubs = await sql`
+      SELECT 
+        id, 
+        name, 
+        zelle_url, 
+        stripe_urls,
+        payment_instructions,
+        is_payment_enabled,
+        last_payment_update_at
+      FROM booster_clubs 
+      WHERE is_active = true
+      ORDER BY name
+    `;
+    
+    res.status(200).json({
+      success: true,
+      data: clubs.map(club => ({
+        id: club.id,
+        name: club.name,
+        zelle_url: club.zelle_url,
+        stripe_urls: club.stripe_urls || {},
+        payment_instructions: club.payment_instructions,
+        is_payment_enabled: club.is_payment_enabled,
+        last_payment_update_at: club.last_payment_update_at
+      }))
+    });
+    
+  } catch (error) {
+    console.error('Error getting all payment settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get payment settings'
     });
   }
 });

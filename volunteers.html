@@ -425,29 +425,7 @@
                 <label for="boosterClub">Booster Club *</label>
                 <select id="boosterClub" name="boosterClub" required>
                     <option value="">Select a booster club</option>
-                    <option value="EWA Eastlake Wolfpack Association">EWA Eastlake Wolfpack Association</option>
-                    <option value="EHS Band Boosters">EHS Band Boosters</option>
-                    <option value="Eastlake Baseball Club">Eastlake Baseball Club</option>
-                    <option value="Eastlake Boys Basketball Booster Club">Eastlake Boys Basketball Booster Club</option>
-                    <option value="Eastlake Girls Basketball Booster Club">Eastlake Girls Basketball Booster Club</option>
-                    <option value="Eastlake Cheer Booster Club">Eastlake Cheer Booster Club</option>
-                    <option value="Eastlake Choir">Eastlake Choir</option>
-                    <option value="Eastlake Cross-Country Boosters">Eastlake Cross-Country Boosters</option>
-                    <option value="Eastlake Dance Team Boosters">Eastlake Dance Team Boosters</option>
-                    <option value="EHS DECA Booster Club">EHS DECA Booster Club</option>
-                    <option value="Eastlake Drama">Eastlake Drama</option>
-                    <option value="Eastlake Fastpitch (Girls)">Eastlake Fastpitch (Girls)</option>
-                    <option value="Eastlake Boys Golf Booster Club">Eastlake Boys Golf Booster Club</option>
-                    <option value="Eastlake Girls Golf Booster Club">Eastlake Girls Golf Booster Club</option>
-                    <option value="EHS Orchestra Boosters Club">EHS Orchestra Boosters Club</option>
-                    <option value="Eastlake Robotics Club">Eastlake Robotics Club</option>
-                    <option value="Eastlake Boys Soccer">Eastlake Boys Soccer</option>
-                    <option value="Eastlake Girls Soccer">Eastlake Girls Soccer</option>
-                    <option value="Eastlake Boys Swim & Dive Booster Club">Eastlake Boys Swim & Dive Booster Club</option>
-                    <option value="Eastlake Girls Swim & Dive Booster Club">Eastlake Girls Swim & Dive Booster Club</option>
-                    <option value="EHS Track and Field Booster Club">EHS Track and Field Booster Club</option>
-                    <option value="Eastlake Volleyball Booster Club">Eastlake Volleyball Booster Club</option>
-                    <option value="EHS Wrestling Booster Club">EHS Wrestling Booster Club</option>
+                    <!-- Clubs will be loaded dynamically from database -->
                 </select>
             </div>
             
@@ -495,6 +473,38 @@
 
     <script src="../assets/user-session.js"></script>
     <script>
+        // Load booster clubs from database on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/api/booster-clubs');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const clubSelect = document.getElementById('boosterClub');
+                    if (clubSelect) {
+                        // Keep the first "Select" option
+                        const firstOption = clubSelect.querySelector('option');
+                        clubSelect.innerHTML = '';
+                        if (firstOption) {
+                            clubSelect.appendChild(firstOption);
+                        }
+                        
+                        // Add clubs from database
+                        data.data.forEach(club => {
+                            const option = document.createElement('option');
+                            option.value = club.name;
+                            option.textContent = club.name;
+                            clubSelect.appendChild(option);
+                        });
+                    }
+                } else {
+                    console.error('Error loading booster clubs:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading booster clubs:', error);
+            }
+        });
+
         document.getElementById('volunteerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             

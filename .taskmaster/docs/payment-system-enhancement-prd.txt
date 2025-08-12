@@ -1,0 +1,200 @@
+# Payment System Enhancement PRD
+## Eastlake Wolfpack Association Website
+
+### Overview
+Enhance the existing payment system to provide comprehensive payment link redirection for all booster clubs, including Zelle QR codes and Stripe payment links, with admin management capabilities. **This system does NOT process payments directly - it only redirects users to external payment providers.**
+
+### Current State Analysis
+- Payment page exists but only supports Robotics club with hardcoded Zelle QR and Stripe links
+- Check payment section exists but is not being used
+- No dynamic loading of payment options based on booster club
+- No admin interface for managing payment links and QR codes
+- Zelle QR codes exist in zelle-standardized/ directory but not integrated
+
+### Requirements
+
+#### 1. Database Schema Enhancements
+- Add payment link columns to booster_clubs table:
+  - zelle_qr_code_path (VARCHAR) - path to QR code image
+  - stripe_donation_link (VARCHAR) - Stripe payment link for donations
+  - stripe_membership_link (VARCHAR) - Stripe payment link for membership fees
+  - stripe_fees_link (VARCHAR) - Stripe payment link for other fees
+  - payment_instructions (TEXT) - custom payment instructions per club
+  - is_payment_enabled (BOOLEAN) - whether payment options are available
+
+#### 2. Zelle QR Code Integration
+- **Initial QR Code Seeding**:
+  - Extract Zelle URLs from QRCODES4BOOSTERS.docx document (one-time process)
+  - Generate QR codes programmatically from these URLs using a QR code library
+  - Store generated QR codes in zelle-standardized/ directory with consistent naming
+  - Populate database with initial QR code paths for each booster club
+- **Admin Panel QR Code Management**:
+  - Combined page with both Zelle QR codes and Stripe payment links
+  - Individual QR code management per club
+  - Upload new QR code images for clubs
+  - QR code testing and validation tools
+  - Version control for QR code updates
+- Display QR codes dynamically based on selected booster club
+- Show "No QR Code available" message for clubs without QR codes
+- Ensure QR codes are accessible and properly sized for mobile devices
+
+#### 3. Stripe Payment Links Management
+- Support multiple Stripe payment types per club (donations, membership, fees)
+- Use existing Robotics implementation as template
+- Allow admin to manage Stripe links through admin panel
+- Validate that links point to legitimate Stripe domains
+
+#### 4. Payment Page Enhancements
+- Remove check payment section entirely
+- Dynamically load payment options based on club selection
+- Display appropriate QR codes and Stripe buttons for each club
+- Maintain responsive design for mobile devices
+- Improve user experience with clear payment instructions
+
+#### 5. Admin Panel Enhancements
+- **Payment Management Dashboard**:
+  - Centralized payment management section in admin dashboard
+  - Overview of all booster clubs with payment status
+  - Quick access to payment settings for each club
+  - Payment configuration status indicators
+
+- **Combined Payment Management Page**:
+  - Single page for managing both Zelle QR codes and Stripe payment links
+  - Club selection dropdown to manage payment settings per club
+  - Zelle QR code upload and management per club
+  - Stripe payment links management (donations, membership, fees) per club
+  - Payment instructions management per club
+  - Real-time validation and testing of payment links
+  - Preview functionality for QR codes and payment instructions
+
+- **Zelle QR Code Management**:
+  - Upload new QR code images for individual clubs
+  - Replace existing QR codes for clubs
+  - QR code testing and validation tools
+  - Version control for QR code updates
+
+- **Stripe Payment Links Management**:
+  - Individual Stripe link management per club
+  - Support for multiple link types (donations, membership, fees)
+  - Link validation against Stripe domains
+  - Link testing and preview functionality
+  - Bulk import/export of Stripe links
+  - Link status monitoring and alerts
+
+- **Payment Instructions Management**:
+  - Custom payment instructions per club
+  - Rich text editor for payment instructions
+  - Template system for common instructions
+  - Preview payment instructions as they appear to users
+
+- **Bulk Operations**:
+  - Bulk import/export functionality for payment data
+  - CSV import for payment links and instructions
+  - Bulk enable/disable payment options
+
+- **Validation and Error Handling**:
+  - Real-time validation of payment links
+  - Error reporting for broken or invalid links
+  - Validation feedback for QR codes
+  - Payment configuration completeness checks
+
+- **Audit and Monitoring**:
+  - Payment configuration change history
+  - Admin action logging for payment changes
+  - Payment link health monitoring
+  - Usage statistics and reporting
+
+#### 6. API Enhancements
+- Create new API endpoints for payment link management
+- Support CRUD operations for payment link information
+- Include proper authentication and authorization
+- Implement data validation and sanitization
+
+### Technical Specifications
+
+#### Frontend Requirements
+- Vanilla JavaScript (no frameworks)
+- Responsive design for mobile and desktop
+- Accessibility compliance (WCAG 2.1)
+- Security measures to prevent AI training
+- Progressive enhancement approach
+
+#### Backend Requirements
+- Node.js/Express API endpoints
+- PostgreSQL database with Neon
+- Proper error handling and logging
+- Input validation and sanitization
+- Basic security best practices (no PCI compliance required)
+
+#### Database Requirements
+- Maintain referential integrity
+- Use UUIDs for primary keys
+- Include proper indexes for performance
+- Support for soft deletes where appropriate
+- Simple audit trail for link management changes
+
+### Security Considerations
+- Secure file upload for QR codes
+- Validation of Stripe payment links (domain verification)
+- Protection against XSS and injection attacks
+- Proper authentication for admin functions
+- **No PCI compliance required - no payment data processed**
+
+### Testing Requirements
+- Unit tests for all new API endpoints
+- Integration tests for link redirection flow
+- Frontend tests for payment page functionality
+- Basic security tests for link management
+- Mobile responsiveness testing
+- Cross-browser compatibility testing
+
+### Performance Requirements
+- Page load time under 3 seconds
+- Optimized image loading for QR codes
+- Efficient database queries
+- Proper caching strategies
+- Mobile-optimized performance
+
+### Success Criteria
+- All booster clubs have working payment link redirections
+- Admin can manage all payment links through admin panel
+- Payment page loads correctly for all clubs
+- QR codes display properly on mobile devices
+- Stripe payment links redirect correctly
+- No broken link redirection flows
+- Comprehensive test coverage
+- Basic security audit passes
+
+### Implementation Phases
+1. Database schema updates and migrations
+2. QR code generation and integration
+3. Payment page enhancements
+4. Admin panel payment link management
+5. API development and testing
+6. Comprehensive testing and basic security audit
+7. Deployment and monitoring
+
+### Dependencies
+- Existing booster clubs database structure
+- Current payment page implementation
+- Admin panel infrastructure
+- Zelle QR codes from QRCODES4BOOSTERS.docx
+- Stripe payment links (to be provided)
+- Vercel deployment infrastructure
+
+### Risks and Mitigation
+- Risk: QR code quality issues
+  - Mitigation: Test QR codes across different devices and apps
+- Risk: Stripe link management complexity
+  - Mitigation: Provide clear admin interface with validation
+- Risk: Mobile responsiveness issues
+  - Mitigation: Comprehensive mobile testing
+- Risk: Broken external payment links
+  - Mitigation: Regular link validation and admin notifications
+
+### Future Enhancements
+- Payment link analytics and reporting
+- Integration with accounting systems
+- Automated receipt generation
+- Payment reminder system
+- Multi-language support

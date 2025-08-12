@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Logic Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Logic Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Non-existent Club (404)</h2>
+        <button onclick="test404Response()">Test 404 Response</button>
+        <div id="test1-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Real Club with QR Code</h2>
+        <button onclick="testRealClub()">Test Real Club</button>
+        <div id="test2-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Simulate Payment Page Logic</h2>
+        <button onclick="testPaymentPageLogic()">Test Payment Page Logic</button>
+        <div id="test3-result" class="result"></div>
+    </div>
+
+    <script>
+        // Simulate the renderZelleQR function from payment.html
+        async function renderZelleQR(clubId) {
+            const resultDiv = document.getElementById('test3-result');
+            
+            try {
+                console.log(`Testing renderZelleQR with clubId: ${clubId}`);
+                
+                // Fetch QR code from API with cache busting
+                const response = await fetch(`/api/qr-code?clubId=${clubId}&t=${Date.now()}&v=${Math.random()}`);
+                
+                console.log(`Response status: ${response.status}`);
+                console.log(`Response ok: ${response.ok}`);
+                
+                if (response.ok) {
+                    // QR code generated successfully
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ QR code generated successfully
+                            <br><img src="${imageUrl}" alt="QR code" style="max-width: 200px;">
+                        </div>
+                    `;
+                } else if (response.status === 404) {
+                    // No QR code available for this club
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ 404 response handled correctly
+                            <br>Message: "This club does not use Zelle, Contact your Booster Club for more details."
+                        </div>
+                    `;
+                } else {
+                    // Other error
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Unexpected error: ${response.status}
+                            <br>Response: ${errorText}
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error in renderZelleQR:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ JavaScript error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function test404Response() {
+            const resultDiv = document.getElementById('test1-result');
+            resultDiv.innerHTML = '<div>Testing...</div>';
+            
+            try {
+                const response = await fetch('/api/qr-code?clubId=00000000-0000-0000-0000-000000000000');
+                const responseText = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ API Response:
+                        <br>Status: ${response.status}
+                        <br>Content: ${responseText}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testRealClub() {
+            const resultDiv = document.getElementById('test2-result');
+            resultDiv.innerHTML = '<div>Testing...</div>';
+            
+            try {
+                // Use a real club ID (Band Boosters)
+                const response = await fetch('/api/qr-code?clubId=5c5d9238-dc96-4ad0-b6fe-6282b06573bc');
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Real club QR code generated
+                            <br><img src="${imageUrl}" alt="QR code" style="max-width: 200px;">
+                        </div>
+                    `;
+                } else {
+                    const responseText = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Real club failed: ${response.status}
+                            <br>Response: ${responseText}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function testPaymentPageLogic() {
+            const resultDiv = document.getElementById('test3-result');
+            resultDiv.innerHTML = '<div>Testing payment page logic...</div>';
+            
+            // Test with the non-existent club ID
+            renderZelleQR('00000000-0000-0000-0000-000000000000');
+        }
+    </script>
+</body>
+</html>
+
