@@ -556,16 +556,18 @@ async function updateLink(linkId, updates) {
       throw new Error('No valid fields to update');
     }
     
-    // Build dynamic update query
-    const setClauses = Object.keys(updateFields).map((field, index) => `${field} = $${index + 2}`);
-    const values = Object.values(updateFields);
-    
-    const result = await sql.unsafe(`
-            UPDATE links 
-            SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $1
-            RETURNING *
-        `, [linkId, ...values]);
+    // Use simple template literal approach like the working news update
+    const result = await sql`
+      UPDATE links 
+      SET title = ${updateFields.title || 'title'},
+          url = ${updateFields.url || 'url'},
+          category = ${updateFields.category || 'category'},
+          order_index = ${updateFields.order_index || 0},
+          is_visible = ${updateFields.is_visible !== undefined ? updateFields.is_visible : true},
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${linkId}
+      RETURNING *
+    `;
     
     if (result.length === 0) {
       return null; // Link not found
