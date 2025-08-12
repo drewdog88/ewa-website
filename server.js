@@ -791,31 +791,31 @@ app.post('/api/users', async (req, res) => {
 // Submit insurance form
 app.post('/api/insurance', async (req, res) => {
   try {
-    const { club, eventName, eventDate, eventDescription, participantCount } = req.body;
+    const { eventName, eventDate, eventDescription, participantCount, submittedBy } = req.body;
         
-    if (!club || !eventName || !eventDate || !eventDescription) {
+    if (!eventName || !eventDate || !eventDescription) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Missing required fields: club, eventName, eventDate, eventDescription' 
+        message: 'Missing required fields: eventName, eventDate, eventDescription' 
       });
     }
 
     const insuranceData = {
-      id: Date.now().toString(),
-      club,
       eventName,
       eventDate,
       eventDescription,
       participantCount: participantCount || 0,
-      submittedAt: new Date().toISOString(),
+      submittedBy: submittedBy || 'admin',
       status: 'pending'
     };
 
-    if (await addInsurance(insuranceData)) {
+    const result = await addInsurance(insuranceData);
+    
+    if (result) {
       res.json({ 
         success: true, 
         message: 'Insurance form submitted successfully',
-        submission: insuranceData
+        submission: result
       });
     } else {
       res.status(500).json({ 

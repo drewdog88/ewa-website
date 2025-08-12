@@ -1345,6 +1345,68 @@ app.post('/links/:id/click', async (req, res) => {
   }
 });
 
+// Insurance Management API Endpoints
+
+// Submit insurance form
+app.post('/insurance', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { eventName, eventDate, eventDescription, participantCount, submittedBy } = req.body;
+        
+    if (!eventName || !eventDate || !eventDescription) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Missing required fields: eventName, eventDate, eventDescription' 
+      });
+    }
+
+    const insuranceData = {
+      eventName,
+      eventDate,
+      eventDescription,
+      participantCount: participantCount || 0,
+      submittedBy: submittedBy || 'admin',
+      status: 'pending'
+    };
+
+    const result = await addInsurance(insuranceData);
+    
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: 'Insurance form submitted successfully',
+        submission: result
+      });
+    } else {
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to save insurance data' 
+      });
+    }
+  } catch (error) {
+    console.error('Error submitting insurance form:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+// Get all insurance submissions (admin only)
+app.get('/insurance', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const insuranceSubmissions = await getInsurance();
+    res.json({ success: true, submissions: insuranceSubmissions });
+  } catch (error) {
+    console.error('Error getting all insurance submissions:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
 // Helper function to get booster club display name
 function getBoosterClubDisplayName(boosterClub) {
   const clubNames = {
