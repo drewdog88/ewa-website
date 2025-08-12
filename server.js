@@ -89,6 +89,8 @@ const {
   addVolunteer,
   getInsurance,
   addInsurance,
+  updateInsuranceStatus,
+  deleteInsuranceSubmission,
   getForm1099,
   addForm1099,
   updateForm1099Status, updateForm1099, deleteForm1099,
@@ -106,7 +108,10 @@ const {
   addLink,
   updateLink,
   deleteLink,
-  incrementLinkClicks
+  incrementLinkClicks,
+  getBoosterClubs,
+  getBoosterClubByName,
+  updateBoosterClubDescription
 } = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
@@ -856,6 +861,69 @@ app.get('/api/insurance', async (req, res) => {
     res.json({ success: true, submissions: insuranceSubmissions });
   } catch (error) {
     console.error('Error getting all insurance submissions:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+// Update insurance submission status
+app.put('/api/insurance/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Status is required' 
+      });
+    }
+    
+    const result = await updateInsuranceStatus(id, status);
+    
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: 'Insurance submission status updated successfully',
+        submission: result
+      });
+    } else {
+      res.status(404).json({ 
+        success: false, 
+        message: 'Insurance submission not found' 
+      });
+    }
+  } catch (error) {
+    console.error('Error updating insurance submission status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+// Delete insurance submission
+app.delete('/api/insurance/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await deleteInsuranceSubmission(id);
+    
+    if (result) {
+      res.json({ 
+        success: true, 
+        message: 'Insurance submission deleted successfully'
+      });
+    } else {
+      res.status(404).json({ 
+        success: false, 
+        message: 'Insurance submission not found' 
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting insurance submission:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Internal server error' 
@@ -2745,6 +2813,88 @@ app.post('/api/links/:id/click', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Internal server error'
+    });
+  }
+});
+
+// Booster Club API endpoints
+// Get all booster clubs
+app.get('/api/booster-clubs', async (req, res) => {
+  try {
+    const clubs = await getBoosterClubs();
+    
+    res.json({
+      success: true,
+      data: clubs
+    });
+  } catch (error) {
+    console.error('Error getting booster clubs:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get booster clubs'
+    });
+  }
+});
+
+// Get booster club by name
+app.get('/api/booster-clubs/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const club = await getBoosterClubByName(name);
+    
+    if (!club) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booster club not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: club
+    });
+  } catch (error) {
+    console.error('Error getting booster club:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get booster club'
+    });
+  }
+});
+
+// Update booster club description
+app.put('/api/booster-clubs/:name/description', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const { description } = req.body;
+    
+    if (!description) {
+      return res.status(400).json({
+        success: false,
+        message: 'Description is required'
+      });
+    }
+    
+    const updatedClub = await updateBoosterClubDescription(name, description);
+    
+    res.json({
+      success: true,
+      message: 'Booster club description updated successfully',
+      data: updatedClub
+    });
+  } catch (error) {
+    console.error('Error updating booster club description:', error);
+    
+    if (error.message.includes('not found')) {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update booster club description'
     });
   }
 });

@@ -230,6 +230,39 @@ async function addInsurance(form) {
   }
 }
 
+// Update insurance submission status
+async function updateInsuranceStatus(id, status) {
+  const sql = getSql();
+  if (!sql) return null;
+    
+  try {
+    const result = await sql`
+            UPDATE insurance_forms 
+            SET status = ${status}, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${id}
+            RETURNING *
+        `;
+    return result[0];
+  } catch (error) {
+    console.error('Error updating insurance status:', error);
+    throw error;
+  }
+}
+
+// Delete insurance submission
+async function deleteInsuranceSubmission(id) {
+  const sql = getSql();
+  if (!sql) return false;
+    
+  try {
+    const result = await sql`DELETE FROM insurance_forms WHERE id = ${id} RETURNING *`;
+    return result.length > 0;
+  } catch (error) {
+    console.error('Error deleting insurance submission:', error);
+    throw error;
+  }
+}
+
 // 1099 forms functions
 async function getForm1099() {
   const sql = getSql();
@@ -672,6 +705,82 @@ async function migrateDataFromJson() {
   }
 }
 
+// Booster Club functions
+async function getBoosterClubs() {
+  const sql = getSql();
+  if (!sql) return [];
+    
+  try {
+    const clubs = await sql`
+      SELECT id, name, description, website_url, donation_url, is_active, created_at, updated_at
+      FROM booster_clubs 
+      ORDER BY name
+    `;
+    return clubs;
+  } catch (error) {
+    console.error('❌ Database error getting booster clubs:', {
+      error: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint
+    });
+    return [];
+  }
+}
+
+async function getBoosterClubByName(clubName) {
+  const sql = getSql();
+  if (!sql) return null;
+    
+  try {
+    const result = await sql`
+      SELECT id, name, description, website_url, donation_url, is_active, created_at, updated_at
+      FROM booster_clubs 
+      WHERE name = ${clubName}
+    `;
+    return result.length > 0 ? result[0] : null;
+  } catch (error) {
+    console.error('❌ Database error getting booster club by name:', {
+      error: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      clubName
+    });
+    return null;
+  }
+}
+
+async function updateBoosterClubDescription(clubName, description) {
+  const sql = getSql();
+  if (!sql) return null;
+    
+  try {
+    const result = await sql`
+      UPDATE booster_clubs 
+      SET description = ${description}, updated_at = CURRENT_TIMESTAMP
+      WHERE name = ${clubName}
+      RETURNING id, name, description, website_url, donation_url, is_active, created_at, updated_at
+    `;
+    
+    if (result.length === 0) {
+      throw new Error(`Booster club '${clubName}' not found`);
+    }
+    
+    return result[0];
+  } catch (error) {
+    console.error('❌ Database error updating booster club description:', {
+      error: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      clubName,
+      description: description ? description.substring(0, 100) + '...' : 'null'
+    });
+    throw error;
+  }
+}
+
 module.exports = {
   getSql,
   getOfficers,
@@ -683,6 +792,8 @@ module.exports = {
   updateVolunteer,
   getInsurance,
   addInsurance,
+  updateInsuranceStatus,
+  deleteInsuranceSubmission,
   getForm1099,
   addForm1099,
   updateForm1099Status,
@@ -703,6 +814,9 @@ module.exports = {
   updateLink,
   deleteLink,
   incrementLinkClicks,
+  getBoosterClubs,
+  getBoosterClubByName,
+  updateBoosterClubDescription,
   initializeDatabase,
   migrateDataFromJson
 }; 

@@ -69,6 +69,12 @@ module.exports = {
       testMatch: ['<rootDir>/tests/integration/**/*.test.js'],
       testEnvironment: 'node',
       setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js']
+    },
+    {
+      displayName: 'e2e',
+      testMatch: ['<rootDir>/tests/e2e/**/*.test.js'],
+      testEnvironment: 'node',
+      setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js']
     }
   ],
   
