@@ -3432,28 +3432,34 @@
         // Load website links from database
         async function loadWebsiteLinks() {
             try {
+                console.log('Loading website links from database...');
                 const response = await fetch('/api/booster-clubs');
                 const result = await response.json();
 
                 if (result.success) {
+                    console.log('Received data from API:', result.data.length, 'clubs');
                     // Update the websiteLinks array with data from database
                     websiteLinks.length = 0; // Clear the array
                     result.data.forEach(club => {
-                        websiteLinks.push({
-                            club: club.name,
-                            url: club.website_url || '',
-                            enabled: club.is_active
-                        });
+                        if (club.website_url && club.website_url.trim() !== '') {
+                            websiteLinks.push({
+                                club: club.name,
+                                url: club.website_url,
+                                enabled: club.is_active !== false // Default to true if not specified
+                            });
+                        }
                     });
                     
+                    console.log('Updated websiteLinks array:', websiteLinks.length, 'entries');
                     // Update the display
                     displayWebsiteLinks();
                 } else {
-                    showAlert('Failed to load website links', 'danger');
+                    console.error('API returned error:', result);
+                    showAlert('Failed to load website links: ' + (result.message || 'Unknown error'), 'danger');
                 }
             } catch (error) {
                 console.error('Error loading website links:', error);
-                showAlert('Error loading website links', 'danger');
+                showAlert('Error loading website links: ' + error.message, 'danger');
             }
         }
         

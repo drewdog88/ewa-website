@@ -92,9 +92,6 @@
             padding: 40px;
             background-color: #f8f9fa;
             line-height: 1.6;
-            /* Prevent horizontal overflow */
-            overflow-x: hidden;
-            max-width: 100vw;
         }
         
         /* Header Styles */
@@ -122,15 +119,13 @@
         .logo {
             width: 60px;
             height: 60px;
-            background: url('./assets/ewa-wolf.jpg') no-repeat center;
+            background: url('../assets/ewa-wolf.jpg') no-repeat center;
             background-size: contain;
             margin-right: 20px;
             /* Performance optimization: will-change for GPU acceleration */
             will-change: transform;
             /* Optimize for animations */
             transform: translateZ(0);
-            /* Prevent logo from shrinking */
-            flex-shrink: 0;
         }
         
         .header-right {
@@ -478,87 +473,25 @@
         
         /* Responsive Design */
         @media (max-width: 768px) {
-            /* Mobile body constraints */
-            body {
-                padding: 20px 10px;
-                overflow-x: hidden;
-                max-width: 100vw;
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 24px;
             }
             
-            /* Mobile header improvements */
+            .content-left h1 {
+                font-size: 2.5rem;
+            }
+            
+            .wolf-logo { display: none; }
+            
             .header {
                 flex-direction: column;
-                gap: 15px;
-                padding: 15px 0;
-                margin-bottom: 40px;
-                width: 100%;
-                max-width: 100%;
-            }
-            
-            .header-left {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-                width: 100%;
-            }
-            
-            .header-left a {
-                margin-right: 0;
-                margin-bottom: 5px;
-                text-align: center;
-                width: 100%;
-                padding: 8px;
-                /* Touch-friendly minimum size */
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                gap: 20px;
             }
             
             .header-right {
                 flex-wrap: wrap;
                 justify-content: center;
-                width: 100%;
-            }
-            
-            /* Mobile logo improvements */
-            .logo {
-                width: 50px;
-                height: 50px;
-                margin-right: 0;
-                margin-bottom: 10px;
-                background: url('./assets/ewa-wolf.jpg') no-repeat center;
-                background-size: contain;
-            }
-            
-            /* Mobile content improvements */
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 0 10px;
-                max-width: 100%;
-            }
-            
-            .content-left h1 {
-                font-size: 2rem;
-                text-align: center;
-            }
-            
-            .wolf-logo { display: none; }
-            
-            /* Mobile quick links improvements */
-            .quick-links {
-                padding: 15px;
-                margin: 15px 0;
-            }
-            
-            .links-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            
-            .link-card {
-                padding: 12px;
             }
         }
     </style>
@@ -635,7 +568,7 @@
                 <div class="club-description">Production test - The EHS Band Boosters is dedicated to supporting the Eastlake High School band program with enhanced resources and community engagement.</div>
                 <div class="club-actions">
                     <a href="payment.html?club=EHS%20Band%20Boosters" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://www.facebook.com/groups/EHSmusicboosters/" target="_blank" class="club-website-btn">Visit Website</a>
+                    <a href="https://new-ehsbandboosters.org" target="_blank" class="club-website-btn">Visit Website</a>
                 </div>
             </div>
         </div>
@@ -817,7 +750,7 @@
                 <div class="club-description">The EHS Orchestra Boosters Club is dedicated to supporting the Eastlake High School orchestra program. Our mission is to enhance the musical experience for students by providing financial support, organizing events, and fostering a community of enthusiastic supporters. We aim to ensure that every orchestra member has the resources and opportunities to excel in their musical journey.</div>
                 <div class="club-actions">
                     <a href="payment.html?club=EHS%20Orchestra%20Boosters%20Club" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://eastlakeorchestra.org" target="_blank" class="club-website-btn">Visit Website</a>
+                    <a href="https://ehsorchestra.org" target="_blank" class="club-website-btn">Visit Website</a>
                 </div>
             </div>
         </div>
@@ -873,7 +806,7 @@
                 <div class="club-description">The Eastlake Boys Swim & Dive Booster Club is committed to supporting the swim and dive teams at Eastlake High School. We provide financial assistance, organize events, and build a strong community of supporters to ensure that our athletes have the best possible experience in and out of the pool.</div>
                 <div class="club-actions">
                     <a href="payment.html?club=Eastlake%20Boys%20Swim%20%26%20Dive%20Booster%20Club" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://eastlakeboyss swimming.org" target="_blank" class="club-website-btn">Visit Website</a>
+                    <a href="https://eastlakeboysswim.org" target="_blank" class="club-website-btn">Visit Website</a>
                 </div>
             </div>
         </div>
@@ -887,7 +820,7 @@
                 <div class="club-description">The Eastlake Girls Swim & Dive Booster Club is dedicated to supporting the girls' swim and dive teams at Eastlake High School. Our mission is to provide financial assistance, organize events, and foster a community of enthusiastic supporters to ensure that our athletes have the best possible experience in and out of the pool. We aim to promote the values of teamwork, sportsmanship, and dedication, helping our swimmers and divers achieve their personal and team goals.</div>
                 <div class="club-actions">
                     <a href="payment.html?club=Eastlake%20Girls%20Swim%20%26%20Dive%20Booster%20Club" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://eastlakegirlsswimming.org" target="_blank" class="club-website-btn">Visit Website</a>
+                    <a href="https://eastlakegirlsswim.org" target="_blank" class="club-website-btn">Visit Website</a>
                 </div>
             </div>
         </div>
@@ -901,7 +834,7 @@
                 <div class="club-description">The EHS Track and Field Booster Club supports the track and field teams at Eastlake High School by providing resources, organizing events, and fostering a community of fans. Our mission is to enhance the athletic experience for athletes and promote the values of teamwork, sportsmanship, and dedication.</div>
                 <div class="club-actions">
                     <a href="payment.html?club=EHS%20Track%20and%20Field%20Booster%20Club" class="club-donate-btn">Pay Fees/Membership/Donate</a>
-                    <a href="https://eastlaketrack.org" target="_blank" class="club-website-btn">Visit Website</a>
+                    <a href="https://ehstrackandfield.org" target="_blank" class="club-website-btn">Visit Website</a>
                 </div>
             </div>
         </div>
