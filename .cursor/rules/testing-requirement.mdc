@@ -1,0 +1,75 @@
+# MANDATORY 100% TESTING REQUIREMENTS
+
+## **CRITICAL RULE: NEVER EVER CLAIM ANYTHING IS FIXED WITHOUT PROOF**
+
+- **ALWAYS test locally first** before making any claims about fixes
+- **ALWAYS test in production** after deployment before declaring success
+- **NEVER say "should work" or "should be fixed"** without actual testing
+- **NEVER push to production** without local testing first
+
+## Required Testing Steps:
+
+### 1. Local Testing (MANDATORY)
+- Start local server: `npm start`
+- Test the specific functionality that was broken
+- Verify the fix actually resolves the reported issue
+- Test with both PowerShell and WSL/curl commands
+- Test browser functionality if applicable
+
+### 2. Production Testing (MANDATORY)
+- Wait for Vercel deployment to complete
+- Test the same functionality on production site
+- Verify the fix works in production environment
+- Test both www and non-www domains if applicable
+
+### 3. Before Making Any Claims:
+- ✅ Local testing completed and working
+- ✅ Production testing completed and working
+- ✅ All reported issues resolved
+- ✅ No new issues introduced
+
+## Testing Commands:
+```bash
+# Local testing
+npm start
+# Test specific functionality
+# Verify fix works
+
+# Production testing
+# Wait for deployment
+# Test on https://www.eastlakewolfpack.org
+# Verify fix works in production
+```
+
+## Consequences of Not Testing:
+- Wastes user's time
+- Breaks production builds
+- Creates more problems than solutions
+- Damages credibility
+
+## Remember:
+**"Should work" = "I haven't tested it"**
+**"Fixed" = "Tested and verified working"**
+**"Might work" = "I haven't tested it"**
+**"Probably fixed" = "I haven't tested it"**
+**"Should be working" = "I haven't tested it"**
+
+## ZERO TOLERANCE POLICY:
+- **NEVER** say anything is fixed without testing
+- **NEVER** say anything should work without testing  
+- **NEVER** make assumptions about functionality
+- **ALWAYS** test every single change
+- **ALWAYS** verify in both local and production
+- **ALWAYS** prove it works before claiming success
+
+## Testing Checklist (MANDATORY):
+- [ ] Local server starts without errors
+- [ ] Specific broken functionality tested locally
+- [ ] Fix actually resolves the reported issue
+- [ ] No new issues introduced
+- [ ] Production deployment completed
+- [ ] Same functionality tested in production
+- [ ] All tests pass
+- [ ] User can verify the fix works
+
+**ONLY THEN can you say "Fixed" or "Working"**
