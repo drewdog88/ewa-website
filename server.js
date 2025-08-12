@@ -1461,22 +1461,38 @@ app.post('/api/users/forgot-password', async (req, res) => {
       });
     }
 
+    console.log('🔍 Forgot password - Getting users...');
     const users = await getUsers();
+    console.log('🔍 Users returned:', Object.keys(users));
+    console.log('🔍 User exists:', !!users[username]);
         
     if (!users[username]) {
+      console.log('❌ User not found:', username);
       return res.status(404).json({ 
         success: false, 
         message: 'User not found' 
       });
     }
 
+    console.log('🔍 User data:', {
+      username: users[username].username,
+      secretQuestion: users[username].secretQuestion,
+      secretAnswer: users[username].secretAnswer,
+      hasSecretAnswer: !!users[username].secretAnswer
+    });
+
     if (users[username].secretAnswer !== secretAnswer) {
+      console.log('❌ Secret answer mismatch:', {
+        expected: secretAnswer,
+        actual: users[username].secretAnswer
+      });
       return res.status(400).json({ 
         success: false, 
         message: 'Secret answer is incorrect' 
       });
     }
 
+    console.log('✅ Secret answer correct, updating password...');
     if (await updateUser(username, { password: newPassword })) {
       res.json({ 
         success: true, 
