@@ -81,7 +81,17 @@ async function getUsers() {
     const users = await sql`SELECT * FROM users ORDER BY created_at`;
     const userMap = {};
     users.forEach(user => {
-      userMap[user.username] = user;
+      // Map snake_case database columns to camelCase API properties
+      userMap[user.username] = {
+        ...user,
+        secretQuestion: user.secret_question,
+        secretAnswer: user.secret_answer,
+        isFirstLogin: user.is_first_login,
+        isLocked: user.is_locked,
+        lastLogin: user.last_login,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at
+      };
     });
     return userMap;
   } catch (error) {
@@ -95,13 +105,51 @@ async function updateUser(username, updates) {
   if (!sql) return null;
     
   try {
-    const result = await sql`
-            UPDATE users 
-            SET last_login = ${updates.lastLogin || null},
-                is_first_login = ${updates.isFirstLogin !== undefined ? updates.isFirstLogin : null}
-            WHERE username = ${username}
-            RETURNING *
-        `;
+    // Use template literals for simpler approach
+    let result;
+    
+    if (updates.password !== undefined) {
+      result = await sql`
+        UPDATE users 
+        SET password = ${updates.password}, updated_at = CURRENT_TIMESTAMP
+        WHERE username = ${username}
+        RETURNING *
+      `;
+    } else if (updates.lastLogin !== undefined) {
+      result = await sql`
+        UPDATE users 
+        SET last_login = ${updates.lastLogin}, updated_at = CURRENT_TIMESTAMP
+        WHERE username = ${username}
+        RETURNING *
+      `;
+    } else if (updates.isFirstLogin !== undefined) {
+      result = await sql`
+        UPDATE users 
+        SET is_first_login = ${updates.isFirstLogin}, updated_at = CURRENT_TIMESTAMP
+        WHERE username = ${username}
+        RETURNING *
+      `;
+    } else if (updates.secretQuestion !== undefined && updates.secretAnswer !== undefined) {
+      result = await sql`
+        UPDATE users 
+        SET secret_question = ${updates.secretQuestion}, secret_answer = ${updates.secretAnswer}, updated_at = CURRENT_TIMESTAMP
+        WHERE username = ${username}
+        RETURNING *
+      `;
+    } else {
+      // Default case - just update timestamp
+      result = await sql`
+        UPDATE users 
+        SET updated_at = CURRENT_TIMESTAMP
+        WHERE username = ${username}
+        RETURNING *
+      `;
+    }
+    
+    if (result.length === 0) {
+      return null; // User not found
+    }
+    
     return result[0];
   } catch (error) {
     console.error('Error updating user:', error);
