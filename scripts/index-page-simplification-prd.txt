@@ -1,0 +1,81 @@
+# Index Page Simplification PRD
+
+## Overview
+Simplify the index.html page code while maintaining its exact current appearance and functionality. The page should remain visually identical but with cleaner, more maintainable code.
+
+## Current State Analysis
+- Complex JavaScript with unnecessary mounting systems
+- Overly complicated CSS structure
+- Redundant event listeners and DOM manipulation
+- Hard to maintain and debug
+
+## Requirements
+
+### Visual Requirements (MUST NOT CHANGE)
+- Header with logo and navigation links
+- Two-column layout: left column with intro and Quick Links, right column with booster club cards
+- Exact same styling, colors, fonts, spacing
+- Same responsive behavior on mobile
+- Same accessibility features
+
+### Functional Requirements (MUST MAINTAIN)
+- Dynamic loading of booster club cards from `/api/booster-clubs`
+- Each card shows: club name, description, "Pay Fees/Membership/Donate" button, "Visit Website" button
+- Accordion functionality for expanding/collapsing card content
+- Quick Links section (static content, not dynamic)
+- All existing links and navigation
+
+### Simplification Goals
+- Remove complex JavaScript mounting system
+- Simplify CSS structure while maintaining exact appearance
+- Clean up redundant event listeners
+- Remove unnecessary DOM manipulation
+- Make code more readable and maintainable
+- Reduce file size and complexity
+
+## Technical Specifications
+
+### HTML Structure
+- Keep semantic HTML structure
+- Maintain accessibility attributes
+- Preserve SEO meta tags
+- Keep Vercel analytics scripts
+
+### CSS Requirements
+- Maintain exact visual appearance
+- Keep responsive design
+- Preserve accessibility styles
+- Maintain performance optimizations
+
+### JavaScript Requirements
+- Simplify `loadBoosterClubs()` function
+- Clean up accordion functionality
+- Remove complex mounting system
+- Keep dynamic loading from database
+- Maintain error handling
+
+### Database Integration
+- Keep existing `/api/booster-clubs` endpoint usage
+- Maintain same data structure for club cards
+- Preserve filtering logic (active clubs with URLs only)
+
+## Success Criteria
+1. Page looks exactly the same as current version
+2. All functionality works identically
+3. Code is significantly simpler and more maintainable
+4. Performance is maintained or improved
+5. Accessibility features preserved
+6. Mobile responsiveness unchanged
+
+## Constraints
+- Must not change any visual appearance
+- Must not break any existing functionality
+- Must maintain database integration
+- Must preserve SEO and analytics
+- Must keep all accessibility features
+
+## Future Considerations
+- Code should be easier to extend with new features
+- Structure should support future dynamic content additions
+- Maintain clean separation of concerns
+- Keep code organized for team collaboration
