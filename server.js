@@ -94,7 +94,13 @@ const {
   updateForm1099Status, updateForm1099, deleteForm1099,
   getDocuments,
   addDocument,
-  deleteDocument
+  deleteDocument,
+  getNews,
+  getPublishedNews,
+  addNews,
+  updateNews,
+  publishNews,
+  deleteNews
 } = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
@@ -2393,6 +2399,174 @@ app.get('/api/dashboard/stats', async (req, res) => {
       success: false, 
       message: 'Failed to get dashboard statistics',
       error: error.message 
+    });
+  }
+});
+
+// News Management API Endpoints
+
+// Get all news (for admin)
+app.get('/api/news', async (req, res) => {
+  try {
+    const news = await getNews();
+    res.json({ success: true, news });
+  } catch (error) {
+    console.error('Error getting news:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get published news (for public website)
+app.get('/api/news/published', async (req, res) => {
+  try {
+    const news = await getPublishedNews();
+    res.json({ success: true, news });
+  } catch (error) {
+    console.error('Error getting published news:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Add news article
+app.post('/api/news', async (req, res) => {
+  try {
+    const { title, content, status = 'draft' } = req.body;
+    
+    // Validate required fields
+    if (!title || !content) {
+      return res.status(400).json({
+        success: false,
+        message: 'Title and content are required'
+      });
+    }
+    
+    // Add news article
+    const newsItem = await addNews({
+      title: title.trim(),
+      content: content.trim(),
+      status: status,
+      createdBy: req.body.createdBy || 'admin'
+    });
+    
+    if (newsItem) {
+      res.json({
+        success: true,
+        message: 'News article created successfully',
+        news: newsItem
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create news article'
+      });
+    }
+  } catch (error) {
+    console.error('Error creating news article:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Update news article
+app.put('/api/news/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, status } = req.body;
+    
+    const updates = {};
+    if (title !== undefined) updates.title = title.trim();
+    if (content !== undefined) updates.content = content.trim();
+    if (status !== undefined) updates.status = status;
+    
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid fields to update'
+      });
+    }
+    
+    const updatedNews = await updateNews(id, updates);
+    
+    if (!updatedNews) {
+      return res.status(404).json({
+        success: false,
+        message: 'News article not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'News article updated successfully',
+      news: updatedNews
+    });
+  } catch (error) {
+    console.error('Error updating news article:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Publish news article
+app.post('/api/news/:id/publish', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const publishedNews = await publishNews(id);
+    
+    if (!publishedNews) {
+      return res.status(404).json({
+        success: false,
+        message: 'News article not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'News article published successfully',
+      news: publishedNews
+    });
+  } catch (error) {
+    console.error('Error publishing news article:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Delete news article
+app.delete('/api/news/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const deleted = await deleteNews(id);
+    
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: 'News article not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'News article deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting news article:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 });
