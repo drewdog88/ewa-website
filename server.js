@@ -111,7 +111,8 @@ const {
   incrementLinkClicks,
   getBoosterClubs,
   getBoosterClubByName,
-  updateBoosterClubDescription
+  updateBoosterClubDescription,
+  updateBoosterClubWebsite
 } = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
@@ -2867,16 +2868,16 @@ app.put('/api/booster-clubs/:name/description', async (req, res) => {
   try {
     const { name } = req.params;
     const { description } = req.body;
-    
+
     if (!description) {
       return res.status(400).json({
         success: false,
         message: 'Description is required'
       });
     }
-    
+
     const updatedClub = await updateBoosterClubDescription(name, description);
-    
+
     res.json({
       success: true,
       message: 'Booster club description updated successfully',
@@ -2884,17 +2885,54 @@ app.put('/api/booster-clubs/:name/description', async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating booster club description:', error);
-    
+
     if (error.message.includes('not found')) {
       return res.status(404).json({
         success: false,
         message: error.message
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: 'Failed to update booster club description'
+    });
+  }
+});
+
+// Update booster club website URL
+app.put('/api/booster-clubs/:name/website', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const { websiteUrl } = req.body;
+
+    if (!websiteUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Website URL is required'
+      });
+    }
+
+    const updatedClub = await updateBoosterClubWebsite(name, websiteUrl);
+
+    res.json({
+      success: true,
+      message: 'Booster club website URL updated successfully',
+      data: updatedClub
+    });
+  } catch (error) {
+    console.error('Error updating booster club website URL:', error);
+
+    if (error.message.includes('not found')) {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update booster club website URL'
     });
   }
 });
