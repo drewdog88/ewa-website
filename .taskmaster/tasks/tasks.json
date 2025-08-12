@@ -2,303 +2,208 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Initialize Project Repository and Environment",
-        "description": "Project repository, environment configuration, Vercel deployment, and Neon PostgreSQL integration are fully set up and operational.",
-        "details": "Repository initialized with proper structure, .env.local configured for local development, Vercel environment variables and vercel.json configured for production, Neon PostgreSQL connection established via environment variables, and Node.js/Express backend with static HTML frontend scaffolded. Package.json includes all required dependencies.",
-        "testStrategy": "Verified repository initialization, environment variable loading, and successful Neon PostgreSQL connections in both local and Vercel environments. Confirmed production deployment and runtime health.",
-        "priority": "high",
+        "id": 20,
+        "title": "Project setup, environment parity, and secure config baseline",
+        "description": "Establish a reproducible local environment matching Vercel+Neon, standardize environment variables, logging, and dependency updates to enable debugging and fixes, and add missing API endpoints/database functions uncovered by investigation. Emphasize comprehensive testing: no subtask is complete until all testing is verified in both local and production environments, including command-line (PowerShell Invoke-WebRequest), BrowserMCP browser testing, database verification, local environment checks, and production deployment verification.",
+        "status": "in-progress",
         "dependencies": [],
-        "status": "done",
-        "subtasks": []
+        "priority": "high",
+        "details": "- Node.js LTS 20.x; update dependencies with npm-check-updates and run npm audit fix (review breaking changes).\n- Ensure pg@8.x with connection pooling via pg.Pool; configure Neon pooled connection string (pgBouncer) for production; use DATABASE_URL, JWT_SECRET, SESSION_SECRET, COOKIE_SECURE, VERCEL envs.\n- Add dotenv-flow for layered envs (.env.local, .env.production). Do not commit secrets.\n- Integrate pino@9 for structured logging; add pino-http middleware in Express OR adapt existing custom logger to emit pino-compatible JSON. Central error handler returns standardized JSON {error, code}.\n- CORS and helmet@7 for security; express-rate-limit for auth and admin-sensitive routes.\n- Configure Prisma or continue with node-postgres: if current code uses raw pg, retain it; add sql template tag for parameterized queries to prevent injection.\n- Add Zod@3 for request validation; create middleware validate(schema) for API inputs.\n- Add linting/formatting: eslint@9, typescript@5 if repo uses TS; otherwise JSDoc types.\n- Dev DB: local Postgres 15/16 with same schema as Neon; run migrations. Add seed script for test users, roles, and sample content.\n- Vercel: ensure serverless functions timeouts respected; move long-running tasks to background or edge config as needed.\n- Logging for production via pino transport to Vercel logs; mask PII; never log SSNs.\n- Implement missing API endpoints and DB functions discovered:\n  • Volunteers: PUT /api/volunteers/:id with updateVolunteer(id, payload) using parameterized queries; validate allowed fields with Zod; enforce role-based authorization.\n  • News: POST /api/news/:id/publish, PUT /api/news/:id, DELETE /api/news/:id (soft delete via deleted_at), and corresponding DB functions publishNews, updateNews, deleteNewsSoft; ensure slug uniqueness and updated_at handling.\n  • Links/Resources: Full CRUD: GET /api/links, GET /api/links/:id, POST /api/links, PUT /api/links/:id, DELETE /api/links/:id with DB functions listLinks, getLink, createLink, updateLink, deleteLink; include ordering and visibility flags.\n  • Insurance Forms: Review and correct field mapping in API to expected keys {club, eventName, eventDate, eventDescription}; map club -> club_id; ensure ISO 8601 dates and server-side validation.\n  • Admin Login: Audit and harden authentication; verify JWT/session configuration, secrets, cookie flags; ensure roles/permissions lookups; add rate limiting and brute-force protection to /api/auth/login.\n  • Backup Management: Add admin API for backups (e.g., POST /api/admin/backups to trigger, GET /api/admin/backups to list, GET /api/admin/backups/:id/download) with strict admin-only access; stub UI endpoints and integrate with Neon logical backups or S3 if available.\n  • Content Management: PUT /api/clubs/:id/description to update description safely with sanitization and cache revalidation.\n\nTesting policy for all subtasks:\n- No subtask can be marked complete until all of the following pass in both local and production: (1) PowerShell Invoke-WebRequest command-line tests, (2) Browser testing using BrowserMCP tools, (3) Direct database verification of persistence and constraints, (4) Local environment validation including env/config and serverless constraints, (5) Production deployment verification on Vercel+Neon with logs free of PII.",
+        "testStrategy": "- Global verification applicable to all subtasks (must pass in both local and production before completion):\n  1) Command line testing (PowerShell): use Invoke-WebRequest and Invoke-RestMethod to exercise endpoints with headers/auth, capture status codes and bodies, and validate CORS and rate limits.\n  2) Browser testing (BrowserMCP): execute GET/POST/PUT/DELETE flows, validate UI states, auth redirects, and cache revalidation; confirm no mixed content or CSP violations.\n  3) Database verification: connect to local Postgres and Neon; verify rows created/updated/deleted as expected, soft deletes set deleted_at, updated_at modified, constraints enforced (unique slug, FKs), and audit logs where applicable.\n  4) Local environment testing: NODE_ENV=development with dotenv-flow; run migrations/seed; confirm SELECT 1, pooled connections, structured logging, rate limits, and serverless behavior simulated if applicable.\n  5) Production deployment verification: deploy to Vercel; confirm endpoints function under timeouts, Neon connectivity, logs via pino, envs configured, secrets set, and no PII in logs.\n- Existing coverage remains: env loading, DB connectivity, lint/tests in CI, security scans, endpoint coverage, and E2E smoke, all extended to include the five required testing categories.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add Volunteer update endpoint and DB function",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Implement PUT /api/volunteers/:id with Zod validation and role-based authorization (admin/club_admin).\n- Create updateVolunteer(pool, id, data) using parameterized SQL; whitelist updatable fields (e.g., status, notes, assigned_club_id).\n- Return 204 on success; 404 if volunteer not found; audit log the change.\n<info added on 2025-08-12T04:54:59.769Z>\nCOMPLETED: Volunteer status update implemented.\n\n- Database: added columns status (VARCHAR(50), default 'pending'), notes (TEXT), assigned_club_id (UUID) with index on status via migration database/add-volunteer-status.js.\n- DB function: updateVolunteer(volunteerId, updates) in database/neon-functions.js with field whitelist ['status','notes','assigned_club_id'], parameterized queries, returns updated row or null; exported.\n- API: PUT /api/volunteers/:id in api/index.js; validates status ['pending','contacted','confirmed','declined']; 404 if not found; 400 for invalid status; 500 on server error; wired to updateVolunteer.\n- Security: whitelisting, parameterized queries, input validation, and error logging in place.\n</info added on 2025-08-12T04:54:59.769Z>\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-WebRequest -Method Put -Uri \"$ENV:BASE_URL/api/volunteers/$id\" -Headers @{Authorization=\"Bearer $token\"} -ContentType 'application/json' -Body (@{status='confirmed'} | ConvertTo-Json) | Select-Object StatusCode\n- BrowserMCP: Perform authenticated PUT via UI/admin panel; verify success toast and updated status in list; check network tab for 204.\n- Database: SELECT status, notes, assigned_club_id FROM volunteers WHERE id = $1; verify changes and updated_at; ensure audit log entry present.\n- Local env: .env.local loaded; Zod errors return 400; rate limit not triggered under normal use; logs structured (pino) without PII.\n- Production: Vercel deploy; Neon connection via pgBouncer; confirm 204 responses, 404 for missing, 400 for invalid; review Vercel logs for masked PII.",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement News publish/edit/delete API and SQL",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Add endpoints: POST /api/news/:id/publish, PUT /api/news/:id, DELETE /api/news/:id (soft delete).\n- Ensure slug uniqueness, updated_at optimistic concurrency, and role checks.\n- DB functions: publishNews, updateNews, deleteNewsSoft; add updated_at trigger if missing.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell:\n  • PUT: Invoke-WebRequest -Method Put -Uri \"$ENV:BASE_URL/api/news/$id\" -Headers @{Authorization=\"Bearer $token\";'If-Match'=$etag} -ContentType 'application/json' -Body (@{title='New';slug='unique-slug'}|ConvertTo-Json)\n  • DELETE: Invoke-WebRequest -Method Delete -Uri \"$ENV:BASE_URL/api/news/$id\" -Headers @{Authorization=\"Bearer $token\"}\n  • PUBLISH: Invoke-WebRequest -Method Post -Uri \"$ENV:BASE_URL/api/news/$id/publish\" -Headers @{Authorization=\"Bearer $token\"}\n- BrowserMCP: Edit and delete via admin UI; verify publish sets status and published_at; ensure deleted items hidden from public lists.\n- Database: Verify slug uniqueness constraint; deleted_at set on soft delete; updated_at changed; published_at set on publish; optional audit rows.\n- Local env: Validate role checks, Zod validation, rate limiting on admin routes; structured logs.\n- Production: Test flows on Vercel with Neon; confirm ETag/updated_at concurrency works; review logs and ensure no PII.",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Build Links/Resources CRUD API and DB layer",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Endpoints: GET /api/links, GET /api/links/:id, POST /api/links, PUT /api/links/:id, DELETE /api/links/:id.\n- Fields: title, url, category, order_index, is_visible; validate and sanitize.\n- DB: listLinks, getLink, createLink, updateLink, deleteLink; support ordering.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell:\n  • POST: Invoke-RestMethod -Method Post -Uri \"$ENV:BASE_URL/api/links\" -Headers @{Authorization=\"Bearer $token\"} -ContentType 'application/json' -Body (@{title='Site';url='https://example.com';category='general';order_index=1;is_visible=$true}|ConvertTo-Json)\n  • GET list/item, PUT update, DELETE remove using Invoke-WebRequest/Invoke-RestMethod and assert status codes 200/201/204.\n- BrowserMCP: Create, edit, reorder, toggle visibility; verify ordering in list and visibility on public page.\n- Database: Check rows inserted/updated; ordering maintained; constraints on URL format if enforced; soft delete policy if applicable.\n- Local env: Validate schema errors; ensure sanitization; ensure pagination/performance acceptable; logs structured.\n- Production: Verify CRUD under serverless timeouts; confirm Vercel logs and Neon pooling; no PII in logs.",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Fix Insurance Forms field mapping and validation",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Align API parsing with expected keys {club, eventName, eventDate, eventDescription}; convert eventDate to ISO; map club -> club_id.\n- Add Zod schema and return detailed 400/422 errors; prevent duplicates via idempotency key or unique constraint.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-RestMethod -Method Post -Uri \"$ENV:BASE_URL/api/insurance/events\" -ContentType 'application/json' -Body (@{club='orchestra';eventName='Fall Concert';eventDate='2025-10-01T19:00:00Z';eventDescription='Annual'}|ConvertTo-Json) | Should -Not -BeNullOrEmpty\n- BrowserMCP: Submit form with valid and invalid data; verify field-level errors and disabled submit during pending; ensure success shows in admin view.\n- Database: Confirm club_id mapping via lookup; record persisted with ISO date; uniqueness/idempotency respected; verify created_at/updated_at.\n- Local env: Ensure express.json parsing, Zod validation, and correct 400/422 codes; logs structured and free of PII.\n- Production: Verify endpoint returns 201; duplicates prevented on double submit; Neon write visible in admin UI.",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Audit and harden Admin Login (sessions/JWT)",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Verify auth mechanism (session vs JWT), secrets, cookie flags (Secure, HttpOnly, SameSite), token expiry.\n- Ensure password hashing with bcrypt@5; parameterized user+roles lookup; lockout/brute-force protection on /api/auth/login.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-RestMethod -Method Post -Uri \"$ENV:BASE_URL/api/auth/login\" -ContentType 'application/json' -Body (@{email='admin@example.com';password='P@ssw0rd'}|ConvertTo-Json) | Select-Object token, sessionId\n- BrowserMCP: Login as admin, club_admin, and regular user; verify role-based access to /admin routes; confirm logout clears session/JWT.\n- Database: Verify bcrypt hashes stored; roles/user_roles mappings correct; failed attempts increment and lockout thresholds enforced.\n- Local env: Check cookie flags in dev over HTTPS; JWT signing with JWT_SECRET; rate limiting and brute-force protections active.\n- Production: Verify secure cookies (Secure, HttpOnly, SameSite), token expiry, refresh if implemented; review Vercel logs for auth events without PII.",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Add Backup Management admin APIs",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Create POST /api/admin/backups (trigger), GET /api/admin/backups (list), GET /api/admin/backups/:id/download (download) with admin-only authorization.\n- Integrate with Neon backups or S3 if configured; otherwise no-op stub in dev with clear responses.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell:\n  • Trigger: Invoke-WebRequest -Method Post -Uri \"$ENV:BASE_URL/api/admin/backups\" -Headers @{Authorization=\"Bearer $token\"}\n  • List: Invoke-RestMethod -Method Get -Uri \"$ENV:BASE_URL/api/admin/backups\" -Headers @{Authorization=\"Bearer $token\"}\n  • Download: Invoke-WebRequest -Method Get -Uri \"$ENV:BASE_URL/api/admin/backups/$id/download\" -OutFile backup.dump -Headers @{Authorization=\"Bearer $token\"}\n- BrowserMCP: Trigger backup from admin UI and download artifact; verify appropriate messages in non-prod (stub).\n- Database: If using logical backups metadata table, verify entry creation; otherwise validate S3 object existence.\n- Local env: Stubbed responses function with clear messaging; auth enforced; rate limits applied.\n- Production: Confirm admin-only access; successful trigger/list/download; verify storage location and retention; logs contain no sensitive data.",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Add Content Description update API",
+            "description": "",
+            "status": "pending",
+            "dependencies": [],
+            "details": "- Implement PUT /api/clubs/:id/description with sanitization and length limits; authorize admin/club_admin; trigger homepage cache revalidation.\n\nTesting requirements (must pass locally and in production before completion):\n- PowerShell: Invoke-WebRequest -Method Put -Uri \"$ENV:BASE_URL/api/clubs/$id/description\" -Headers @{Authorization=\"Bearer $token\"} -ContentType 'application/json' -Body (@{description='Safe <b>update</b>'}|ConvertTo-Json)\n- BrowserMCP: Update description via admin UI; verify preview debounce, sanitize output, and homepage reflects after revalidation.\n- Database: Verify description updated, sanitized; updated_at changed; only authorized roles can modify.\n- Local env: Ensure validation rejects overly long input; XSS sanitized; revalidation hook called.\n- Production: Verify change visible on homepage; cache revalidation succeeds; logs structured with no PII.",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 2,
-        "title": "Design and Implement Database Schema & Migrations",
-        "description": "Full PostgreSQL schema implemented with UUID PKs, FKs, indexes, triggers, and default admin users; migrations and integrity checks in place.",
-        "details": "Implemented database/schema.sql with tables: officers, users, volunteers, insurance_forms, form_1099, documents. Added appropriate indexes and triggers, enforced referential integrity with UUID primary keys, and seeded default admin users. Schema reflects normalized design with performance-oriented indexing.",
-        "testStrategy": "Migrations applied locally and on staging; validated referential integrity, rollback capability, index presence, and post-migration data consistency. Verified triggers and seed data creation.",
+        "id": 21,
+        "title": "Fix Admin Login and role-based access for Booster Club Admins",
+        "description": "Resolve inability for booster club admins to sign in and access admin panel with proper roles/permissions.",
+        "details": "- Audit auth flow: if using sessions, ensure express-session with secure cookies behind HTTPS; if JWT, ensure sign/verify using HS256 and JWT_SECRET.\n- Check users table, roles/permissions tables (e.g., roles, user_roles, clubs). Ensure booster admins (e.g., orchestra_booster) exist and are active; passwords hashed with bcrypt@5 (bcrypt.hash(password, 12)).\n- Implement login endpoint POST /api/auth/login validating {username/email, password}; parameterized query to get user and roles; compare bcrypt.\n- Issue session or JWT; include role claims and club_id for scoping.\n- Middleware requireAuth and requireRole(['admin','club_admin']); verify role and optionally club scope.\n- Fix admin panel route protection to accept club_admin as authorized.\n- Ensure CSRF protection for cookie-based sessions via csurf or use double-submit token; for JWT add SameSite=Lax cookies if using httpOnly.\nPseudo:\nconst user = await db.one('SELECT id,password_hash FROM users WHERE username=$1', [u]);\nif(!await bcrypt.compare(pw,user.password_hash)) throw 401;\nconst roles = await db.many('SELECT r.name FROM roles r JOIN user_roles ur ON ur.role_id=r.id WHERE ur.user_id=$1',[user.id]);\nconst token = jwt.sign({sub:user.id, roles, clubId}, process.env.JWT_SECRET, {expiresIn:'8h'});\n",
+        "testStrategy": "- Create test accounts: global admin, club_admin(orchestra), regular user.\n- Unit: successful login returns token/session; wrong password returns 401; locked/inactive user blocked.\n- E2E: club_admin can access /admin routes; regular user cannot.\n- Security: tokens expire; refresh flow if implemented; cookies httpOnly/SameSite; brute-force lockout after N attempts with rate-limit.",
         "priority": "high",
         "dependencies": [
-          1
+          20
         ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 3,
-        "title": "Implement Role-Based Authentication & Authorization",
-        "description": "Role-based authentication and authorization fully implemented with secure sessions and protected routes.",
-        "details": "Implemented roles (admin, booster), secure login/logout, session management, and route protection with role checks. Admin panel with dynamic UI. Password validation and masking of sensitive fields in responses.",
-        "testStrategy": "Tested login/logout flows, session expiration, CSRF-safe patterns on forms, and access restrictions per role. Attempted privilege escalation and verified denial on protected endpoints.",
-        "priority": "high",
-        "dependencies": [
-          1,
-          2
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 4,
-        "title": "Develop Booster Club CRUD APIs",
-        "description": "RESTful endpoints for managing booster-related entities are implemented with validation, referential integrity, and authorization.",
-        "details": "Implemented full CRUD operations for relevant booster/club entities and officers, including CSV import for bulk officer data, relationship management, and robust validation with parameterized queries. Enforced role-based access for Admin and Club Officers.",
-        "testStrategy": "Unit and integration tests cover all CRUD operations, validation, referential integrity enforcement, and role restrictions. Verified error handling on invalid input.",
-        "priority": "high",
-        "dependencies": [
-          2,
-          3
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 5,
-        "title": "Develop Officer Management APIs & CSV Import",
-        "description": "Officer CRUD APIs and CSV import with duplicate detection, PII validation, and club-specific management are complete.",
-        "details": "Implemented GET/POST/PUT endpoints for officers and CSV import. Validated officer data (email, phone), sanitized PII, ensured SSN is never exposed in plaintext, and implemented server-side duplicate detection. Managed officer assignments to clubs with roles and date ranges.",
-        "testStrategy": "Tested CRUD flows, input validation, CSV import with valid/invalid data, duplicate detection, and verified SSN masking. Confirmed club scoping and permissions.",
-        "priority": "high",
-        "dependencies": [
-          2,
-          3,
-          4
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 6,
-        "title": "Develop Volunteer Signup & Management APIs",
-        "description": "Volunteer signup and management APIs implemented with minimal PII collection, validation, and role-based access.",
-        "details": "Implemented POST /api/volunteers and related GET endpoints. Added validation, limited PII to essentials, captured interests and availability, and enforced club association with role-based access controls.",
-        "testStrategy": "Verified signup with valid/invalid data, ensured minimal PII storage, validated access controls and data visibility per role.",
-        "priority": "medium",
-        "dependencies": [
-          2,
-          3,
-          4
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 7,
-        "title": "Implement 1099/W-9 Workflow APIs and Secure File Handling",
-        "description": "1099 management, secure W-9 uploads via Vercel Blob, admin review tools, and CSV export are fully implemented.",
-        "details": "Implemented GET /api/1099, POST /api/1099/upload-w9, and admin review endpoints. Enforced file type/size validation, malware scanning hooks, and metadata storage in DB. Joined officer/club data for 1099 records, ensured no raw SSN exposure, and added status tracking, bulk operations, and CSV export.",
-        "testStrategy": "Tested W-9 uploads with allowed/disallowed files, verified malware scan flow, validated admin review completeness, confirmed SSN masking and correctness of CSV export and bulk actions.",
-        "priority": "high",
-        "dependencies": [
-          2,
-          3,
-          4,
-          5
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Implement Frontend Static HTML & Vanilla JS Pages",
-        "description": "Responsive, accessible HTML pages implemented for all user flows using semantic markup and minimal vanilla JS.",
-        "details": "Implemented public site pages (index, team, gallery, news, etc.), volunteer, officer, and admin pages. Admin dashboard includes dynamic interfaces. Semantic HTML with ARIA attributes, form validation and feedback, and mobile-responsive design without heavy frameworks.",
-        "testStrategy": "Performed manual and automated accessibility tests (WCAG), responsiveness checks across devices, and form validation tests. Verified functional flows across roles.",
-        "priority": "medium",
-        "dependencies": [
-          3,
-          4,
-          5,
-          6,
-          7
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Integrate Structured Logging and Audit Trails",
-        "description": "Structured logging and audit trails implemented with correlation IDs, PII masking, and robust error handling.",
-        "details": "Implemented logging via utils/logger.js for API requests, errors, and critical actions. Added correlation IDs and request tracking, ensured PII masking in logs, and stored logs securely. Added audit events for sensitive operations.",
-        "testStrategy": "Triggered API requests and critical actions to verify correlation IDs, confirmed no PII leakage, and validated error logging and audit trail completeness.",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          3,
-          4,
-          5,
-          6,
-          7
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 10,
-        "title": "Automate Backups and Migration Integrity Checks",
-        "description": "Automated backups for database and blobs implemented with integrity verification and restore tooling.",
-        "details": "Implemented nightly backups using Neon PostgreSQL and Vercel Blob APIs. Added integrity checks post-backup, restore scripts, and admin dashboard controls for backup/restore operations. Tested on staging prior to production usage.",
-        "testStrategy": "Ran backup jobs, verified integrity checks, and performed restore tests on staging. Validated backup coverage and data consistency for both DB and files.",
-        "priority": "high",
-        "dependencies": [
-          2,
-          7
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 11,
-        "title": "Implement Health Check Endpoint and Error Messaging",
-        "description": "Health check endpoint and standardized, non-sensitive error messaging are implemented and monitored.",
-        "details": "Added GET /api/health for uptime monitoring, standardized error responses across the app, and integrated uptime/error rate monitoring support.",
-        "testStrategy": "Tested health endpoint under normal and failure conditions and reviewed error messages for clarity and absence of sensitive details.",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          3,
-          4,
-          5,
-          6,
-          7
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 12,
-        "title": "Documentation and Accessibility Compliance",
-        "description": "Documentation is comprehensive and accessibility compliance maintained across the site.",
-        "details": "Updated README.md, environment setup docs, backup/restore and logging documentation, and in-code API documentation. Conducted accessibility audits and remediated issues to maintain compliance.",
-        "testStrategy": "Reviewed documentation for completeness and accuracy. Ran accessibility audit tools and manual checks to ensure WCAG compliance and reflected updates in docs.",
-        "priority": "medium",
-        "dependencies": [
-          8,
-          9,
-          10,
-          11
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 13,
-        "title": "Comprehensive Security Audit & Hardening for EWA Production",
-        "description": "Perform a full-stack security audit and implement hardening across authentication, input/file handling, database queries, and PII protection for a production system handling SSNs and personal data.",
-        "details": "Scope and objectives\n- Goal: Identify and remediate vulnerabilities across auth, input validation, file uploads, DB access, secrets, transport security, headers, logging, and PII/SSN handling in production and staging.\n- Standards and references: Align with OWASP Top 10 (A01–A10), NIST SP 800-53 controls relevant to web apps, and practical website audit checklists including SSL/TLS, input validation, session management, and security headers.[4][5]\n\nWork plan\n1) Discovery & asset inventory\n- Enumerate all public and internal endpoints, forms, file upload points, database connections, background jobs, third-party integrations, and storage locations for blobs/files and PII.\n- Map data flows for SSNs and personal data: collection points, processing, storage, logs, backups, exports.\n\n2) Authentication, authorization, and session security review\n- Review existing role-based auth from Task 3: session cookie flags (Secure, HttpOnly, SameSite=strict/lax), session rotation on login/privilege change, idle/absolute timeouts, and logout invalidation.\n- Enforce MFA for admin and privileged roles; add backup codes and rate limit login/MFA endpoints.[4]\n- Password policy: length, complexity, haveibeenpwned k‑anonymity checks, and server-side throttling with exponential backoff.[4]\n- Ensure HSTS with preload, TLS 1.2+, modern ciphers, and cert validity; redirect HTTP→HTTPS.[4]\n\n3) Input validation and output encoding\n- Centralize validation with a shared schema layer for all request bodies, query params, headers, and multipart fields; use allowlists for enums, lengths, and formats.\n- Implement context-appropriate output encoding (HTML, attribute, JS, URL) and a strict Content Security Policy (CSP) to mitigate XSS.[5]\n- Add global request size limits, nested object depth limits, and WAF-friendly error responses.\n\n4) File upload security\n- Enforce server-side MIME/type sniffing, magic-byte verification, max size, and extension allowlists.\n- Store uploads on blob storage with private ACLs; generate time-limited signed URLs for access.\n- Image handling: transcode to safe formats, strip metadata, and deny SVG unless sanitized.\n- Antivirus/antimalware scan on upload pipeline; quarantine and alert on detection.[5]\n\n5) Database query security and secrets\n- Mandate parameterized queries/ORM binds everywhere; prohibit string concatenation in queries; enable query linting in CI.\n- Implement row-level access checks in data access layer aligned to roles from Task 3.\n- Use least-privilege DB roles; rotate DB creds; enable TLS to DB; enforce statement timeouts; log slow/aborted queries without PII.\n\n6) PII/SSN protection and data minimization\n- Classify data fields by sensitivity. For SSNs: store only when necessary, encrypt at rest using application-layer encryption (envelope keys; KMS-managed master key), and tokenize where feasible.\n- Mask PII in UI, logs, and audit events; ensure redaction in errors and analytics.\n- Implement field-level access controls and purpose limitation checks for reads/exports.\n- Add data retention policies and secure deletion workflows; verify backups (Task 10) exclude unnecessary PII and are encrypted.\n\n7) Security headers and rate limiting\n- Enforce: CSP (default-src 'self'; no inline eval; specific allowlists), HSTS, X-Content-Type-Options, X-Frame-Options/SameSite defenses, Referrer-Policy, Permissions-Policy.[4][5]\n- Add per-endpoint rate limits and IP-based anomaly detection for auth, file upload, and data export routes.\n\n8) Monitoring, audit, and incident readiness\n- Extend structured logging and audit trails (Task 9) with security event taxonomy: auth failures, privilege changes, policy denials, upload rejects, AV detections, rate-limit hits.\n- Configure alerting thresholds and dashboards; define incident response runbooks with roles, containment steps, and regulatory notification templates.[5]\n\n9) Tooling and automation\n- Integrate SAST/secret scanning, dependency vulnerability scans, and DAST into CI; fail builds on criticals.[5]\n- Run periodic website security audit scans and configuration checks for SSL/TLS, headers, and exposures; document residual risks and exceptions.[1][2][3][4][5]\n\nDeliverables\n- Security Audit Report: findings categorized by severity, affected assets, evidence, exploitability, and remediation.\n- Hardening Changes: PRs with config/code changes, CSP/HSTS/headers, validators, query refactors, upload pipeline controls, encryption/tokenization.\n- Runbooks and Policies: incident response, key management, data retention, and PII handling SOPs.\n- Updated documentation touching auth, logging, and error messaging alignment with previous tasks.\n\nImplementation notes\n- Coordinate with DB schema (Task 2) for any new encrypted columns or token tables.\n- Leverage existing auth and logging foundations (Tasks 3 and 9) and ensure health/error messaging remain non-sensitive (Task 11).\n- Verify backups and restore paths accommodate encrypted PII and key management (Task 10).",
-        "testStrategy": "Preparation\n- Set up staging mirroring production configs, with synthetic PII including SSNs. Ensure logging/audit trail capture is active without PII leakage.\n\nVerification steps\n1) Authentication & session\n- Check cookies: Secure, HttpOnly, SameSite; verify session rotation post-login and role elevation; test idle (e.g., 15–30 min) and absolute timeouts (e.g., 8–12 hours); confirm logout invalidation.\n- Attempt credential stuffing simulation with rate limiting in place; confirm throttle and no account enumeration in messages. Validate MFA enforcement for admin.\n\n2) Transport & headers\n- Scan TLS and HSTS settings; confirm HSTS preload eligibility and HTTP→HTTPS redirect. Validate presence and correctness of CSP, X-Content-Type-Options, X-Frame-Options/Frame-Ancestors, Referrer-Policy, Permissions-Policy headers.\n\n3) Input validation & XSS/CSRFi\n- Fuzz all endpoints with oversized payloads, nested JSON, invalid enums; confirm 4xx with sanitized error bodies. Use DAST to test reflected/stored XSS; verify CSP and encoding block payloads.\n- Verify CSRF protections on state-changing routes (tokens or same-site cookie strategy) and absence of dangerous CORS policies.\n\n4) File uploads\n- Upload polyglot files, oversized files, SVGs, and disguised executables; confirm rejection/quarantine and audit events. Verify content-type and magic-byte enforcement and that stored files are private and served via signed URLs.\n\n5) Database queries and access\n- Static search for string-concatenated SQL; ensure parameterization. Attempt forced browsing/IDOR to access other users’ records; confirm denials and audit logs. Validate DB role least-privilege and TLS to DB; test statement timeouts.\n\n6) PII/SSN protection\n- Inspect at-rest storage: ensure SSNs are encrypted or tokenized. Attempt to retrieve PII via logs, errors, analytics, and exports; confirm masking and access controls. Validate retention and secure deletion workflows. Confirm backups include encrypted data and keys are managed separately.\n\n7) Monitoring & incident response\n- Trigger representative security events (failed logins, rate-limit hits, AV detections) and confirm alerts, dashboards, and runbook execution steps. Verify audit trail completeness with correlation IDs and no PII leakage.\n\nEvidence & acceptance\n- Provide scan reports (SAST/DAST/deps), header/TLS scans, CSP violation reports, AV logs, and before/after config diffs. All critical/high findings remediated or risk-accepted with sign-off. Update docs/runbooks accordingly.",
-        "status": "done",
-        "dependencies": [
-          2,
-          3,
-          9,
-          10,
-          11
-        ],
-        "priority": "high",
-        "subtasks": []
-      },
-      {
-        "id": 14,
-        "title": "Implement Performance Optimization & Monitoring for EWA",
-        "description": "Optimize database queries, caching, frontend assets, and API response times, and implement end-to-end performance monitoring to improve user experience and reduce server load.",
-        "details": "Scope and objectives:\n- Target p95 page load < 2.5s on 4G, p95 API latency < 300ms for common endpoints, and reduce DB CPU/IO by ≥25% under typical load.\n\n1) Baseline measurement and SLOs\n- Define service-level objectives (SLOs) for key user journeys (home, gallery/news pages, volunteer signup, officer/admin dashboard actions). Instrument Real User Monitoring (RUM) for Core Web Vitals (LCP, FID/INP, CLS) using PerformanceObserver in the frontend and send metrics to backend /api/metrics with correlation IDs from Task 9.\n- Add synthetic checks for critical pages and APIs using existing /api/health (Task 11) extended to include dependency timings (DB, cache, blob) and version/build info.\n\n2) Database query optimization (PostgreSQL)\n- Enable and review slow query logs (log_min_duration_statement) in staging/prod. Use EXPLAIN (ANALYZE, BUFFERS) to optimize hot paths: officer list/search, volunteer list/filter, 1099 lookups, admin dashboard aggregates (Tasks 4,5,6,7).\n- Add/adjust indexes (composite/partial) based on access patterns; ensure existing indexes from Task 2 align with query plans. Remove unused/duplicate indexes.\n- Refactor N+1 joins to batched queries; prefer SELECT specific columns over SELECT *; paginate with keyset pagination where applicable.\n- Add caching of infrequently changing reference data (e.g., club metadata) to reduce repeated reads.\n\n3) Caching strategy\n- CDN edge caching for static assets via Vercel/CloudFront: immutable asset filenames with content hashing; set Cache-Control: public, max-age=31536000, immutable. HTML: Cache-Control: no-store or short max-age with stale-while-revalidate for SSR pages if applicable.\n- API caching: implement server-side in-memory or Redis cache for read-heavy endpoints (e.g., public pages data, officer/club listings with filters that are cacheable). Use cache keys with versioning, per-role scoping to respect Task 3 auth constraints. Apply soft TTL + background revalidation. Honor PII masking from Task 9.\n- Database query result caching for expensive aggregates with explicit invalidation hooks on write paths in Tasks 4/5/6/7.\n\n4) Frontend performance improvements (Task 8 integration)\n- Asset optimizations: enable Brotli/Gzip compression; tree-shake and minify JS/CSS; split vendor vs app bundles; defer/non-blocking scripts; preload critical CSS; inline minimal critical CSS for above-the-fold; lazy-load non-critical images/components; use responsive images (srcset, sizes) and modern formats (WebP/AVIF) with fallbacks.\n- Reduce third-party scripts; audit for unused code; set priority hints (fetchpriority) for hero media; use native lazy loading (loading=lazy) for images/iframes where safe.\n\n5) API response time optimization\n- Standardize pagination and projection (select only needed fields) for list endpoints; enforce limits and sensible defaults.\n- Add request-level timeouts and circuit breakers for external calls (e.g., malware scan hooks in Task 7) and perform async/offline processing where feasible.\n- Implement streaming or chunked responses for large CSV exports while maintaining audit logging (Task 9).\n\n6) Monitoring & alerting\n- Server-side metrics: integrate OpenTelemetry (OTel) for traces, spans, and metrics across API, DB, cache, blob storage. Propagate correlation IDs from Task 9. Export to a managed backend (e.g., Grafana Cloud/OTel collector). Track latency histograms, error rates, throughput, cache hit ratio, DB wait events.\n- Frontend RUM: capture CWV and navigation timing, JS error rates, and SPA route timings. Sample at configurable rates; anonymize and avoid PII per Task 9.\n- Dashboards: create dashboards for CWV, API p50/p95/p99 latencies by endpoint, error rates, DB slow queries, cache hit/miss, and resource usage. Alerts on SLO breaches with burn-rate policies.\n\n7) Documentation and operations\n- Document caching keys, TTLs, and invalidation rules; playbooks for common performance incidents; SLOs and alert thresholds. Include rollback toggles/feature flags for each optimization.\n\nImplementation notes\n- Ensure all caching respects role-based access and PII masking from Tasks 3 and 9. Do not cache user-specific sensitive responses at shared layers. Add Vary headers for Authorization or use per-user cache scopes as needed.\n- Add automated performance budget checks in CI (e.g., Lighthouse CI for key pages; k6 load tests for APIs) with thresholds aligned to SLOs.\n",
-        "testStrategy": "Baseline and regression\n- Capture baseline: run Lighthouse (mobile, 4x CPU slow, 4G) on index, news/gallery, volunteer signup, admin dashboard; record CWV. Run k6 load tests for top 5 APIs (list officers, list volunteers, 1099 list, admin dashboard summary, public content) at 50–200 VU with realistic think times; record p50/p95/p99 and error rate.\n\nDB optimization validation\n- Enable slow query log and run representative workflows; list queries >200ms. After optimizations, re-run and verify ≥50% reduction in count of slow queries and ≥25% lower mean execution time for targeted queries. Validate query plans changed as expected (index usage, fewer rows).\n\nCaching tests\n- Unit/integration tests for cache layers: verify cache key correctness, TTL expiry, invalidation on POST/PUT/DELETE of related resources, and no leakage across roles. Measure cache hit ratio ≥70% for designated endpoints under load test replay.\n\nFrontend performance\n- Lighthouse CI gates: LCP ≤2.5s, CLS ≤0.1, INP ≤200ms on mobile emulation. Verify image formats/responsive attributes in markup, script defer/async usage, and bundle size reductions vs baseline.\n\nAPI latency\n- Re-run k6 after changes: confirm p95 latency <300ms for targeted read endpoints at test load; verify rate limiting/back-pressure doesn’t degrade UX. Validate CSV export uses streaming and maintains audit logs.\n\nMonitoring & alerting\n- Validate OTel traces include correlation IDs and span DB/cache calls. Trigger synthetic errors/latency to test alerting and burn-rate policies. Verify dashboards show CWV, API latencies, DB slow queries, and cache metrics with correct labels.\n\nSecurity & privacy\n- Confirm no PII is stored in metrics/logs; check headers and caches for role-based scoping; validate Vary/Cache-Control headers. Perform authorization checks on cached responses.\n",
         "status": "pending",
-        "dependencies": [
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11
-        ],
-        "priority": "medium",
         "subtasks": []
       },
       {
-        "id": 15,
-        "title": "Enhance UX/UI, Accessibility, and Progressive Enhancement across EWA (Admin + All Roles)",
-        "description": "Improve admin dashboard usability, strengthen form validation and user feedback, add progressive enhancement for mobile, implement keyboard navigation, and elevate accessibility and UI consistency for all user roles.",
-        "details": "Scope and goals\n- Elevate usability and accessibility of the EWA website with a focus on the admin dashboard and shared components across roles (admin, booster, officer, volunteer, public).\n- Deliver WCAG 2.2 AA compliance, robust client-side and server-side validation with actionable feedback, full keyboard operability, and progressive enhancement that preserves core features without JS.\n\nImplementation plan\n1) Admin dashboard UX improvements\n- Information architecture: reorganize dashboard to prioritize critical KPIs and primary actions using card-based layout, clear hierarchy, and progressive disclosure to reduce clutter.\n- Navigation: ensure consistent sidebar/topbar with clear labels, icons, and keyboard-focusable collapsible sections; add skip links to dashboard content area.\n- Data tables: add column sorting, filtering, pagination; preserve state in URL params; responsive tables with overflow strategies; provide empty/loading states.\n- Customization (lightweight): allow user preference for density (comfortable/compact) and persisted column visibility per table.\n\n2) Forms: validation, feedback, and resilience\n- Client-side validation using Constraint Validation API plus custom validators; server-side validation remains source of truth.\n- Inline, accessible error messages bound via aria-describedby; summary alert at top with links to invalid fields.\n- Distinguish statuses with iconography and color plus text; prevent color-only communication.\n- Async submission with optimistic UI where safe; disable double submit; preserve user input on validation errors; add success toasts/snackbars with undo where applicable.\n\n3) Progressive enhancement and mobile experience\n- Ensure all critical flows work with JS disabled (basic form POST fallbacks, server-rendered responses, pagination links).\n- Enhance with JS for filters, live validation, and dynamic tables; load enhancements conditionally and defer non-critical scripts.\n- Improve touch targets (≥44x44px), responsive spacing/typography, and orientation handling; test on low-end/mid-tier devices and 4G.\n\n4) Keyboard navigation and focus management\n- Define global focus order and visible focus styles; add skip-to-content and skip-to-navigation links.\n- Manage focus after route/content updates (focus main heading); trap focus in modals/drawers; ESC to close; ensure menus, tabs, accordions, and comboboxes meet ARIA Authoring Practices.\n- Provide keyboard shortcuts for frequent admin actions (discoverable via help modal, e.g., ? to open palette, / to focus search).\n\n5) Accessibility upgrades (WCAG 2.2 AA)\n- Headings and landmarks: unique h1 per page, main/nav/aside/footer landmarks; label search, filters, and tables.\n- Color contrast: meet 4.5:1 for text; audit and update palette/tokens; ensure focus indicator contrast.\n- Errors, status, and live regions: use role=alert/aria-live for async results; associate labels with inputs; larger hit areas; prevent motion sensitivity with reduced motion.\n- Tables and charts: add table headers, scope, captions; for charts, provide data tables or text summaries.\n\n6) UI consistency and design tokens\n- Establish or update design tokens (color, spacing, typography, radius, elevation, focus ring) and component guidelines; document patterns for cards, tables, forms, alerts, modals.\n- Apply tokens across pages for consistent look-and-feel.\n\n7) Non-functional\n- Maintain security headers and sanitized error messages; no leakage of sensitive data in UI.\n- Ensure changes do not degrade performance; coordinate with performance task by deferring enhancements and tree-shaking.\n\nDeliverables\n- Updated admin dashboard layout and components (cards, tables, filters, navigation).\n- Shared form components with validation and feedback.\n- Accessibility-compliant components and patterns with documentation.\n- Keyboard navigation, shortcuts, and focus management utilities.\n- Progressive enhancement utilities and JS-disabled fallbacks.\n- Changelog and upgrade notes for developers.\n",
-        "testStrategy": "Accessibility and usability\n- Automated: run axe-core and eslint-plugin-jsx-a11y (or equivalent) on key pages; target zero critical violations.\n- Manual WCAG checks: keyboard-only traversal of all flows; verify visible focus, skip links, modals focus trap, correct ARIA roles, landmarks, headings, and error associations.\n- Screen reader passes: NVDA + Firefox, VoiceOver + Safari; validate form error announcements, live updates, table headers, and navigation.\n\nForms and validation\n- Turn off JS and submit invalid/valid forms; verify server-side errors display and inputs persist.\n- With JS on, test inline validation, summary alerts, and prevention of double-submit; simulate slow network and retry flows.\n\nAdmin dashboard functionality\n- Verify table sorting/filtering/pagination work and state persists via URL; test empty/loading/error states.\n- Resize tests from 320px to desktop; confirm responsive tables and touch target sizes; orientation change handling.\n- Preference persistence for density/columns via localStorage or user profile as designed.\n\nProgressive enhancement\n- Disable JS globally and validate critical journeys: login, list pages, create/edit forms, 1099 views; ensure baseline is usable.\n- Throttle network to 4G; confirm enhanced features load after content; no blocking of first interaction.\n\nKeyboard shortcuts and focus\n- Verify shortcuts are discoverable and can be disabled; ensure no conflicts with screen readers; test ESC to close modals, / to focus search, ? to open help.\n\nRegression and non-functional\n- Cross-role verification: admin, booster/officer, volunteer, public pages.\n- Check standardized, non-sensitive error messages still apply; confirm health endpoint unaffected.\n- Spot-check performance budgets (no >10% increase in JS payload vs baseline) and coordinate with performance monitoring.\n",
-        "status": "pending",
-        "dependencies": [
-          3,
-          8,
-          11,
-          12
-        ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 16,
-        "title": "Implement Advanced Reporting, Analytics Dashboards, and Data Export",
-        "description": "Build role-based analytics dashboards with visualizations for volunteers, 1099 forms, and officer management, including filtering, sorting, search, and export capabilities to enable data-driven decisions.",
-        "details": "Scope and objectives:\n- Deliver role-specific dashboards for Admin and Booster roles with KPIs, charts, and tabular reports.\n- Provide volunteer statistics, 1099/W-9 analytics, and officer management reports with rich filtering, sorting, search, and export (CSV/XLSX, print-to-PDF) while honoring RBAC and PII masking.\n\nKey features:\n1) Role-based dashboards\n- Admin dashboard: global KPIs (total volunteers, active this season, hours contributed, clubs covered), 1099 pipeline (submitted, in-review, approved, exceptions), officer coverage by club, at-risk compliance indicators, recent audit events.\n- Booster/Officer dashboard: club-scoped KPIs, volunteer funnel, pending W-9/1099 items for their club, officer roster health, upcoming deadlines.\n- Respect role-based data visibility and row-level scoping using existing auth context and role checks.\n\n2) Data visualizations\n- Charts: time-series (signups per week), categorical (volunteers by interest, availability bands), stacked bars (1099 status by club), donut (officer roles mix), heatmap/calendar (volunteer activity by day if available).\n- Implement with a lightweight chart lib (e.g., Chart.js or ECharts) with accessible color palettes and high-contrast mode.\n- All charts must have descriptive labels, aria-describedby, and data table toggle for screen readers.\n\n3) Reports\n- Volunteers: filters (date range, club, interest, availability, status), multi-column sort, full-text search on name/email but display only masked PII per policy.\n- 1099/W-9: filters (status, date range, officer, club), error/exception buckets, export of admin-safe fields; never export SSN or sensitive document links.\n- Officer management: filters (club, role, term expiration), flags for vacancies, duplicates, and expiring terms.\n\n4) Exports and printing\n- Server-side CSV and XLSX export endpoints for each report; paginate on client, stream on server for large results.\n- Print-friendly views and PDF print via browser with dedicated CSS; include report title, filters applied, timestamp, and footer with page numbers.\n- Apply RBAC and row-level constraints to exports; add audit trail events for each export request.\n\n5) Performance and UX\n- Backend query optimization with indexed filters; stable, deterministic sorting; cursor-based pagination for large datasets.\n- Client-side debounced search, persisted filter state in URL query params, and saved views per user role.\n- Empty/loading/error states; no blocking spinners longer than 300ms without skeletons.\n\n6) Security, privacy, and auditability\n- Enforce role checks on all dashboard and export endpoints; ensure PII masking consistent with existing policies.\n- Log audit events for report views and exports with correlation IDs.\n- Redact sensitive fields in responses and logs; validate and sanitize all filter inputs.\n\nImplementation plan:\n- Backend\n  - Add reporting endpoints: GET /api/reports/volunteers, /officers, /1099/summary, /1099/detail, with filters: ?clubId=&role=&status=&from=&to=&q=&sort=&order=&cursor=&limit.\n  - Implement aggregation endpoints for KPIs and chart series: GET /api/analytics/kpis, /timeseries, /breakdowns; scope results by role.\n  - Add export endpoints: GET /api/exports/{report}.csv and .xlsx, streaming with text/csv or application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; include Content-Disposition with filename containing timestamp and filters hash.\n  - Reuse existing schemas (users, volunteers, officers, form_1099) and indexes; add read-only views or materialized views for common aggregations if needed.\n  - Integrate audit logging on every analytics/extract request via existing logger utilities.\n- Frontend\n  - Create /dashboard routes for Admin and Booster with role guard.\n  - Build filter bars (date picker, multiselects for club/role/status), search box, and table with column toggles.\n  - Add charts with accessible legends and data table toggle; implement responsive grid layout.\n  - Implement saved filters (localStorage) and sharable links (URL params).\n  - Add Export buttons with progress feedback and confirmation about PII policy.\n\nAccessibility and compliance:\n- WCAG AA contrast, keyboard navigable filter controls, table headers with scope, aria-live for loading state.\n- Mask emails/phone where policy requires; show tooltips explaining masking to users.\n\nOperational considerations:\n- Document API contracts and filter semantics.\n- Add rate limiting to export endpoints; cap row counts with admin override.\n- Feature flags to progressively roll out dashboards per role.\n",
-        "testStrategy": "API and backend tests:\n- Unit tests for filter parsing, RBAC scoping, and query builders for each endpoint.\n- Integration tests validating row-level restrictions: admin sees cross-club aggregates; booster sees only their club.\n- Verify PII masking in list and export responses; confirm SSN and document links never appear.\n- Load tests for aggregation and export endpoints at realistic volumes; confirm p95 latency targets and stream correctness.\n- Audit trail assertions: exports and report views produce entries with correlation IDs.\n\nFrontend tests:\n- Component tests for filter bar, tables (sorting, pagination), and charts (render with sample data, accessible labels present).\n- E2E flows per role: login -> dashboard renders correct KPIs and restricted data; apply filters, search, and multi-column sort; export CSV/XLSX and verify downloaded file headers and applied filters metadata.\n- Accessibility tests: keyboard-only navigation through filters and tables; axe checks for color contrast and ARIA attributes; screen reader verification of chart data table toggle.\n- Print view tests: ensure headers/footers, page breaks, and applied filters appear; PDF generated via browser contains correct content.\n\nSecurity and privacy tests:\n- Attempt to access admin-only endpoints as booster; expect 403.\n- Tamper with URL query params for clubId to escalate scope; expect server to enforce row-level limits.\n- Validate rate limiting on export endpoints and logging redaction.\n",
-        "status": "pending",
-        "dependencies": [
-          2,
-          3,
-          4,
-          6,
-          7,
-          8,
-          9,
-          10
-        ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 17,
-        "title": "Implement Automated Testing, Security Scans, and CI/CD for EWA",
-        "description": "Build a comprehensive automated QA suite (unit, integration, end-to-end) for EWA APIs, DB operations, and user workflows; add automated security testing; and implement a CI/CD pipeline to run tests and deploy safely to staging/production.",
-        "details": "Scope and goals:\n- Establish a unified testing framework covering: unit tests for API handlers and utilities; integration tests exercising DB operations and migrations; end-to-end (E2E) browser tests for key user journeys; automated security testing (dependency and application-level); and gate all via CI/CD with test artifacts, flaky-test mitigation, and code quality checks. Focus on maintainability and preventing regressions through repeatable pipelines and clear reporting.[3][4]\n\nTest architecture and tooling:\n- Unit/API: Use Jest/Vitest with supertest to hit API routes in-memory or via test server. Mock external services (e.g., Vercel Blob, email) and use test doubles for logger to assert PII masking.\n- Integration (DB): Spin up ephemeral PostgreSQL (Docker or Testcontainers). Apply migrations, seed minimal fixtures (admin, officer, volunteer, 1099 sample) to validate referential integrity and triggers from Task 2.\n- E2E: Use Playwright for cross-browser (Chromium/WebKit/Firefox) E2E covering login, role-based access (admin, booster), volunteer signup, 1099 flows, admin dashboard, file upload constraints, and CSV export. Run headed locally, headless in CI with video, screenshots, and tracing.[4]\n- Security automation: \n  - SCA/Dependency: Enable npm/yarn audit, OWASP Dependency-Check or Snyk step failing on high/critical.\n  - SAST: Add ESLint security plugins and Semgrep rules tuned for Node/JS.\n  - DAST: Run OWASP ZAP baseline scan against staging preview; exclude authenticated-only routes unless auth context is configured.\n- Code quality gates: Enforce coverage thresholds (e.g., 80% lines/branches on unit/integration), lint/type checks, formatting, and disallow TODO/FIXME in changed lines.\n\nTest implementation plan:[1][3]\n1) Identify candidates for automation prioritizing high-frequency, regression-prone paths: auth, protected APIs, volunteers CRUD, 1099 upload/review/export, admin dashboards, health checks, and backup controls.[4]\n2) Define test cases precisely with steps and expected outcomes; store as living specs alongside tests.[2][3]\n3) Implement framework structure:\n   - packages/tests or tests/ with folders: unit/, integration/, e2e/, security/.\n   - Shared helpers: auth/login helpers, test data builders, DB reset utilities, and file fixtures for allowed/disallowed uploads.\n   - Environment handling: .env.test with isolated secrets; CI secrets via environment variables.\n4) Data strategy:\n   - Use factories to generate users with roles (admin, booster) and volunteers; seed 1099 records. Provide teardown/reset between tests. For E2E, seed via API or direct DB in a known schema snapshot.\n5) Flake control:\n   - Use Playwright auto-waiting, network idle assertions, and retry-on-failure for known flaky specs. Quarantine flaky tests with labels and track in CI reports.\n6) Reporting:\n   - JUnit XML for CI annotations, HTML reports for E2E with videos and traces, coverage reports uploaded as artifacts. Trend dashboards in CI summaries.[3]\n\nCI/CD pipeline:\n- Triggers: PRs, pushes to main, nightly scheduled.\n- Jobs (in order):\n  1) Setup: node install, cache deps; lint + typecheck.\n  2) Unit/API tests with coverage; upload artifacts.\n  3) Integration tests using Postgres service/Testcontainers; run migrations; upload coverage.\n  4) Build app.\n  5) E2E on ephemeral preview (spin app on random port) or deploy-to-preview then run Playwright against preview URL; capture screenshots/videos/traces.\n  6) Security: npm audit/Snyk, Semgrep, ZAP baseline; fail on high/critical or configurable policy.\n  7) Aggregate coverage; enforce thresholds; post PR annotations.\n  8) Deploy: On protected main after all checks pass, deploy to staging; gated manual approval to promote to production. Post-deploy smoke tests (health, key endpoints) and rollback on failure.\n\nKey test coverage mapped to prior tasks:\n- Task 3 (AuthN/Z): unit tests for session middleware; E2E for login/logout, role route guards, privilege escalation attempts.\n- Task 4/6 (CRUD + Volunteers): integration tests for referential integrity, validation; E2E flows for create/edit/list with role checks.\n- Task 7 (1099/W-9): file upload validation (type/size), malware-scan hook mock, SSN masking, admin review, bulk actions, CSV export correctness.\n- Task 8 (Frontend): accessibility smoke via axe-core in Playwright; form validations and ARIA roles.\n- Task 9 (Logging/Audit): assert no PII in logs using logger mock; audit events emitted on sensitive operations.\n- Task 10 (Backups): admin backup/restore controls visibility and basic happy-path trigger in staging-only context.\n- Task 11 (Health): uptime endpoint assertions and standardized error payload checks.\n\nOperational considerations:\n- Separate test and prod resources; do not run destructive tests against prod. Use feature flags where necessary.\n- Parallelize tests by shard; ensure DB isolation per worker (schema suffixing) to avoid contention.\n- Document how to run all test suites locally with make/npm scripts and how failures block merges in CI.\n\nDeliverables:\n- Test suites with >80% unit/integration coverage on critical modules, stable E2E pack for smoke and regression, security scans integrated, and a CI/CD pipeline with clear pass/fail gates and artifacts.[2][3][4]",
-        "testStrategy": "Verification checklist:\n- Unit/API tests:\n  - Run npm test:unit with coverage ≥80% lines/branches on auth middleware, validators, controllers for CRUD, volunteers, and 1099 endpoints.\n  - Validate that sensitive fields are masked in responses and logs via tests.\n- Integration (DB):\n  - Execute npm test:integration using ephemeral Postgres; migrations apply cleanly; foreign keys/triggers enforced; create/update/delete flows succeed and invalid inputs fail with standardized errors.\n  - Concurrency test: parallel create/update does not violate constraints; transaction rollbacks work.\n- E2E (Playwright):\n  - Smoke suite runs in <10 min across Chromium/WebKit/Firefox in CI and passes consistently 3 consecutive runs.\n  - Scenarios: login/logout; role access denied for non-privileged users; volunteer signup flow; admin dashboard data loads; W-9 upload rejects invalid types, accepts valid sample, admin review + status change persist; CSV export downloads and schema validated; health endpoint green; basic accessibility violations < threshold using axe.\n  - Artifacts: videos, screenshots, and traces uploaded for failures.\n- Security automation:\n  - SCA/SAST steps execute and report; pipeline fails on high/critical vulnerabilities; Semgrep ruleset covers common Node/Express issues.\n  - ZAP baseline runs against preview/staging URL, produces report artifact; no medium/high alerts remain unresolved or are risk-accepted with documented justifications.\n- CI/CD gates:\n  - On PR: lint/typecheck, unit, integration, E2E, security all required to merge; coverage gate enforced; PR annotations visible for failing tests and lines.\n  - On main: staging deploy occurs only after all checks pass; post-deploy smoke tests pass; manual approval required before production; rollback tested by forcing a failing smoke test.\n- Flake control: test retries <=2; flaky rate <2% over 10 nightly runs; quarantine list tracked.\n- Documentation: README/QA guide includes setup, commands, and how to triage failures; developers can run full suite locally successfully.\n- Evidence: attach CI run links, coverage summary, ZAP/Semgrep reports, and sample artifacts to the task for review.",
-        "status": "pending",
-        "dependencies": [
-          2,
-          3,
-          4,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11
-        ],
+        "id": 22,
+        "title": "Repair Volunteer Status Update in Admin Dashboard",
+        "description": "Fix API and DB logic causing 'Volunteer Not found' when updating volunteer submission status.",
+        "details": "- Identify endpoint (e.g., PATCH /api/volunteers/:id/status). Inspect frontend to confirm payload {id,status,notes?}.\n- Validate payload with Zod: id as UUID/int, status in ['pending','approved','rejected','inactive'].\n- DB query must use correct table and primary key; verify volunteers table schema and foreign keys (user_id, club_id). Ensure ID from UI matches DB id (not submission id vs user id mismatch).\n- Use parameterized update returning rowCount to detect missing records. If club scoping applies, include club_id in WHERE when club admins update.\n- Add 404 when not found; 409 if invalid transition; 200 with updated record on success.\n- Consider transaction if updating related audit log table volunteer_status_history.\n- Frontend: ensure button triggers fetch with method PATCH, correct URL, credentials, CSRF/JWT headers; display toast on success/error.\nSQL:\nUPDATE volunteers SET status=$1, updated_at=NOW() WHERE id=$2 RETURNING id,status;\n",
+        "testStrategy": "- Unit: status transitions valid; invalid status rejected with 400.\n- E2E: admin updates status from dashboard; verify DB row updated; history row inserted if applicable.\n- Negative: wrong id -> 404; mismatched club scope -> 403.\n- Regression: ensure listing volunteers still paginates and filters.",
         "priority": "high",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 18,
-        "title": "Implement Disaster Recovery and Business Continuity (DR/BC) for EWA",
-        "description": "Design and implement end-to-end disaster recovery and business continuity capabilities, including automated backup verification, point-in-time recovery (PITR), health monitoring and alerting, runbooks, and failover procedures to keep the EWA site operational during outages.",
-        "details": "Scope and objectives:\n- Recovery Time Objective (RTO): ≤ 30 minutes for critical APIs and authentication; Recovery Point Objective (RPO): ≤ 15 minutes for database and blobs.\n- Maintain core operations (public pages, auth, volunteer/1099 admin) during partial outages via documented procedures and automation.\n\n1) DR architecture and capabilities\n- Database (PostgreSQL/Neon):\n  - Enable/verify continuous backups and PITR; document retention policy (e.g., 14–30 days) and PITR restore procedure using a timestamp/LSN.\n  - Create automated PITR restore script to a staging/DR instance (read-only) with parameterized timestamp and safety checks to avoid restoring over production.\n  - Implement logical dump snapshots daily as a secondary layer (pg_dump with schema+data) to complement provider PITR.\n- Blob storage (Vercel Blob):\n  - Verify object versioning/immutability if available; otherwise implement periodic manifest snapshots and cross-region replication if supported.\n  - Build verification job to sample-validate checksums/hashes of blob objects against stored metadata from Task 10; reconcile missing/corrupt items.\n- Application/config:\n  - Externalize configuration for DR (feature flags, env groups). Store encrypted .env.example.dr and document required secrets rotation.\n  - Create infra-as-code or scripts to stand up a warm-standby environment (staging as DR) with minimal changes (DNS/edge routing toggle, env promotion).\n\n2) Automated backup verification and drills\n- Extend Task 10 backup jobs to include:\n  - Post-backup validation: run pg_restore --list and integrity queries on a disposable instance; compute row counts per key tables and compare against production snapshot deltas.\n  - Blob verification: sample N% of objects nightly and 100% weekly by key collections (1099 docs, W-9 uploads) using size/hash comparison.\n- Scheduled DR drill pipeline (monthly):\n  - Execute PITR restore to a DR instance at a chosen timestamp; run smoke test suite; produce drill report with RTO/RPO achieved and discrepancies.\n\n3) Monitoring, alerting, and health signals\n- Build unified monitoring based on Task 11 health endpoint and Task 9 logs:\n  - Uptime/latency SLOs: alert when p95 API latency > 300ms sustained 15 min or error rate > 2%.\n  - Backup job status, verification failures, PITR drill failures, storage quota thresholds, DB replica lag.\n  - Implement alert routing (email/Slack/PagerDuty) with severity levels; include runbook links in alert payloads.\n\n4) Runbooks and incident response\n- Create concise, role-targeted runbooks in /docs/runbooks for:\n  - DB point-in-time restore to DR; promoting DR to primary; rolling back promotion.\n  - Blob/data recovery for missing/corrupt objects.\n  - Partial outage: degraded DB, blob unavailability, auth/session issues, upstream provider incident.\n  - Security incident containment steps relevant to data restores (coordinate with audit trails from Task 9).\n- Include decision trees, commands, required permissions, and estimated timelines. Maintain a DR checklist and a communications template.\n\n5) Quick recovery procedures and automation\n- One-command DR activation scripts:\n  - dr/restore_db.sh: perform PITR to new instance; outputs connection URL.\n  - dr/swap_env.ts: switch app environment variables to DR endpoints; flush caches; warm critical pages/APIs.\n  - dr/dns_failover.md: steps for traffic switch (manual with safeguards). Where possible, add provider API automation for DNS/edge routing.\n- Data reconciliation:\n  - After failback, run diff scripts to compare DR and primary data ranges and apply forward migrations for write gaps within RPO tolerance.\n\n6) Documentation and training\n- DR/BC plan covering objectives, roles, inventories (systems, dependencies, secrets), and contact matrix.\n- Schedule quarterly tabletop exercises; capture lessons learned; update RTO/RPO and runbooks accordingly.\n\nSecurity and compliance considerations:\n- Ensure PII masking in logs per Task 9 during DR drills.\n- Encrypt backups at rest and in transit; restrict access with least privilege and audit access events.\n- Avoid restoring sensitive data into shared environments without access controls.\n",
-        "testStrategy": "Verification plan\n1) Backup and verification\n- Trigger nightly backup job and confirm success logs with integrity checks for DB and blobs. Intentionally corrupt a sampled blob and verify alert and auto-reconciliation report.\n- Run pg_restore on a disposable instance and validate row counts vs. production snapshot (±RPO window).\n\n2) PITR capabilities\n- Choose a timestamp T; create a test transaction after T; perform PITR to T and verify the post-T transaction is absent while pre-T data exists.\n- Execute automated PITR drill and capture RTO/RPO metrics; assert RTO ≤ 30 min and RPO ≤ 15 min.\n\n3) Monitoring and alerting\n- Simulate failures: force a backup job to exit non-zero, inject health endpoint errors to push error rate > 2%, and simulate DB replica lag. Confirm alerts fire with correct severity and include runbook links.\n- Validate p95 latency alerts by adding artificial delay in a canary endpoint and confirming alert thresholds and recovery notifications.\n\n4) Runbooks\n- Follow each runbook end-to-end on staging: perform DR promotion and rollback; measure time taken and steps count; ensure no hardcoded secrets, and commands succeed as documented.\n- Peer review runbooks; run a tabletop exercise and record action items.\n\n5) Quick recovery automation\n- Execute dr/restore_db.sh and dr/swap_env.ts in staging; confirm app reads from DR DB and serves core flows (public pages, auth, volunteers, 1099 admin) with acceptable latency.\n- Perform failback to primary; run reconciliation scripts and verify data parity within RPO tolerance.\n\n6) Security and compliance\n- Verify backups are encrypted, access is audited, and no PII appears in drill logs. Attempt unauthorized access to backup artifacts and confirm denial and alerting.\n",
-        "status": "pending",
-        "dependencies": [
-          2,
-          7,
-          9,
-          10,
-          11
-        ],
+        "id": 23,
+        "title": "Restore News Publish functionality",
+        "description": "Make 'Publish News' button functional including API, validation, and UI feedback.",
+        "details": "- Frontend: attach click/submit handler to publish button; ensure form data {title, body, publish_at?, author_id, club_id?}. Disable button while request in-flight; show success/error toast.\n- API: POST /api/news with validation; sanitize HTML body using sanitize-html to prevent XSS if rich text.\n- DB: news table columns (id, title, body, status ['draft','published'], publish_at, author_id, club_id, created_at). Insert with status='published' and publish_at=NOW() or scheduled if provided.\n- Ensure role check: admin/club_admin can publish; scope by club if needed.\n- Return created news; revalidate any statically rendered pages if using ISR by calling Vercel revalidate endpoint.\n- Add indexes on (status, publish_at DESC) for front-page queries.\n",
+        "testStrategy": "- Unit: validation rejects missing title/body; XSS payloads sanitized.\n- E2E: clicking Publish creates visible item on public news feed; check SSR/ISR revalidation if applicable.\n- Permissions: regular user blocked; club_admin can publish within club scope.\n- Regression: drafts unaffected.",
         "priority": "high",
+        "dependencies": [
+          21,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Fix News Edit and Delete operations",
+        "description": "Enable editing and deletion of existing news items via functional endpoints and UI handlers.",
+        "details": "- Frontend: wire edit button to open modal/form populated via GET /api/news/:id; on save call PUT /api/news/:id; delete calls DELETE /api/news/:id with confirm dialog.\n- API: PUT validates fields and updates mutable columns; ensure slug uniqueness if used. DELETE performs soft delete (deleted_at) to preserve history, unless hard delete required by PRD.\n- Authorization: only author, admin, or club_admin of same club can edit/delete.\n- DB: add updated_at trigger; optional audit table news_changes(user_id, news_id, diff,jsonb, changed_at).\nSQL:\nUPDATE news SET title=$1, body=$2, status=$3, updated_at=NOW() WHERE id=$4 RETURNING id;\nUPDATE news SET deleted_at=NOW() WHERE id=$1;\n",
+        "testStrategy": "- Unit: PUT with invalid ID -> 404; missing permissions -> 403; optimistic concurrency with updated_at check to prevent clobbering (If-Match header optional).\n- E2E: edit reflects on site; delete hides from public lists.\n- Regression: Publish flow remains functional.",
+        "priority": "high",
+        "dependencies": [
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Repair Links & Resources CRUD",
+        "description": "Make Add/Edit/Delete for links/resources work end-to-end with validation and UI feedback.",
+        "details": "- Frontend: ensure buttons trigger fetch calls; validate URL with zod.string().url(); support title, url, description, club scope, position.\n- API: POST /api/links, PUT /api/links/:id, DELETE /api/links/:id; all parameterized queries. Enforce unique(title, club_id) if needed; maintain sort order.\n- DB: links table (id, title, url, description, club_id, position, created_at, updated_at). Add index (club_id, position).\n- Security: sanitize text fields; only admins/club_admins can mutate.\n",
+        "testStrategy": "- Unit: invalid URL rejected; duplicate title handled with 409.\n- E2E: add link appears in list; edit persists; delete removes; order maintained.\n- Regression: public links page loads without errors.",
+        "priority": "medium",
+        "dependencies": [
+          21,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Fix Insurance Forms event submission",
+        "description": "Resolve missing required fields error by correcting form bindings, validation, and API parsing.",
+        "details": "- Frontend: verify form input names match API expected keys: club, eventName, eventDate, eventDescription; ensure value is sent (FormData or JSON) and date format ISO 8601.\n- Add client-side validation with Zod; disable submit while pending; display field-level errors.\n- API: POST /api/insurance/events parses body (express.json and multer if files). Validate required fields; map club to club_id via lookup; store event row and optionally send email notification.\n- DB: insurance_events table (id, club_id, name, date, description, contact_id, created_at). Ensure NOT NULL constraints align; default values present.\n- Return created event; handle timezone consistently (store UTC, display local).\n",
+        "testStrategy": "- Unit: missing fields -> 400 with details; valid submission -> 201; invalid date -> 422.\n- E2E: submit form with valid data succeeds and record visible in admin view.\n- Regression: no duplicate submissions on double-click (disable button).",
+        "priority": "high",
+        "dependencies": [
+          20,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Restore Front Page Band Booster card rendering",
+        "description": "Ensure Band booster card appears by fixing data fetch, conditions, and fallbacks.",
+        "details": "- Confirm boosters query includes band club and status=active; check hidden flags. If filtering by has_officers or has_content, adjust to include band or fix underlying data.\n- Verify club slug mapping; ensure image/logo path valid; handle missing image fallback.\n- Frontend: conditional rendering should not short-circuit due to null description; default description from DB or copy.\n- If using server-side data fetch, ensure API returns band club; add index for clubs(active) to speed query.\n",
+        "testStrategy": "- E2E: band card visible on homepage grid for anonymous users.\n- Data: toggling active flag hides/shows card as expected.\n- Performance: homepage loads within target time; no console errors.",
+        "priority": "high",
+        "dependencies": [
+          23,
+          24,
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Fix Content Management 'Update Description' for home cards",
+        "description": "Wire up update description action to API and persist changes safely.",
+        "details": "- Frontend: ensure textarea binds to state and submits PUT /api/clubs/:id/description with JSON {description}; debounce preview; show success toast.\n- API: validate description length and sanitize (allow basic formatting). Update clubs.description or club_cards.description.\n- Authorization: admin/club_admin for that club.\n- Invalidate/revalidate homepage cache after update.\n",
+        "testStrategy": "- Unit: overly long input rejected; script tags stripped.\n- E2E: update reflects on homepage after revalidation.\n- Regression: other club cards unaffected.",
+        "priority": "medium",
+        "dependencies": [
+          27,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Backup Management page and API restoration",
+        "description": "Recover missing/blank Backup Management in admin panel and ensure backups run safely.",
+        "details": "- UI: restore admin route /admin/backups; render list of existing backups with actions (Create Backup, Download, Restore if allowed).\n- API: GET /api/backups (list), POST /api/backups (create), GET /api/backups/:id/download; Restrict to global admin only.\n- Implementation: for Neon, use logical backups via pg_dump run in serverless-compatible job: trigger Vercel Background Function or external job (GitHub Actions) to run pg_dump against DATABASE_URL and upload to secure storage (e.g., AWS S3 or Vercel Blob). For local, execute child_process pg_dump with allowlist of args.\n- Store backup metadata in backups table (id, filename, created_by, created_at, size). Do not implement DB restore from production in-app; provide instructions and link to run restore offline to mitigate risk.\n- Security: signed URLs for download with short TTL; encrypt at rest (SSE-S3) and in transit; never expose connection strings.\n",
+        "testStrategy": "- E2E: page shows list; create backup triggers job and shows pending/completed status; download works with signed URL.\n- Negative: non-admin receives 403.\n- Operational: verify a created backup can be restored in staging manually.",
+        "priority": "high",
+        "dependencies": [
+          21,
+          20
+        ],
+        "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-09T00:01:44.976Z",
-      "updated": "2025-08-11T05:33:46.854Z",
+      "updated": "2025-08-12T04:47:09.165Z",
       "description": "Tasks for master context"
     }
   },

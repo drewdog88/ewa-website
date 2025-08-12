@@ -1,6 +1,6 @@
 const request = require('supertest');
-const express = require('express');
-const path = require('path');
+// const express = require('express'); // Unused - can be removed in future cleanup
+// const path = require('path'); // Unused - can be removed in future cleanup
 
 // Mock environment variables for testing
 process.env.NODE_ENV = 'test';
@@ -144,7 +144,7 @@ describe('EWA API Endpoints', () => {
       const response = await request(server)
         .post('/api/officers')
         .send({
-          name: "'; DROP TABLE officers; --",
+          name: '\'; DROP TABLE officers; --',
           position: 'Test',
           club: 'test-club'
         });
