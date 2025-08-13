@@ -520,33 +520,33 @@ describe('Main API Router - Comprehensive Tests', () => {
     test('should get booster club display names', () => {
       const getBoosterClubDisplayName = (boosterClub) => {
         const clubNames = {
-          'band': 'EHS Band Boosters',
-          'football': 'EHS Football Boosters',
-          'basketball': 'EHS Basketball Boosters',
-          'soccer': 'EHS Soccer Boosters',
-          'baseball': 'EHS Baseball Boosters',
-          'softball': 'EHS Softball Boosters',
-          'volleyball': 'EHS Volleyball Boosters',
-          'swimming': 'EHS Swimming Boosters',
-          'track': 'EHS Track & Field Boosters',
-          'tennis': 'EHS Tennis Boosters',
-          'golf': 'EHS Golf Boosters',
-          'wrestling': 'EHS Wrestling Boosters',
-          'cheer': 'EHS Cheer Boosters',
-          'dance': 'EHS Dance Boosters',
-          'orchestra': 'EHS Orchestra Boosters',
-          'choir': 'EHS Choir Boosters',
-          'drama': 'EHS Drama Boosters',
-          'debate': 'EHS Debate Boosters',
-          'robotics': 'EHS Robotics Boosters',
+          'band': 'Eastlake Band Boosters',
+                      'football': 'Eastlake Football Boosters',
+            'basketball': 'Eastlake Basketball Boosters',
+            'soccer': 'Eastlake Soccer Boosters',
+            'baseball': 'Eastlake Baseball Boosters',
+            'softball': 'Eastlake Softball Boosters',
+            'volleyball': 'Eastlake Volleyball Boosters',
+            'swimming': 'Eastlake Swimming Boosters',
+            'track': 'Eastlake Track & Field Boosters',
+            'tennis': 'Eastlake Tennis Boosters',
+            'golf': 'Eastlake Golf Boosters',
+            'wrestling': 'Eastlake Wrestling Boosters',
+            'cheer': 'Eastlake Cheer Boosters',
+            'dance': 'Eastlake Dance Boosters',
+            'orchestra': 'Eastlake Orchestra Boosters',
+            'choir': 'Eastlake Choir Boosters',
+            'drama': 'Eastlake Drama Boosters',
+            'debate': 'Eastlake Debate Boosters',
+            'robotics': 'Eastlake Robotics Boosters',
           'other': 'Other'
         };
         return clubNames[boosterClub] || boosterClub;
       };
 
       const testCases = [
-        { input: 'orchestra', expected: 'EHS Orchestra Boosters' },
-        { input: 'band', expected: 'EHS Band Boosters' },
+        { input: 'orchestra', expected: 'Eastlake Orchestra Boosters' },
+        { input: 'band', expected: 'Eastlake Band Boosters' },
         { input: 'Unknown Club', expected: 'Unknown Club' }
       ];
 

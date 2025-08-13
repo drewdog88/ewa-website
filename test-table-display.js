@@ -68,7 +68,7 @@ async function testTableDisplay() {
         
         if (hasData) {
             // Look for the Band Boosters row
-            const bandRow = page.locator('#paymentLinksTableBody tr').filter({ hasText: 'EHS Band Boosters' });
+            const bandRow = page.locator('#paymentLinksTableBody tr').filter({ hasText: 'Eastlake Band Boosters' });
             const bandRowExists = await bandRow.count() > 0;
             console.log('🔍 Band Boosters row exists:', bandRowExists);
             
