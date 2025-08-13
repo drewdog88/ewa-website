@@ -21,19 +21,28 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'https://ewa-website.com',
-      'https://www.ewa-website.com',
-      'https://eastlakewolfpack.org',
-      'https://www.eastlakewolfpack.org',
-      'https://ewa-website.vercel.app',
-      'https://ewa-website-n2dw0czus-andrews-projects-fcf60ac5.vercel.app',
+      'https://*.eastlakewolfpack.org',
+      'https://*.vercel.app',
       'http://localhost:3000', // Development only
       'http://localhost:3001'  // Development only
     ];
     
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(pattern => {
+      if (pattern.includes('*')) {
+        // Handle wildcard patterns
+        const regexPattern = pattern.replace(/\*/g, '.*');
+        const regex = new RegExp(`^${regexPattern}$`);
+        return regex.test(origin);
+      } else {
+        return pattern === origin;
+      }
+    });
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.log('CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
