@@ -7,7 +7,7 @@ async function testLivePaymentSystem() {
   // Test 1: Check payment page content
   console.log('1. Testing payment page content...');
   try {
-    const pageResponse = await fetch('https://ewa-website.vercel.app/payment.html?id=5c5d9238-dc96-4ad0-b6fe-6282b06573bc&club=EHS%20Band%20Boosters');
+    const pageResponse = await fetch('https://ewa-website.vercel.app/payment.html?id=5c5d9238-dc96-4ad0-b6fe-6282b06573bc&club=Eastlake%20Band%20Boosters');
     console.log('   Page Status:', pageResponse.status);
     const pageContent = await pageResponse.text();
     console.log('   Has Zelle® Payments section:', pageContent.includes('Zelle® Payments'));
@@ -28,7 +28,7 @@ async function testLivePaymentSystem() {
       const buffer = await qrResponse.arrayBuffer();
       console.log('   ✅ QR code generated successfully!');
       console.log('   Size:', buffer.byteLength, 'bytes');
-      console.log('   This should show EHS BAND BOOSTERS (not Volleyball)');
+      console.log('   This should show EASTLAKE BAND BOOSTERS (not Volleyball)');
     } else {
       console.log('   ❌ QR code generation failed');
     }
@@ -45,7 +45,7 @@ async function testLivePaymentSystem() {
       const buffer = await decaResponse.arrayBuffer();
       console.log('   ✅ QR code generated successfully!');
       console.log('   Size:', buffer.byteLength, 'bytes');
-      console.log('   This should show EHS DECA BOOSTER CLUB (not Wrestling)');
+      console.log('   This should show EASTLAKE DECA BOOSTER CLUB (not Wrestling)');
     } else {
       console.log('   ❌ QR code generation failed');
     }
@@ -86,8 +86,8 @@ async function testLivePaymentSystem() {
 
   console.log('\n🎯 SUMMARY:');
   console.log('The QR codes should now show the correct content for each club.');
-  console.log('If you scan the Band Boosters QR code, it should show "EHS BAND BOOSTERS"');
-  console.log('If you scan the DECA QR code, it should show "EHS DECA BOOSTER CLUB"');
+  console.log('If you scan the Band Boosters QR code, it should show "EASTLAKE BAND BOOSTERS"');
+  console.log('If you scan the DECA QR code, it should show "EASTLAKE DECA BOOSTER CLUB"');
 }
 
 testLivePaymentSystem();
