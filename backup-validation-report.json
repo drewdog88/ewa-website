@@ -1,0 +1,1662 @@
+{
+  "timestamp": "2025-08-13T07:10:30.464Z",
+  "backupTimestamp": "2025-08-13T06:49:25.918Z",
+  "summary": {
+    "totalTables": 13,
+    "tablesWithDifferences": 2,
+    "tablesWithMissingData": 0,
+    "tablesWithExtraData": 2,
+    "criticalIssues": 0
+  },
+  "detailedResults": {
+    "backup_metadata": {
+      "tableName": "backup_metadata",
+      "currentCount": 8,
+      "backupCount": 8,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "f62947d2-12ea-480c-b8d3-d20c48486936",
+          "timestamp": "2025-08-07T03:33:02.322Z",
+          "backup_type": "full",
+          "file_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/db-backup-2025-08-07T03-33-02-781Z",
+          "file_size": "1367866",
+          "duration_ms": 8454,
+          "status": "success",
+          "error_message": null,
+          "blob_count": 0,
+          "created_at": "2025-08-07T03:33:02.745Z"
+        },
+        {
+          "id": "4c5e4801-3bf5-4a0e-8af5-0e4330fc5450",
+          "timestamp": "2025-08-07T17:53:01.874Z",
+          "backup_type": "full",
+          "file_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/db-backup-2025-08-07T17-53-01-939Z",
+          "file_size": "2720045",
+          "duration_ms": 4526,
+          "status": "success",
+          "error_message": null,
+          "blob_count": 0,
+          "created_at": "2025-08-07T17:53:01.904Z"
+        },
+        {
+          "id": "5c582152-f5a5-41b2-9b28-bd1cac88da2b",
+          "timestamp": "2025-08-07T17:57:46.382Z",
+          "backup_type": "full",
+          "file_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/db-backup-2025-08-07T17-57-46-450Z",
+          "file_size": "5424029",
+          "duration_ms": 5260,
+          "status": "success",
+          "error_message": null,
+          "blob_count": 0,
+          "created_at": "2025-08-07T17:57:46.416Z"
+        },
+        {
+          "id": "52553884-4a17-4af9-a34a-90305399d2f0",
+          "timestamp": "2025-08-07T17:58:30.843Z",
+          "backup_type": "full",
+          "file_url": null,
+          "file_size": null,
+          "duration_ms": null,
+          "status": "failed",
+          "error_message": "Vercel Blob: Access denied, please provide a valid token for this resource.",
+          "blob_count": 0,
+          "created_at": "2025-08-07T17:58:30.682Z"
+        },
+        {
+          "id": "3770b7f3-4e93-4394-bb76-08b908af28fb",
+          "timestamp": "2025-08-07T17:58:59.118Z",
+          "backup_type": "full",
+          "file_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/db-backup-2025-08-07T17-58-59-180Z",
+          "file_size": "10832191",
+          "duration_ms": 5139,
+          "status": "success",
+          "error_message": null,
+          "blob_count": 0,
+          "created_at": "2025-08-07T17:58:59.148Z"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 10,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "gen_random_uuid()"
+          },
+          {
+            "column_name": "timestamp",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "now()"
+          },
+          {
+            "column_name": "backup_type",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "file_url",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "file_size",
+            "data_type": "bigint",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "duration_ms",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "status",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": "'pending'::character varying"
+          },
+          {
+            "column_name": "error_message",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "blob_count",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": "0"
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "now()"
+          }
+        ]
+      }
+    },
+    "backup_status": {
+      "tableName": "backup_status",
+      "currentCount": 1,
+      "backupCount": 1,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": 1,
+          "last_backup": "2025-08-13T06:49:25.918Z",
+          "last_backup_status": "success",
+          "next_scheduled_backup": null,
+          "backup_count": 7,
+          "total_backup_size": "8642348888880552",
+          "updated_at": "2025-08-13T06:49:41.508Z"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 7,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "integer",
+            "is_nullable": "NO",
+            "column_default": "1"
+          },
+          {
+            "column_name": "last_backup",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "last_backup_status",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "next_scheduled_backup",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "backup_count",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": "0"
+          },
+          {
+            "column_name": "total_backup_size",
+            "data_type": "bigint",
+            "is_nullable": "YES",
+            "column_default": "0"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "now()"
+          }
+        ]
+      }
+    },
+    "booster_clubs": {
+      "tableName": "booster_clubs",
+      "currentCount": 23,
+      "backupCount": 22,
+      "hasDifferences": true,
+      "missingData": false,
+      "extraData": true,
+      "differences": [
+        {
+          "type": "count_mismatch",
+          "current": 23,
+          "backup": 22,
+          "difference": 1
+        }
+      ],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "47d6a7c1-128d-4719-b002-ae34d9012619",
+          "name": "Eastlake Boys Soccer",
+          "description": "The Eastlake Boys Soccer Booster Club supports the boys' soccer program at Eastlake High School.",
+          "website_url": "http://eastlakewolvesboyssoccer.com/index.html",
+          "donation_url": "payment.html?club=Eastlake%20Boys%20Soccer%20Booster%20Club",
+          "is_active": true,
+          "created_at": "2025-08-06T00:22:53.983Z",
+          "updated_at": "2025-08-13T06:08:59.984Z",
+          "zelle_qr_code_path": "zelle-standardized\\eastlake-boys-soccer-zelle.png",
+          "stripe_donation_link": null,
+          "stripe_membership_link": null,
+          "stripe_fees_link": null,
+          "payment_instructions": null,
+          "is_payment_enabled": true,
+          "last_payment_update_by": "admin",
+          "last_payment_update_at": "2025-08-13T06:39:42.726Z",
+          "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIEJPWVMgU09DQ0VSIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiZWhzYm95c29jY2VyQG91dGxvb2suY29tIn0",
+          "qr_code_settings": {
+            "color": {
+              "dark": "#000000",
+              "light": "#FFFFFF"
+            },
+            "width": 640,
+            "margin": 2,
+            "errorCorrectionLevel": "M"
+          },
+          "stripe_url": null
+        },
+        {
+          "id": "1dcc6157-a3f6-46f3-a50f-23cde148b58b",
+          "name": "Eastlake Girls Basketball Booster Club",
+          "description": "The Eastlake Girls Basketball Booster Club is dedicated to supporting the girls' basketball program at Eastlake High School.",
+          "website_url": "https://www.goladywolves.com/",
+          "donation_url": "payment.html?club=Eastlake%20Girls%20Basketball%20Booster%20Club",
+          "is_active": true,
+          "created_at": "2025-08-06T00:22:53.811Z",
+          "updated_at": "2025-08-13T06:09:00.113Z",
+          "zelle_qr_code_path": null,
+          "stripe_donation_link": null,
+          "stripe_membership_link": null,
+          "stripe_fees_link": null,
+          "payment_instructions": null,
+          "is_payment_enabled": true,
+          "last_payment_update_by": "admin",
+          "last_payment_update_at": "2025-08-13T06:37:56.238Z",
+          "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgR0lSTFMgQkFTS0VUQkFMTCBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiJlYXN0bGFrZWxhZHl3b2x2ZXNAZ21haWwuY29tIn0",
+          "qr_code_settings": {
+            "color": {
+              "dark": "#000000",
+              "light": "#FFFFFF"
+            },
+            "width": 640,
+            "margin": 2,
+            "errorCorrectionLevel": "M"
+          },
+          "stripe_url": "https://www.goladywolves.com/page/show/8862343-it-s-2024-25-season-donate-now"
+        },
+        {
+          "id": "e30ef488-f120-48b2-9f92-bf1ab60a3ccd",
+          "name": "Eastlake Boys Golf Booster Club",
+          "description": "The Eastlake Boys Golf Booster Club supports the boys golf program at Eastlake High School.",
+          "website_url": "https://eastlakeboysgolf.org",
+          "donation_url": "payment.html?club=Eastlake%20Boys%20Golf%20Booster%20Club",
+          "is_active": true,
+          "created_at": "2025-08-12T19:53:19.880Z",
+          "updated_at": "2025-08-13T06:08:59.968Z",
+          "zelle_qr_code_path": "zelle-standardized\\eastlake-boys-golf-booster-club-zelle.png",
+          "stripe_donation_link": null,
+          "stripe_membership_link": null,
+          "stripe_fees_link": null,
+          "payment_instructions": null,
+          "is_payment_enabled": true,
+          "last_payment_update_by": "admin",
+          "last_payment_update_at": "2025-08-13T06:45:12.952Z",
+          "zelle_url": null,
+          "qr_code_settings": {
+            "color": {
+              "dark": "#000000",
+              "light": "#FFFFFF"
+            },
+            "width": 640,
+            "margin": 2,
+            "errorCorrectionLevel": "M"
+          },
+          "stripe_url": "http://www.ehsboysgolf.com/"
+        },
+        {
+          "id": "40595908-c00e-4d87-a79a-566aa4869715",
+          "name": "Eastlake Choir",
+          "description": "The Eastlake Choir Booster Club is committed to supporting the choir program at Eastlake High School.",
+          "website_url": "https://www.facebook.com/groups/1320268077989293/",
+          "donation_url": "payment.html?club=Eastlake%20Choir",
+          "is_active": true,
+          "created_at": "2025-08-06T00:22:53.842Z",
+          "updated_at": "2025-08-13T06:09:00.032Z",
+          "zelle_qr_code_path": "zelle-standardized\\eastlake-choir-zelle.png",
+          "stripe_donation_link": null,
+          "stripe_membership_link": null,
+          "stripe_fees_link": null,
+          "payment_instructions": null,
+          "is_payment_enabled": true,
+          "last_payment_update_by": "emergency-fix",
+          "last_payment_update_at": "2025-08-12T23:38:14.613Z",
+          "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQ0hPSVIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+          "qr_code_settings": {
+            "color": {
+              "dark": "#000000",
+              "light": "#FFFFFF"
+            },
+            "width": 640,
+            "margin": 2,
+            "errorCorrectionLevel": "M"
+          },
+          "stripe_url": null
+        },
+        {
+          "id": "40733b78-7d7c-44b8-a713-f5fbfb2ffefb",
+          "name": "Eastlake Fastpitch (Girls)",
+          "description": "The Eastlake Fastpitch Booster Club supports the girls' fastpitch softball program at Eastlake High School.",
+          "website_url": "https://www.ehsfastpitch.org/",
+          "donation_url": "payment.html?club=Eastlake%20Fastpitch%20(Girls)",
+          "is_active": true,
+          "created_at": "2025-08-06T00:22:53.889Z",
+          "updated_at": "2025-08-13T06:09:00.097Z",
+          "zelle_qr_code_path": null,
+          "stripe_donation_link": null,
+          "stripe_membership_link": null,
+          "stripe_fees_link": null,
+          "payment_instructions": null,
+          "is_payment_enabled": true,
+          "last_payment_update_by": "admin",
+          "last_payment_update_at": "2025-08-13T05:58:38.880Z",
+          "zelle_url": null,
+          "qr_code_settings": {
+            "color": {
+              "dark": "#000000",
+              "light": "#FFFFFF"
+            },
+            "width": 640,
+            "margin": 2,
+            "errorCorrectionLevel": "M"
+          },
+          "stripe_url": "https://www.ehsfastpitch.org/donations"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 19,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "uuid_generate_v4()"
+          },
+          {
+            "column_name": "name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "description",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "website_url",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "donation_url",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "is_active",
+            "data_type": "boolean",
+            "is_nullable": "YES",
+            "column_default": "true"
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "zelle_qr_code_path",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "stripe_donation_link",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "stripe_membership_link",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "stripe_fees_link",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "payment_instructions",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "is_payment_enabled",
+            "data_type": "boolean",
+            "is_nullable": "YES",
+            "column_default": "false"
+          },
+          {
+            "column_name": "last_payment_update_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "last_payment_update_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "zelle_url",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "qr_code_settings",
+            "data_type": "jsonb",
+            "is_nullable": "YES",
+            "column_default": "'{\"color\": {\"dark\": \"#000000\", \"light\": \"#FFFFFF\"}, \"width\": 640, \"margin\": 2, \"errorCorrectionLevel\": \"M\"}'::jsonb"
+          },
+          {
+            "column_name": "stripe_url",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "documents": {
+      "tableName": "documents",
+      "currentCount": 0,
+      "backupCount": 0,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [],
+      "schemaValidation": {
+        "columnCount": 10,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "gen_random_uuid()"
+          },
+          {
+            "column_name": "filename",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "original_name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "blob_url",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "file_size",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "mime_type",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "booster_club",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "uploaded_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "form_1099": {
+      "tableName": "form_1099",
+      "currentCount": 12,
+      "backupCount": 12,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "17aeb0ac-1d13-4a26-9ff0-cfdc942b5410",
+          "recipient_name": "Jim smith",
+          "recipient_tin": "231-322-1111",
+          "amount": "600.00",
+          "description": "test",
+          "submitted_by": "admin",
+          "tax_year": 2024,
+          "status": "pending",
+          "created_at": "2025-08-05T22:33:13.766Z",
+          "updated_at": "2025-08-06T02:09:27.294Z",
+          "w9_filename": "w9-1754433192899-StevenSmith.pdf",
+          "w9_blob_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/w9-1754433192899-StevenSmith.pdf",
+          "w9_file_size": 220037,
+          "w9_mime_type": "application/pdf",
+          "booster_club": "Eastlake Girls Soccer",
+          "club_id": null
+        },
+        {
+          "id": "427847f8-ee67-4d5e-b1c6-e5e39770457a",
+          "recipient_name": "James smith",
+          "recipient_tin": "555-55-5555",
+          "amount": "600.00",
+          "description": "Test of submission",
+          "submitted_by": "admin",
+          "tax_year": 2024,
+          "status": "pending",
+          "created_at": "2025-08-05T22:36:21.343Z",
+          "updated_at": "2025-08-06T02:09:32.659Z",
+          "w9_filename": "w9-1754433380469-StevenSmith.pdf",
+          "w9_blob_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/w9-1754433380469-StevenSmith.pdf",
+          "w9_file_size": 220037,
+          "w9_mime_type": "application/pdf",
+          "booster_club": "Eastlake Boys Swim & Dive Booster Club",
+          "club_id": null
+        },
+        {
+          "id": "f9be3e93-b19a-492f-84d0-7e8d5fb94852",
+          "recipient_name": "Andrew Smith",
+          "recipient_tin": "350-55-5217",
+          "amount": "50.00",
+          "description": "test",
+          "submitted_by": "admin",
+          "tax_year": 2024,
+          "status": "pending",
+          "created_at": "2025-08-05T22:40:17.628Z",
+          "updated_at": "2025-08-06T02:09:38.063Z",
+          "w9_filename": "w9-1754433616026-StevenSmith.pdf",
+          "w9_blob_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/w9-1754433616026-StevenSmith.pdf",
+          "w9_file_size": 220037,
+          "w9_mime_type": "application/pdf",
+          "booster_club": "EHS Orchestra Boosters Club",
+          "club_id": null
+        },
+        {
+          "id": "4965190c-b2aa-4d76-b7b1-5ebef02a0779",
+          "recipient_name": "Test Vendor 2",
+          "recipient_tin": "987-65-4321",
+          "amount": "250.00",
+          "description": "Test service 2",
+          "submitted_by": "admin",
+          "tax_year": 2024,
+          "status": "acknowledged",
+          "created_at": "2025-08-05T21:42:28.447Z",
+          "updated_at": "2025-08-06T02:09:49.421Z",
+          "w9_filename": "test2.pdf",
+          "w9_blob_url": "https://test.com/test2.pdf",
+          "w9_file_size": 2048,
+          "w9_mime_type": "application/pdf",
+          "booster_club": "Eastlake Boys Golf Booster Club",
+          "club_id": null
+        },
+        {
+          "id": "45e08cfa-5453-495e-aafe-e645cec01b18",
+          "recipient_name": "Steven smith",
+          "recipient_tin": "555-55-5555",
+          "amount": "100.00",
+          "description": "Consulting",
+          "submitted_by": "admin",
+          "tax_year": 2024,
+          "status": "submitted_to_irs",
+          "created_at": "2025-08-05T22:20:21.013Z",
+          "updated_at": "2025-08-06T02:09:51.782Z",
+          "w9_filename": "w9-1754432419458-StevenSmith.pdf",
+          "w9_blob_url": "https://kre9xoivjggj03of.public.blob.vercel-storage.com/w9-1754432419458-StevenSmith.pdf",
+          "w9_file_size": 220037,
+          "w9_mime_type": "application/pdf",
+          "booster_club": "Eastlake Girls Soccer",
+          "club_id": null
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 16,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "gen_random_uuid()"
+          },
+          {
+            "column_name": "recipient_name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "recipient_tin",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "amount",
+            "data_type": "numeric",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "description",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "submitted_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "tax_year",
+            "data_type": "integer",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "status",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": "'pending'::character varying"
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "w9_filename",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "w9_blob_url",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "w9_file_size",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "w9_mime_type",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "booster_club",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "insurance_forms": {
+      "tableName": "insurance_forms",
+      "currentCount": 2,
+      "backupCount": 2,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "7467e6eb-d388-4a79-8523-16957f9f61b3",
+          "event_name": "Test Event",
+          "event_date": "2024-12-25T08:00:00.000Z",
+          "event_description": "Test description",
+          "participant_count": 10,
+          "submitted_by": "admin",
+          "status": "pending",
+          "created_at": "2025-08-12T18:40:47.131Z",
+          "updated_at": "2025-08-12T18:40:47.131Z",
+          "club_id": "5c5d9238-dc96-4ad0-b6fe-6282b06573bc"
+        },
+        {
+          "id": "9fa1d9e5-ac65-4f17-a1a3-9bff46bca3b6",
+          "event_name": "Test Event",
+          "event_date": "2024-12-25T08:00:00.000Z",
+          "event_description": "Test insurance event",
+          "participant_count": 50,
+          "submitted_by": "admin",
+          "status": "pending",
+          "created_at": "2025-08-12T20:19:32.481Z",
+          "updated_at": "2025-08-12T20:19:32.481Z",
+          "club_id": null
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 10,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "gen_random_uuid()"
+          },
+          {
+            "column_name": "event_name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "event_date",
+            "data_type": "date",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "event_description",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "participant_count",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "submitted_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "status",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": "'pending'::character varying"
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "links": {
+      "tableName": "links",
+      "currentCount": 8,
+      "backupCount": 8,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "841b1fc9-da42-41ef-bfca-9b4dbfaf880b",
+          "title": "Eastlake Athletics",
+          "url": "https://www.lwsd.org/schools/eastlake/athletics",
+          "category": "athletics",
+          "order_index": 1,
+          "is_visible": true,
+          "click_count": 0,
+          "created_by": "admin",
+          "created_at": "2025-08-12T18:55:51.998Z",
+          "updated_at": "2025-08-12T18:55:51.998Z"
+        },
+        {
+          "id": "1a3d20fd-eab1-4622-a1b0-66eabae49fd7",
+          "title": "LWSD Athletics",
+          "url": "https://www.lwsd.org/athletics",
+          "category": "athletics",
+          "order_index": 2,
+          "is_visible": true,
+          "click_count": 0,
+          "created_by": "admin",
+          "created_at": "2025-08-12T18:55:52.131Z",
+          "updated_at": "2025-08-12T18:55:52.131Z"
+        },
+        {
+          "id": "9908875b-3a2e-4409-b077-1335f4a96d4c",
+          "title": "Booster Club Guidelines",
+          "url": "https://www.lwsd.org/athletics/booster-clubs",
+          "category": "booster",
+          "order_index": 3,
+          "is_visible": true,
+          "click_count": 0,
+          "created_by": "admin",
+          "created_at": "2025-08-12T18:55:52.254Z",
+          "updated_at": "2025-08-12T18:55:52.254Z"
+        },
+        {
+          "id": "d7739d9f-0416-4dd8-8c6e-b7c0cf93a9b7",
+          "title": "Eastlake High School",
+          "url": "https://www.lwsd.org/schools/eastlake",
+          "category": "community",
+          "order_index": 4,
+          "is_visible": true,
+          "click_count": 0,
+          "created_by": "admin",
+          "created_at": "2025-08-12T18:55:52.382Z",
+          "updated_at": "2025-08-12T18:55:52.382Z"
+        },
+        {
+          "id": "f7245e42-42a1-4e6f-aadd-44909038e912",
+          "title": "WIAA",
+          "url": "https://www.wiaa.com",
+          "category": "athletics",
+          "order_index": 6,
+          "is_visible": true,
+          "click_count": 0,
+          "created_by": "admin",
+          "created_at": "2025-08-12T18:55:52.626Z",
+          "updated_at": "2025-08-12T18:55:52.626Z"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 10,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "uuid_generate_v4()"
+          },
+          {
+            "column_name": "title",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "url",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "category",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": "'other'::character varying"
+          },
+          {
+            "column_name": "order_index",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": "0"
+          },
+          {
+            "column_name": "is_visible",
+            "data_type": "boolean",
+            "is_nullable": "YES",
+            "column_default": "true"
+          },
+          {
+            "column_name": "click_count",
+            "data_type": "integer",
+            "is_nullable": "YES",
+            "column_default": "0"
+          },
+          {
+            "column_name": "created_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          }
+        ]
+      }
+    },
+    "news": {
+      "tableName": "news",
+      "currentCount": 2,
+      "backupCount": 2,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "f5e30feb-48fd-45af-8436-b61ee56828d0",
+          "title": "Updated Test News Article",
+          "content": "This is the updated content for the test news article.",
+          "slug": "test-news-article",
+          "status": "published",
+          "published_at": null,
+          "created_by": "admin",
+          "created_at": "2025-08-12T18:33:48.021Z",
+          "updated_at": "2025-08-12T18:33:53.027Z"
+        },
+        {
+          "id": "fc44df78-1ca1-45f1-8643-ce64d5db3979",
+          "title": "New Announcement",
+          "content": "This is a test",
+          "slug": "new-announcement",
+          "status": "published",
+          "published_at": null,
+          "created_by": "admin",
+          "created_at": "2025-08-13T03:31:55.498Z",
+          "updated_at": "2025-08-13T03:31:55.498Z"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 9,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "uuid_generate_v4()"
+          },
+          {
+            "column_name": "title",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "content",
+            "data_type": "text",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "slug",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "status",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": "'draft'::character varying"
+          },
+          {
+            "column_name": "published_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "created_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          }
+        ]
+      }
+    },
+    "officers": {
+      "tableName": "officers",
+      "currentCount": 6,
+      "backupCount": 6,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "231340ba-03bc-481a-8d78-b02edf55f1c4",
+          "name": "Sara Goldie",
+          "position": "Athletic Director",
+          "email": "sgoldie@lwsd.org",
+          "phone": "000-000-0000",
+          "club": "ewa",
+          "club_name": "EWA Eastlake Wolfpack Association",
+          "created_at": "2025-08-05T19:59:15.788Z",
+          "updated_at": "2025-08-12T22:52:18.284Z",
+          "club_id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740"
+        },
+        {
+          "id": "c5238559-9ca5-4078-a156-4542217a855d",
+          "name": "Todd Johnson",
+          "position": "Concessions / Merch",
+          "email": "todd.johnson@marzogroup.com",
+          "phone": "000-000-0000",
+          "club": "ewa",
+          "club_name": "EWA Eastlake Wolfpack Association",
+          "created_at": "2025-08-05T19:59:15.855Z",
+          "updated_at": "2025-08-12T22:52:18.284Z",
+          "club_id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740"
+        },
+        {
+          "id": "74148ccb-b5d4-41cb-8e3e-6b2bdc33827d",
+          "name": "Baxter Kent",
+          "position": "Secretary",
+          "email": "ewasecretary1@gmail.com",
+          "phone": "000-000-5555",
+          "club": "ewa",
+          "club_name": "EWA Eastlake Wolfpack Association",
+          "created_at": "2025-08-05T19:59:15.804Z",
+          "updated_at": "2025-08-12T22:52:18.284Z",
+          "club_id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740"
+        },
+        {
+          "id": "cbe34395-c4da-4480-82ab-e04ea0ad1d26",
+          "name": "Shirley Brill",
+          "position": "Treasurer",
+          "email": "ewatreasurer@gmail.com",
+          "phone": "510-828-5131",
+          "club": "ewa",
+          "club_name": "EWA Eastlake Wolfpack Association",
+          "created_at": "2025-08-05T19:59:15.821Z",
+          "updated_at": "2025-08-12T22:52:18.284Z",
+          "club_id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740"
+        },
+        {
+          "id": "9f054768-48c7-4326-b5b6-b6a9cd09c0f3",
+          "name": "Andrew Brill",
+          "position": "Vice President / Insurance",
+          "email": "ewavpinsurance@gmail.com",
+          "phone": "415-637-8623",
+          "club": "ewa",
+          "club_name": "EWA Eastlake Wolfpack Association",
+          "created_at": "2025-08-05T19:59:15.838Z",
+          "updated_at": "2025-08-12T22:52:18.284Z",
+          "club_id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 10,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "gen_random_uuid()"
+          },
+          {
+            "column_name": "name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "position",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "email",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "phone",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "club",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "club_name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "payment_audit_log": {
+      "tableName": "payment_audit_log",
+      "currentCount": 47,
+      "backupCount": 35,
+      "hasDifferences": true,
+      "missingData": false,
+      "extraData": true,
+      "differences": [
+        {
+          "type": "count_mismatch",
+          "current": 47,
+          "backup": 35,
+          "difference": 12
+        }
+      ],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "fca843da-fcb6-4bb4-84a3-0916a51944e6",
+          "club_id": "5c5d9238-dc96-4ad0-b6fe-6282b06573bc",
+          "action": "update",
+          "field_name": "zelle_qr_code_path",
+          "old_value": null,
+          "new_value": "zelle-standardized\\ehs-band-boosters-zelle.png",
+          "changed_by": "system",
+          "changed_at": "2025-08-12T20:25:47.443Z",
+          "ip_address": "::1",
+          "user_agent": "pgbouncer"
+        },
+        {
+          "id": "330e56fa-e68e-4a6a-9e01-5c3061275a9f",
+          "club_id": "a79fec5c-ffbc-4fd2-832f-ddf09019d392",
+          "action": "update",
+          "field_name": "zelle_qr_code_path",
+          "old_value": null,
+          "new_value": "zelle-standardized\\ehs-deca-booster-club-zelle.png",
+          "changed_by": "system",
+          "changed_at": "2025-08-12T20:25:47.518Z",
+          "ip_address": "::1",
+          "user_agent": "pgbouncer"
+        },
+        {
+          "id": "da42c52b-c940-4551-9338-97c16db06ae7",
+          "club_id": "05d21d4b-4149-4b7f-9e20-dfa3864f60dd",
+          "action": "update",
+          "field_name": "zelle_qr_code_path",
+          "old_value": null,
+          "new_value": "zelle-standardized\\ehs-orchestra-boosters-club-zelle.png",
+          "changed_by": "system",
+          "changed_at": "2025-08-12T20:25:47.571Z",
+          "ip_address": "::1",
+          "user_agent": "pgbouncer"
+        },
+        {
+          "id": "2f096113-4fc1-41bd-801e-3245578682c9",
+          "club_id": "6e69b02b-e467-4879-a7ba-16429e651a53",
+          "action": "update",
+          "field_name": "zelle_qr_code_path",
+          "old_value": null,
+          "new_value": "zelle-standardized\\ehs-track-and-field-booster-club-zelle.png",
+          "changed_by": "system",
+          "changed_at": "2025-08-12T20:25:47.625Z",
+          "ip_address": "::1",
+          "user_agent": "pgbouncer"
+        },
+        {
+          "id": "a54d74e8-cd66-4d59-bf04-7c564a393e6d",
+          "club_id": "5b09a2d8-a942-473d-9270-49f13c1b36c3",
+          "action": "update",
+          "field_name": "zelle_qr_code_path",
+          "old_value": null,
+          "new_value": "zelle-standardized\\ehs-wrestling-booster-club-zelle.png",
+          "changed_by": "system",
+          "changed_at": "2025-08-12T20:25:47.677Z",
+          "ip_address": "::1",
+          "user_agent": "pgbouncer"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 10,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "gen_random_uuid()"
+          },
+          {
+            "column_name": "club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "action",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "field_name",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "old_value",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "new_value",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "changed_by",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "changed_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "ip_address",
+            "data_type": "inet",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "user_agent",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "test_table": {
+      "tableName": "test_table",
+      "currentCount": 0,
+      "backupCount": 0,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [],
+      "schemaValidation": {
+        "columnCount": 2,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "integer",
+            "is_nullable": "NO",
+            "column_default": "nextval('test_table_id_seq'::regclass)"
+          },
+          {
+            "column_name": "name",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "users": {
+      "tableName": "users",
+      "currentCount": 2,
+      "backupCount": 2,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "username": "admin",
+          "password": "ewa2025",
+          "role": "admin",
+          "club": "",
+          "club_name": "",
+          "is_locked": false,
+          "is_first_login": null,
+          "created_at": "2025-08-05T19:57:55.247Z",
+          "last_login": "2025-08-13T07:08:24.087Z",
+          "updated_at": "2025-08-13T07:08:24.255Z",
+          "club_id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740",
+          "secret_question": null,
+          "secret_answer": null
+        },
+        {
+          "username": "orchestra_booster",
+          "password": "ewa2025",
+          "role": "booster",
+          "club": "orchestra",
+          "club_name": "Eastlake Orchestra Booster Club",
+          "is_locked": false,
+          "is_first_login": null,
+          "created_at": "2025-08-05T19:57:55.265Z",
+          "last_login": "2025-08-12T09:17:44.501Z",
+          "updated_at": "2025-08-12T09:17:44.536Z",
+          "club_id": "05d21d4b-4149-4b7f-9e20-dfa3864f60dd",
+          "secret_question": "Favorite Food",
+          "secret_answer": "Pizza"
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 13,
+        "columns": [
+          {
+            "column_name": "username",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "password",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "role",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": "'user'::character varying"
+          },
+          {
+            "column_name": "club",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "club_name",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "is_locked",
+            "data_type": "boolean",
+            "is_nullable": "YES",
+            "column_default": "false"
+          },
+          {
+            "column_name": "is_first_login",
+            "data_type": "boolean",
+            "is_nullable": "YES",
+            "column_default": "true"
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "last_login",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "secret_question",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "secret_answer",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    },
+    "volunteers": {
+      "tableName": "volunteers",
+      "currentCount": 1,
+      "backupCount": 1,
+      "hasDifferences": false,
+      "missingData": false,
+      "extraData": false,
+      "differences": [],
+      "criticalIssues": [],
+      "sampleData": [
+        {
+          "id": "2d46d795-1db1-440c-a0aa-12f9b7150edf",
+          "name": "Test Volunteer",
+          "email": "test@example.com",
+          "phone": "555-1234",
+          "club": "EWA Eastlake Wolfpack Association",
+          "club_name": "EWA Eastlake Wolfpack Association",
+          "interests": "Test Child",
+          "availability": "",
+          "status": "approved",
+          "created_at": "2025-08-12T05:24:45.189Z",
+          "updated_at": "2025-08-12T08:39:16.946Z",
+          "notes": null,
+          "assigned_club_id": null
+        }
+      ],
+      "schemaValidation": {
+        "columnCount": 13,
+        "columns": [
+          {
+            "column_name": "id",
+            "data_type": "uuid",
+            "is_nullable": "NO",
+            "column_default": "uuid_generate_v4()"
+          },
+          {
+            "column_name": "name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "email",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "phone",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "club",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "club_name",
+            "data_type": "character varying",
+            "is_nullable": "NO",
+            "column_default": null
+          },
+          {
+            "column_name": "interests",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "availability",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "status",
+            "data_type": "character varying",
+            "is_nullable": "YES",
+            "column_default": "'pending'::character varying"
+          },
+          {
+            "column_name": "created_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "updated_at",
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "column_name": "notes",
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          {
+            "column_name": "assigned_club_id",
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+        ]
+      }
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "MEDIUM",
+      "message": "2 tables have additional data not in backup",
+      "action": "Verify new data is intentional and consider creating new backup"
+    }
+  ]
+}

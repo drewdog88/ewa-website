@@ -1,0 +1,91 @@
+EWA WEBSITE BACKUP VALIDATION REPORT
+=====================================
+
+Validation Date: 2025-08-13T07:10:30.464Z
+Backup Date: 2025-08-13T06:49:25.918Z
+
+EXECUTIVE SUMMARY
+=================
+Total Tables Analyzed: 13
+Tables with Differences: 2
+Tables with Missing Data: 0
+Tables with Extra Data: 2
+Critical Issues: 0
+
+DETAILED RESULTS
+================
+
+Table: backup_metadata
+  Current Count: 8
+  Backup Count: 8
+  Status: ✅ MATCHES
+
+Table: backup_status
+  Current Count: 1
+  Backup Count: 1
+  Status: ✅ MATCHES
+
+Table: booster_clubs
+  Current Count: 23
+  Backup Count: 22
+  Status: ⚠️  DIFFERENCES FOUND
+  Issues:
+    - count_mismatch: +1 records
+
+Table: documents
+  Current Count: 0
+  Backup Count: 0
+  Status: ✅ MATCHES
+
+Table: form_1099
+  Current Count: 12
+  Backup Count: 12
+  Status: ✅ MATCHES
+
+Table: insurance_forms
+  Current Count: 2
+  Backup Count: 2
+  Status: ✅ MATCHES
+
+Table: links
+  Current Count: 8
+  Backup Count: 8
+  Status: ✅ MATCHES
+
+Table: news
+  Current Count: 2
+  Backup Count: 2
+  Status: ✅ MATCHES
+
+Table: officers
+  Current Count: 6
+  Backup Count: 6
+  Status: ✅ MATCHES
+
+Table: payment_audit_log
+  Current Count: 47
+  Backup Count: 35
+  Status: ⚠️  DIFFERENCES FOUND
+  Issues:
+    - count_mismatch: +12 records
+
+Table: test_table
+  Current Count: 0
+  Backup Count: 0
+  Status: ✅ MATCHES
+
+Table: users
+  Current Count: 2
+  Backup Count: 2
+  Status: ✅ MATCHES
+
+Table: volunteers
+  Current Count: 1
+  Backup Count: 1
+  Status: ✅ MATCHES
+
+RECOMMENDATIONS
+===============
+[MEDIUM] 2 tables have additional data not in backup
+    Action: Verify new data is intentional and consider creating new backup
+

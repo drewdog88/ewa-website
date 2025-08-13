@@ -2,7 +2,6 @@ const { Pool } = require('pg');
 const { put, del, list } = require('@vercel/blob');
 const cron = require('node-cron');
 const archiver = require('archiver');
-// const { Readable } = require('stream'); // Unused - can be removed in future cleanup
 
 class ServerlessBackupManager {
   constructor() {
@@ -116,75 +115,103 @@ class ServerlessBackupManager {
     const backupId = `db-backup-${timestamp.replace(/[:.]/g, '-')}`;
         
     try {
-      console.log('📊 Creating database backup...');
+      console.log('📊 Creating database backup with transaction isolation...');
             
-      // Get all tables
-      const tablesResult = await this.dbPool.query(`
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_type = 'BASE TABLE'
-                ORDER BY table_name
-            `);
+      // Use a client with transaction isolation to ensure data consistency
+      const client = await this.dbPool.connect();
+      
+      try {
+        // Start transaction with SERIALIZABLE isolation level for maximum consistency
+        await client.query('BEGIN');
+        
+        // Set transaction isolation level to ensure we get a consistent snapshot
+        await client.query('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+        
+        // Get all tables within the transaction
+        const tablesResult = await client.query(`
+          SELECT table_name 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_type = 'BASE TABLE'
+          ORDER BY table_name
+        `);
 
-      let backupContent = '-- EWA Website Database Backup\n';
-      backupContent += `-- Created: ${timestamp}\n`;
-      backupContent += `-- Database: ${process.env.DATABASE_URL?.split('/').pop()?.split('?')[0]}\n\n`;
+        let backupContent = '-- EWA Website Database Backup (Transaction-Isolated)\n';
+        backupContent += `-- Created: ${timestamp}\n`;
+        backupContent += `-- Database: ${process.env.DATABASE_URL?.split('/').pop()?.split('?')[0]}\n`;
+        backupContent += `-- Isolation Level: SERIALIZABLE\n\n`;
 
-      // Backup each table
-      for (const table of tablesResult.rows) {
-        const tableName = table.table_name;
+        // Backup each table within the same transaction
+        for (const table of tablesResult.rows) {
+          const tableName = table.table_name;
+          console.log(`   Backing up table: ${tableName}`);
                 
-        // Get table schema
-        const schemaResult = await this.dbPool.query(`
-                    SELECT column_name, data_type, is_nullable, column_default
-                    FROM information_schema.columns 
-                    WHERE table_name = $1 
-                    ORDER BY ordinal_position
-                `, [tableName]);
+          // Get table schema within transaction
+          const schemaResult = await client.query(`
+            SELECT column_name, data_type, is_nullable, column_default
+            FROM information_schema.columns 
+            WHERE table_name = $1 
+            ORDER BY ordinal_position
+          `, [tableName]);
 
-        backupContent += `-- Table: ${tableName}\n`;
-        backupContent += `DROP TABLE IF EXISTS "${tableName}" CASCADE;\n`;
-        backupContent += `CREATE TABLE "${tableName}" (\n`;
+          backupContent += `-- Table: ${tableName}\n`;
+          backupContent += `DROP TABLE IF EXISTS "${tableName}" CASCADE;\n`;
+          backupContent += `CREATE TABLE "${tableName}" (\n`;
                 
-        const columns = schemaResult.rows.map(col => {
-          let def = `"${col.column_name}" ${col.data_type}`;
-          if (col.is_nullable === 'NO') def += ' NOT NULL';
-          if (col.column_default) def += ` DEFAULT ${col.column_default}`;
-          return def;
-        });
+          const columns = schemaResult.rows.map(col => {
+            let def = `"${col.column_name}" ${col.data_type}`;
+            if (col.is_nullable === 'NO') def += ' NOT NULL';
+            if (col.column_default) def += ` DEFAULT ${col.column_default}`;
+            return def;
+          });
                 
-        backupContent += columns.join(',\n  ') + '\n);\n\n';
+          backupContent += columns.join(',\n  ') + '\n);\n\n';
 
-        // Get table data
-        const dataResult = await this.dbPool.query(`SELECT * FROM "${tableName}"`);
-        if (dataResult.rows.length > 0) {
-          backupContent += `-- Data for table: ${tableName}\n`;
-          for (const row of dataResult.rows) {
-            const values = Object.values(row).map(val => {
-              if (val === null) return 'NULL';
-              if (typeof val === 'string') return `'${val.replace(/'/g, '\'\'')}'`;
-              if (typeof val === 'object') return `'${JSON.stringify(val).replace(/'/g, '\'\'')}'`;
-              return val;
-            });
-            backupContent += `INSERT INTO "${tableName}" VALUES (${values.join(', ')});\n`;
+          // Get table data within the same transaction
+          const dataResult = await client.query(`SELECT * FROM "${tableName}"`);
+          console.log(`     Found ${dataResult.rows.length} rows in ${tableName}`);
+          
+          if (dataResult.rows.length > 0) {
+            backupContent += `-- Data for table: ${tableName}\n`;
+            for (const row of dataResult.rows) {
+              const values = Object.values(row).map(val => {
+                if (val === null) return 'NULL';
+                if (typeof val === 'string') return `'${val.replace(/'/g, '\'\'')}'`;
+                if (typeof val === 'object') return `'${JSON.stringify(val).replace(/'/g, '\'\'')}'`;
+                return val;
+              });
+              backupContent += `INSERT INTO "${tableName}" VALUES (${values.join(', ')});\n`;
+            }
+            backupContent += '\n';
           }
-          backupContent += '\n';
         }
+
+        // Commit the transaction to ensure all data is captured consistently
+        await client.query('COMMIT');
+        console.log('   ✅ Transaction committed - backup data captured consistently');
+
+        // Upload to blob storage
+        const blob = await put(backupId, backupContent, {
+          access: 'public',
+          addRandomSuffix: false
+        });
+
+        return {
+          type: 'database',
+          file: blob.url,
+          size: Buffer.byteLength(backupContent, 'utf8'),
+          timestamp: timestamp
+        };
+        
+      } catch (error) {
+        // Rollback transaction on error
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        // Always release the client back to the pool
+        client.release();
       }
-
-      // Upload to blob storage
-      const blob = await put(backupId, backupContent, {
-        access: 'public',
-        addRandomSuffix: false
-      });
-
-      return {
-        type: 'database',
-        file: blob.url,
-        size: Buffer.byteLength(backupContent, 'utf8'),
-        timestamp: timestamp
-      };
+      
     } catch (error) {
       console.error('Error creating database backup:', error);
       throw error;
@@ -263,7 +290,7 @@ class ServerlessBackupManager {
     const timestamp = new Date().toISOString();
         
     try {
-      console.log('🚀 Starting full backup...');
+      console.log('🚀 Starting full backup with transaction isolation...');
             
       // Create backup metadata record
       const backupResult = await this.dbPool.query(`
@@ -297,7 +324,7 @@ class ServerlessBackupManager {
       this.backupStatus.totalBackupSize += totalSize;
       await this.saveBackupStatus();
 
-      console.log('✅ Full backup completed successfully');
+      console.log('✅ Full backup completed successfully with transaction isolation');
             
       return {
         success: true,
