@@ -167,13 +167,14 @@
         </div>
     </div>
 
-    <script src="../assets/user-session.js"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            
+            console.log('Attempting login with:', username, password);
             
             // Submit login to server
             fetch('/api/login', {
@@ -183,11 +184,17 @@
                 },
                 body: JSON.stringify({ username, password })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
-                    // Use the session manager to set user data
-                    userSession.setUser(data.user);
+                    // Simple session storage without external dependency
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    sessionStorage.setItem('loginTime', new Date().getTime().toString());
+                    
                     showMessage('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
