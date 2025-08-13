@@ -34,8 +34,12 @@ module.exports = async (req, res) => {
     // Get payment status statistics
     const sql = getSql();
     
-    // Get total clubs (all clubs, regardless of active status)
-    const totalClubs = await sql`SELECT COUNT(*) as count FROM booster_clubs`;
+    // Get total clubs
+    const totalClubs = await sql`
+      SELECT COUNT(*) as count
+      FROM booster_clubs 
+      WHERE is_active = true
+    `;
     
     // Get clubs with Zelle URLs (regardless of is_active)
     const clubsWithZelle = await sql`
