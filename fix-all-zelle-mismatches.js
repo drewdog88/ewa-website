@@ -66,7 +66,7 @@ async function fixAllZelleMismatches() {
       { dbName: 'EHS Orchestra Boosters Club', docxName: 'EHS ORCHESTRA BOOSTER CLUB' },
       { dbName: 'EHS Track and Field Booster Club', docxName: 'EASTLAKE TRACK AND FIELD BOOSTER CLUB' },
       { dbName: 'EHS Wrestling Booster Club', docxName: 'EHS WRESTLING BOOSTER CLUB' },
-      { dbName: 'EWA Eastlake Wolfpack Association', docxName: 'The Eastlake Wolfpack Association' },
+              { dbName: 'Eastlake Wolfpack Association', docxName: 'The Eastlake Wolfpack Association' },
       { dbName: 'Eastlake Baseball Club', docxName: 'EASTLAKE BASEBALL CLUB' },
       { dbName: 'Eastlake Boys Basketball Booster Club', docxName: 'EASTLAKE GIRLS BASKETBALL BOOSTER CLUB' },
       { dbName: 'Eastlake Boys Soccer', docxName: 'EHS BOYS SOCCER' },

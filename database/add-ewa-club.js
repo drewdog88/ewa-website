@@ -2,7 +2,7 @@ require('dotenv').config({ path: '.env.local' });
 const { neon } = require('@neondatabase/serverless');
 
 async function addEWAClub() {
-  console.log('🔄 Adding EWA Eastlake Wolfpack Association to booster clubs');
+  console.log('🔄 Adding Eastlake Wolfpack Association to booster clubs');
   console.log('📝 This will add EWA as a booster club and update EWA admin officers');
     
   const sql = neon(process.env.DATABASE_URL);
@@ -10,11 +10,11 @@ async function addEWAClub() {
   try {
     console.log('✅ Connected to database');
         
-    // Step 1: Add EWA Eastlake Wolfpack Association to booster_clubs
-    console.log('\n📋 Step 1: Adding EWA Eastlake Wolfpack Association to booster clubs...');
+    // Step 1: Add Eastlake Wolfpack Association to booster_clubs
+    console.log('\n📋 Step 1: Adding Eastlake Wolfpack Association to booster clubs...');
         
     const ewaClub = {
-      name: 'EWA Eastlake Wolfpack Association',
+              name: 'Eastlake Wolfpack Association',
       description: 'The main Eastlake Wolfpack Association organization that coordinates all booster clubs and activities.',
       website_url: 'https://ewa-website.vercel.app',
       donation_url: 'https://ewa-website.vercel.app/payment.html'
@@ -28,9 +28,9 @@ async function addEWAClub() {
         `;
         
     if (result.length > 0) {
-      console.log(`   ✅ Added EWA Eastlake Wolfpack Association with ID: ${result[0].id}`);
+              console.log(`   ✅ Added Eastlake Wolfpack Association with ID: ${result[0].id}`);
     } else {
-      console.log('   ℹ️ EWA Eastlake Wolfpack Association already exists');
+              console.log('   ℹ️ Eastlake Wolfpack Association already exists');
     }
         
     // Step 2: Get the EWA club ID
@@ -57,7 +57,7 @@ async function addEWAClub() {
                 WHERE name = ${officerName} 
                 AND club = 'ewa'
             `;
-      console.log(`   ✅ Updated ${officerName} to be associated with EWA Eastlake Wolfpack Association`);
+              console.log(`   ✅ Updated ${officerName} to be associated with Eastlake Wolfpack Association`);
     }
         
     // Step 4: Update admin user to be associated with EWA club
@@ -69,7 +69,7 @@ async function addEWAClub() {
             WHERE username = 'admin' 
             AND club = ''
         `;
-    console.log('   ✅ Updated admin user to be associated with EWA Eastlake Wolfpack Association');
+            console.log('   ✅ Updated admin user to be associated with Eastlake Wolfpack Association');
         
     // Step 5: Verify the changes
     console.log('\n🔍 Step 5: Verifying changes...');
@@ -98,7 +98,7 @@ async function addEWAClub() {
     const totalClubs = await sql`SELECT COUNT(*) as count FROM booster_clubs`;
     console.log(`\n📊 Total booster clubs: ${totalClubs[0].count}`);
         
-    console.log('\n🎉 EWA Eastlake Wolfpack Association successfully added!');
+    console.log('\n🎉 Eastlake Wolfpack Association successfully added!');
     console.log('📝 EWA admin officers and admin user are now properly associated with the EWA club.');
     console.log('🌐 Ready to add EWA to the main page for donations.');
         
