@@ -41,7 +41,7 @@ This checklist covers comprehensive testing of the payment system enhancement, i
   - [ ] Eastlake Robotics Club (has Zelle URL)
   - [ ] EHS Wrestling Booster Club (has Zelle URL)
   - [ ] Eastlake Baseball Club (has Zelle URL)
-  - [ ] EWA Eastlake Wolfpack Association (has Zelle URL)
+  - [ ] Eastlake Wolfpack Association (has Zelle URL)
 
 - [ ] **Test with clubs that DON'T have Zelle URLs:**
   - [ ] Eastlake Fastpitch (Girls) - should show "This club does not use Zelle, Contact your Booster Club for more details."

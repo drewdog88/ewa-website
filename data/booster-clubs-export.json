@@ -54,7 +54,7 @@
     },
     {
       "id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740",
-      "name": "EWA Eastlake Wolfpack Association",
+      "name": "Eastlake Wolfpack Association",
       "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiVEhFIEVBU1RMQUtFIFdPTEZQQUNLIEFTU09DSUFUSU9OIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
       "stripe_url": null,
       "is_payment_enabled": true,
