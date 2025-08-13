@@ -1653,11 +1653,82 @@
             "testStrategy": "Have an admin complete tasks using only videos/GIFs to validate clarity. Run a broken-link and spell check. Final sign-off from product and support leads."
           }
         ]
+      },
+      {
+        "id": 16,
+        "title": "Fix and Debug Admin Payment Link Management (Zelle & Stripe)",
+        "description": "Investigate and resolve issues with the admin dashboard's payment link management, ensuring Zelle links update correctly and Stripe links can be created, edited, and saved as intended.",
+        "details": "1. Review the admin dashboard payment management UI code to identify why Zelle link updates are failing and Stripe links remain null after attempted updates. \n2. Confirm that the frontend form correctly populates fields from the database and sends updates for all payment link types (Zelle, Stripe Donation, Stripe Membership, Stripe Fees) via the appropriate API endpoints.\n3. Debug the backend update logic: verify that the API endpoint handling payment link updates receives, validates, and persists all fields, including Stripe links, to the database. Check for missing or incorrect field mappings, validation errors, or silent failures.\n4. Ensure that the database schema matches the expected fields and that the ORM (e.g., Prisma) is correctly configured to handle nullable and optional fields for Stripe links.\n5. Add or improve error handling and user feedback in the admin UI for failed updates, including validation errors and backend failures.\n6. Test with valid and invalid Stripe URLs (e.g., buy.stripe.com, donate.stripe.com) and ensure only valid links are accepted, following the allowlist defined in environment configuration.\n7. Update or add audit logging for all payment link changes, including before/after values and actor information.\n8. Refactor or add unit/integration tests for both frontend and backend to cover all update scenarios, including edge cases (null, empty, invalid URLs).",
+        "testStrategy": "- Manual regression test: In the admin dashboard, update Zelle and Stripe links for a test club and verify changes persist and display correctly after reload.\n- Attempt to save invalid or empty Stripe links and confirm validation errors are shown and no changes are saved.\n- Check the database directly to ensure updates are reflected as expected, including audit trail entries.\n- Automated tests: Add/extend unit and integration tests for the update endpoint and frontend form logic, covering all link types and error cases.\n- Confirm that audit logs are created for each update and that error messages are clear to the admin user.",
+        "status": "pending",
+        "dependencies": [
+          2,
+          8,
+          10
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Audit and Debug Admin Dashboard UI for Payment Link Updates",
+            "description": "Review the admin dashboard payment management UI code to identify why Zelle link updates are failing and Stripe links remain null after attempted updates. Check form field population from the database and ensure updates for all payment link types are sent via the correct API endpoints.",
+            "dependencies": [],
+            "details": "Inspect JavaScript logic for form population and submission. Verify that the UI correctly displays existing payment links and sends update requests for Zelle, Stripe Donation, Stripe Membership, and Stripe Fees links. Confirm that the correct API endpoints are called and payloads are properly structured.\n<info added on 2025-08-13T04:31:27.678Z>\nDocument the type mismatch issue: the frontend sends the stripe_urls field as an object (e.g., {payment: url}), but the backend expects a string. Update the backend API endpoint validation to correctly handle the stripe_urls field as a JSONB object, ensuring compatibility with the frontend payload structure.\n</info added on 2025-08-13T04:31:27.678Z>",
+            "status": "pending",
+            "testStrategy": "Manually update Zelle and Stripe links in the admin dashboard for a test club. Confirm that changes persist and display correctly after reload. Attempt to save invalid or empty links and verify validation errors are shown."
+          },
+          {
+            "id": 2,
+            "title": "Debug Backend API Endpoint for Payment Link Updates",
+            "description": "Investigate the backend logic handling payment link updates. Ensure the API endpoint receives, validates, and persists all fields, including Stripe links, to the database. Check for missing or incorrect field mappings, validation errors, or silent failures.",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Trace the update flow from API request to database persistence. Validate that all payment link fields are mapped and saved correctly. Review error handling and logging for update failures.",
+            "status": "pending",
+            "testStrategy": "Send update requests with valid and invalid data via API client. Confirm that successful updates persist and errors are logged and returned for invalid requests."
+          },
+          {
+            "id": 3,
+            "title": "Verify and Update Database Schema and ORM Configuration",
+            "description": "Ensure the database schema matches the expected fields for payment links and that the ORM (e.g., Prisma) is correctly configured to handle nullable and optional fields for Stripe links.",
+            "dependencies": [
+              "16.2"
+            ],
+            "details": "Review database table definitions and ORM models for Zelle and Stripe link fields. Update schema and ORM configuration as needed to support all required fields and allow null/optional values where appropriate.",
+            "status": "pending",
+            "testStrategy": "Inspect database records before and after updates. Confirm that all fields are correctly stored and retrieved, including cases with null or empty Stripe links."
+          },
+          {
+            "id": 4,
+            "title": "Implement Robust Error Handling and User Feedback in Admin UI",
+            "description": "Add or improve error handling and user feedback in the admin dashboard for failed payment link updates, including validation errors and backend failures.",
+            "dependencies": [
+              "16.1",
+              "16.2"
+            ],
+            "details": "Enhance frontend logic to display clear error messages for validation failures and backend errors. Ensure users are informed of the reason for failed updates and guided to correct issues.",
+            "status": "pending",
+            "testStrategy": "Attempt to save invalid or empty payment links and verify that appropriate error messages are shown. Confirm that backend errors are surfaced to the user."
+          },
+          {
+            "id": 5,
+            "title": "Test and Validate Payment Link Update Scenarios",
+            "description": "Test with valid and invalid Stripe URLs (e.g., buy.stripe.com, donate.stripe.com) and ensure only valid links are accepted, following the allowlist defined in environment configuration. Refactor or add unit/integration tests for both frontend and backend to cover all update scenarios, including edge cases.",
+            "dependencies": [
+              "16.3",
+              "16.4"
+            ],
+            "details": "Define and execute test cases for all payment link types, including null, empty, and invalid URLs. Update or add automated tests to ensure coverage of all update scenarios and edge cases.",
+            "status": "pending",
+            "testStrategy": "Run manual regression tests and automated unit/integration tests for payment link updates. Confirm that only valid Stripe URLs are accepted and all edge cases are handled correctly."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-08-12T19:06:54.808Z",
-      "updated": "2025-08-12T21:38:51.526Z",
+      "updated": "2025-08-13T04:30:43.984Z",
       "description": "Tasks for feature-payment-system-enhancement context"
     }
   }

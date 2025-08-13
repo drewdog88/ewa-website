@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
           id, 
           name, 
           zelle_url, 
-          stripe_urls,
+          stripe_url,
           payment_instructions,
           is_payment_enabled,
           qr_code_settings
@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
           id: clubData.id,
           name: clubData.name,
           zelle_url: clubData.zelle_url,
-          stripe_urls: clubData.stripe_urls || null,
+          stripe_url: clubData.stripe_url || null,
           payment_instructions: clubData.payment_instructions,
           is_payment_enabled: clubData.is_payment_enabled,
           qr_code_settings: clubData.qr_code_settings || {}
@@ -100,7 +100,7 @@ module.exports = async (req, res) => {
       const { 
         is_payment_enabled, 
         zelle_url, 
-        stripe_urls, 
+        stripe_url, 
         payment_instructions 
       } = req.body;
       
@@ -119,10 +119,10 @@ module.exports = async (req, res) => {
         });
       }
       
-      if (stripe_urls && typeof stripe_urls !== 'string') {
+      if (stripe_url && typeof stripe_url !== 'string') {
         return res.status(400).json({ 
           success: false,
-          error: 'stripe_urls must be a string' 
+          error: 'stripe_url must be a string' 
         });
       }
       
@@ -139,7 +139,7 @@ module.exports = async (req, res) => {
         SET 
           is_payment_enabled = ${is_payment_enabled},
           zelle_url = ${zelle_url || null},
-          stripe_urls = ${stripe_urls || null},
+          stripe_url = ${stripe_url || null},
           payment_instructions = ${payment_instructions || null},
           last_payment_update_by = 'admin',
           last_payment_update_at = NOW()
@@ -148,7 +148,7 @@ module.exports = async (req, res) => {
           id, 
           name, 
           zelle_url, 
-          stripe_urls,
+          stripe_url,
           payment_instructions,
           is_payment_enabled
       `;
@@ -162,27 +162,34 @@ module.exports = async (req, res) => {
       
       const updatedClub = result[0];
       
-      // Log the update in audit trail
-      await sql`
-        INSERT INTO payment_audit_log (
-          booster_club_id, 
-          action, 
-          before, 
-          after, 
-          actor
-        ) VALUES (
-          ${clubId},
-          'UPDATE_PAYMENT_SETTINGS',
-          '{}',
-          ${JSON.stringify({
-            is_payment_enabled,
-            zelle_url,
-            stripe_urls,
-            payment_instructions
-          })},
-          'admin'
-        )
-      `;
+      // Log the update in audit trail (temporarily disabled for debugging)
+      // const changes = [];
+      // if (zelle_url !== undefined) changes.push({ field: 'zelle_url', old: null, new: zelle_url });
+      // if (stripe_urls !== undefined) changes.push({ field: 'stripe_urls', old: null, new: JSON.stringify(stripe_urls) });
+      // if (is_payment_enabled !== undefined) changes.push({ field: 'is_payment_enabled', old: null, new: is_payment_enabled });
+      // if (payment_instructions !== undefined) changes.push({ field: 'payment_instructions', old: null, new: payment_instructions });
+      
+      // for (const change of changes) {
+      //   await sql`
+      //     INSERT INTO payment_audit_log (
+      //       club_id, 
+      //       action, 
+      //       field_name, 
+      //       old_value, 
+      //       new_value, 
+      //       changed_by, 
+      //       changed_at
+      //     ) VALUES (
+      //       ${clubId},
+      //       'UPDATE_PAYMENT_SETTINGS',
+      //       ${change.field},
+      //       ${change.old},
+      //       ${change.new},
+      //       'admin',
+      //       NOW()
+      //     )
+      //   `;
+      // }
       
       res.status(200).json({
         success: true,
@@ -190,7 +197,7 @@ module.exports = async (req, res) => {
           id: updatedClub.id,
           name: updatedClub.name,
           zelle_url: updatedClub.zelle_url,
-          stripe_urls: updatedClub.stripe_urls || null,
+          stripe_url: updatedClub.stripe_url || null,
           payment_instructions: updatedClub.payment_instructions,
           is_payment_enabled: updatedClub.is_payment_enabled
         }
@@ -256,17 +263,21 @@ module.exports = async (req, res) => {
           // Log the QR code upload in audit trail
           await sql`
             INSERT INTO payment_audit_log (
-              booster_club_id, 
+              club_id, 
               action, 
-              before, 
-              after, 
-              actor
+              field_name, 
+              old_value, 
+              new_value, 
+              changed_by, 
+              changed_at
             ) VALUES (
               ${clubId},
               'UPLOAD_QR_CODE',
-              '{}',
-              ${JSON.stringify({ qr_code_path: qrCodePath })},
-              'admin'
+              'qr_code_path',
+              null,
+              ${qrCodePath},
+              'admin',
+              NOW()
             )
           `;
           

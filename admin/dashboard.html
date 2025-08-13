@@ -5418,9 +5418,9 @@
             const data = await response.json();
             
             if (data.success) {
-                // Use the first available Stripe URL (donation, membership, or fees)
-                const stripeUrls = data.data.stripe_urls || {};
-                const stripeUrl = stripeUrls.donation || stripeUrls.membership || stripeUrls.fees || '';
+                            // Simple string handling - no JSON parsing needed
+            const stripeUrl = data.data.stripe_url || '';
+                
                 document.getElementById('stripeUrl').value = stripeUrl;
                 document.getElementById('stripeEnabled').checked = data.data.is_payment_enabled || false;
             } else {
@@ -5444,15 +5444,32 @@
         }
 
         try {
+            // First, get current data to preserve existing Stripe settings
+            const currentResponse = await fetch(`/api/admin/payment-settings/club/${clubId}`);
+            const currentData = await currentResponse.json();
+            
+            if (!currentData.success) {
+                showAlert('Failed to load current settings: ' + currentData.message, 'danger');
+                return;
+            }
+            
+            // Prepare update data - preserve existing Stripe settings
+            const updateData = {
+                zelle_url: zelleUrl,
+                is_payment_enabled: zelleEnabled
+            };
+            
+            // Preserve existing Stripe URL if it exists
+            if (currentData.data.stripe_url) {
+                updateData.stripe_url = currentData.data.stripe_url;
+            }
+            
             const response = await fetch(`/api/admin/payment-settings/club/${clubId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    zelle_url: zelleUrl,
-                    is_payment_enabled: zelleEnabled
-                })
+                body: JSON.stringify(updateData)
             });
             
             const data = await response.json();
@@ -5481,17 +5498,32 @@
         }
 
         try {
+            // First, get current data to preserve existing Zelle settings
+            const currentResponse = await fetch(`/api/admin/payment-settings/club/${clubId}`);
+            const currentData = await currentResponse.json();
+            
+            if (!currentData.success) {
+                showAlert('Failed to load current settings: ' + currentData.message, 'danger');
+                return;
+            }
+            
+            // Prepare update data - preserve existing Zelle settings
+            const updateData = {
+                stripe_url: stripeUrl,
+                is_payment_enabled: stripeEnabled
+            };
+            
+            // Preserve existing Zelle URL if it exists
+            if (currentData.data.zelle_url) {
+                updateData.zelle_url = currentData.data.zelle_url;
+            }
+            
             const response = await fetch(`/api/admin/payment-settings/club/${clubId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    stripe_urls: {
-                        payment: stripeUrl
-                    },
-                    is_payment_enabled: stripeEnabled
-                })
+                body: JSON.stringify(updateData)
             });
             
             const data = await response.json();
@@ -5535,8 +5567,9 @@
             const row = document.createElement('tr');
             
             const zelleUrl = club.zelle_url || 'Not configured';
-            const stripeUrls = club.stripe_urls || {};
-            const stripeUrl = stripeUrls.payment || 'Not configured';
+            
+            // Simple string handling - no JSON parsing needed
+            const stripeUrl = club.stripe_url || 'Not configured';
             
             const status = club.is_payment_enabled ? 
                 '<span class="status-approved">Enabled</span>' : 
@@ -5644,12 +5677,17 @@
             // Convert data to CSV
             function convertToCSV(data) {
                 const headers = ['Club Name', 'Zelle URL', 'Stripe Payment Link', 'Payment Enabled'];
-                const rows = data.map(club => [
-                    club.name,
-                    club.zelle_url || '',
-                    club.stripe_urls?.donation || club.stripe_urls?.membership || club.stripe_urls?.fees || '',
-                    club.is_payment_enabled ? 'Yes' : 'No'
-                ]);
+                const rows = data.map(club => {
+                    // Simple string handling - no JSON parsing needed
+                    const stripeUrl = club.stripe_url || '';
+                    
+                    return [
+                        club.name,
+                        club.zelle_url || '',
+                        stripeUrl,
+                        club.is_payment_enabled ? 'Yes' : 'No'
+                    ];
+                });
                 
                 return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
             }
