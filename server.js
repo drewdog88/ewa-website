@@ -2312,7 +2312,24 @@ app.get('/api/backup/download/:filename', async (req, res) => {
           });
         }
                 
-        const timestamp = timestampMatch[1].replace(/-/g, ':').replace(/-/g, '.');
+        // Convert filename format back to ISO timestamp
+        // backup-2025-08-13T06-49-25-918Z.json -> 2025-08-13T06:49:25.918Z
+        let timestamp = timestampMatch[1];
+        // Replace the last two hyphens with colon and period for time format
+        const parts = timestamp.split('T');
+        if (parts.length === 2) {
+          const datePart = parts[0];
+          const timePart = parts[1];
+          // Convert 06-49-25-918Z to 06:49:25.918Z
+          const timeParts = timePart.split('-');
+          if (timeParts.length >= 4) {
+            const hours = timeParts[0];
+            const minutes = timeParts[1];
+            const seconds = timeParts[2];
+            const milliseconds = timeParts[3];
+            timestamp = `${datePart}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+          }
+        }
                 
         // Look up the backup in the database
         const backupResult = await backupManager.dbPool.query(`
