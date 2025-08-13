@@ -242,8 +242,7 @@ module.exports = async (req, res) => {
               zelle_qr_code_path = ${qrCodePath},
               last_payment_update_by = 'admin',
               last_payment_update_at = NOW()
-            WHERE id = ${clubId} 
-            AND is_active = true
+            WHERE id = ${clubId}
             RETURNING id, name
           `;
           
