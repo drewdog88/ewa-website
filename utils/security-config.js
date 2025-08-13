@@ -23,6 +23,8 @@ const corsOptions = {
     const allowedOrigins = [
       'https://ewa-website.com',
       'https://www.ewa-website.com',
+      'https://ewa-website.vercel.app',
+      'https://ewa-website-n2dw0czus-andrews-projects-fcf60ac5.vercel.app',
       'http://localhost:3000', // Development only
       'http://localhost:3001'  // Development only
     ];
