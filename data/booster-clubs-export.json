@@ -1,0 +1,236 @@
+{
+  "exportDate": "2025-08-13T06:08:39.265Z",
+  "totalClubs": 23,
+  "clubs": [
+    {
+      "id": "5c5d9238-dc96-4ad0-b6fe-6282b06573bc",
+      "name": "EHS Band Boosters",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=TEST_ZELLE_UPDATE",
+      "stripe_url": "https://buy.stripe.com/bJe7sKdJu3dM6UZ0Dy1sQ00",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.752Z",
+      "updated_at": "2025-08-12T22:54:16.130Z"
+    },
+    {
+      "id": "a79fec5c-ffbc-4fd2-832f-ddf09019d392",
+      "name": "EHS DECA Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIERFQ0EgQk9PU1RFUiBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-12T19:53:19.867Z",
+      "updated_at": "2025-08-12T19:53:19.867Z"
+    },
+    {
+      "id": "05d21d4b-4149-4b7f-9e20-dfa3864f60dd",
+      "name": "EHS Orchestra Boosters Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIE9SQ0hFU1RSQSBCT09TVEVSUyBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.951Z",
+      "updated_at": "2025-08-12T22:54:24.082Z"
+    },
+    {
+      "id": "6e69b02b-e467-4879-a7ba-16429e651a53",
+      "name": "EHS Track and Field Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIFRSQUNLIEFORCBGSUVMRCBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+      "stripe_url": "https://wolvesxc.com/Home",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:54.061Z",
+      "updated_at": "2025-08-12T19:53:51.274Z"
+    },
+    {
+      "id": "5b09a2d8-a942-473d-9270-49f13c1b36c3",
+      "name": "EHS Wrestling Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIFdSRVNUTElORyBCT09TVEVSIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+      "stripe_url": "https://buy.stripe.com/28EfZh9b71yg7JJ8gA8AE02",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:54.092Z",
+      "updated_at": "2025-08-12T19:53:51.287Z"
+    },
+    {
+      "id": "f2efccc3-4dbe-4eeb-b65e-ba7e7149c740",
+      "name": "EWA Eastlake Wolfpack Association",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiVEhFIEVBU1RMQUtFIFdPTEZQQUNLIEFTU09DSUFUSU9OIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:37:57.429Z",
+      "updated_at": "2025-08-12T08:33:20.513Z"
+    },
+    {
+      "id": "99367bd3-c24a-42cd-b581-35f36a29ef49",
+      "name": "Eastlake Baseball Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQkFTRUJBTEwgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6IjQyNTQ0MjkwNTkifQ==",
+      "stripe_url": "https://www.eastlakewolvesbaseball.com/donate",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.778Z",
+      "updated_at": "2025-08-12T16:23:40.940Z"
+    },
+    {
+      "id": "bc3e4b83-e9a7-47ca-b7a9-56e1b4843f66",
+      "name": "Eastlake Boys Basketball Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQk9ZUyBCQVNLRVRCQUxMIEJPT1NURVIgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6IjQyNTQ0MjkwNTkifQ==",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.795Z",
+      "updated_at": "2025-08-12T16:23:40.957Z"
+    },
+    {
+      "id": "e30ef488-f120-48b2-9f92-bf1ab60a3ccd",
+      "name": "Eastlake Boys Golf Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQk9ZUyBHT0xGIENMVUIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-12T19:53:19.880Z",
+      "updated_at": "2025-08-12T19:53:19.880Z"
+    },
+    {
+      "id": "47d6a7c1-128d-4719-b002-ae34d9012619",
+      "name": "Eastlake Boys Soccer",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQk9ZUyBTT0NDRVIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.983Z",
+      "updated_at": "2025-08-12T19:53:51.207Z"
+    },
+    {
+      "id": "4d60931c-5c2a-47d2-ae4a-e37192294f7e",
+      "name": "Eastlake Boys Swim & Dive Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIEJPSVMgU1dJTSAmIERJVkUgQk9PU1RFUiBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:54.013Z",
+      "updated_at": "2025-08-12T19:53:51.234Z"
+    },
+    {
+      "id": "d2d3fcd3-822b-4466-bbd3-49d55c4fb0bd",
+      "name": "Eastlake Cheer Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUhTIEZPT1RCQUxMIEJPT1NURVIgQ0xVQiIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6IjQyNTQ0MjkwNTkifQ==",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.826Z",
+      "updated_at": "2025-08-06T00:22:53.826Z"
+    },
+    {
+      "id": "40595908-c00e-4d87-a79a-566aa4869715",
+      "name": "Eastlake Choir",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQ0hPSVIiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.842Z",
+      "updated_at": "2025-08-12T23:37:16.552Z"
+    },
+    {
+      "id": "ce376909-2bb7-402e-874a-3f542463602a",
+      "name": "Eastlake Cross-Country Boosters",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgQ1JPU1MtQ09VTlRSWSBCT09TVEVSUyIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6IjQyNTQ0MjkwNTkifQ==",
+      "stripe_url": "https://wolvesxc.com/Home",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.858Z",
+      "updated_at": "2025-08-12T16:23:40.987Z"
+    },
+    {
+      "id": "cfa44638-82d5-4d26-b5b3-d00f3b7cc428",
+      "name": "Eastlake Dance Team Boosters",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgREFOQ0UgVEVBTSBCT09TVEVSUyIsImFjdGlvbiI6InBheW1lbnQiLCJ0b2tlbiI6IjQyNTQ0MjkwNTkifQ==",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-12T19:53:19.854Z",
+      "updated_at": "2025-08-12T19:53:19.854Z"
+    },
+    {
+      "id": "fb289ef9-3f94-4145-b1df-55fafd4362cb",
+      "name": "Eastlake Drama",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgRFJBTUEiLCJhY3Rpb24iOiJwYXltZW50IiwidG9rZW4iOiI0MjU0NDI5MDU5In0=",
+      "stripe_url": "https://buy.stripe.com/dR64jT65B6OYfMQ3cc",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.874Z",
+      "updated_at": "2025-08-12T23:37:16.596Z"
+    },
+    {
+      "id": "40733b78-7d7c-44b8-a713-f5fbfb2ffefb",
+      "name": "Eastlake Fastpitch (Girls)",
+      "zelle_url": null,
+      "stripe_url": "https://www.ehsfastpitch.org/donations",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.889Z",
+      "updated_at": "2025-08-12T16:23:41.034Z"
+    },
+    {
+      "id": "1dcc6157-a3f6-46f3-a50f-23cde148b58b",
+      "name": "Eastlake Girls Basketball Booster Club",
+      "zelle_url": null,
+      "stripe_url": "https://www.goladywolves.com/page/show/8862343-it-s-2024-25-season-donate-now",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.811Z",
+      "updated_at": "2025-08-12T16:23:40.972Z"
+    },
+    {
+      "id": "77273cdf-390f-4611-ae8a-81c542e69def",
+      "name": "Eastlake Girls Golf Booster Club",
+      "zelle_url": null,
+      "stripe_url": null,
+      "is_payment_enabled": false,
+      "is_active": true,
+      "created_at": "2025-08-12T19:53:19.893Z",
+      "updated_at": "2025-08-12T19:53:19.893Z"
+    },
+    {
+      "id": "933845bd-6e1a-47e0-a3df-e3a7123b3260",
+      "name": "Eastlake Girls Soccer",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgR0lSTFMgU09DQ0VSIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": "https://www.eastlakegirlssoccer.com/donate",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.967Z",
+      "updated_at": "2025-08-12T19:53:51.221Z"
+    },
+    {
+      "id": "4053c0cb-5959-4379-80f0-e82998225318",
+      "name": "Eastlake Girls Swim & Dive Booster Club",
+      "zelle_url": null,
+      "stripe_url": null,
+      "is_payment_enabled": false,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:53.998Z",
+      "updated_at": "2025-08-12T19:53:51.248Z"
+    },
+    {
+      "id": "2b5bfa51-bed6-49f6-aa3a-962e42549d52",
+      "name": "Eastlake Robotics Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgUk9CT1RJQ1MgQk9PU1RFUiBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": "https://buy.stripe.com/3cIbJ2g7L0Y59KVeRxbQY02",
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-12T19:45:25.758Z",
+      "updated_at": "2025-08-12T19:46:45.565Z"
+    },
+    {
+      "id": "b926f783-1f1e-41ae-a94a-fdccac50e3f8",
+      "name": "Eastlake Volleyball Booster Club",
+      "zelle_url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiRUFTVExBS0UgVk9MTEVZQkFMTCAgQk9PU1RFUiBDTFVCIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNDI1NDQyOTA1OSJ9",
+      "stripe_url": null,
+      "is_payment_enabled": true,
+      "is_active": true,
+      "created_at": "2025-08-06T00:22:54.076Z",
+      "updated_at": "2025-08-12T16:23:41.156Z"
+    }
+  ]
+}
