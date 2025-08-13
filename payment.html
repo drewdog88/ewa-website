@@ -340,7 +340,6 @@
         
         <div class="payment-section">
             <h3>Credit Card Payments</h3>
-            <p>Credit card payments are processed through Stripe.</p>
             <!-- Stripe UI is injected here only for Eastlake Robotics Club -->
             <div id="stripeContainer" style="display:none;"></div>
         </div>
@@ -472,29 +471,18 @@
             const container = document.getElementById('stripeContainer');
             if (!container) return;
             
-            // Check if club has Stripe URLs configured
-            const stripeUrls = clubData.stripe_urls || {};
-            const hasStripeLinks = Object.keys(stripeUrls).length > 0;
+            // Simple string handling - no JSON parsing needed
+            const stripeUrl = clubData.stripe_url || '';
             
-            if (hasStripeLinks) {
+            if (stripeUrl) {
                 container.style.display = 'block';
-                
-                // Use the single Stripe payment URL
-                let stripeUrl = stripeUrls.payment;
-                
-                if (stripeUrl) {
-                    container.innerHTML = `
-                        <div class="stripe-links">
-                            <a class="stripe-btn" href="${stripeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Pay via Stripe">
-                                Pay Now (Stripe)
-                            </a>
-                        </div>
-                    `;
-                } else {
-                    // No Stripe links configured - hide the entire section
-                    container.style.display = 'none';
-                    container.setAttribute('aria-hidden', 'true');
-                }
+                container.innerHTML = `
+                    <div class="stripe-links">
+                        <a class="stripe-btn" href="${stripeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Pay via Stripe">
+                            Pay Now
+                        </a>
+                    </div>
+                `;
             } else {
                 // No Stripe links configured - hide the entire section
                 container.style.display = 'none';
@@ -534,7 +522,7 @@
             container.innerHTML = `
                 <div class="stripe-links">
                   <a class="stripe-btn" href="https://buy.stripe.com/3cIbJ2g7L0Y59KVeRxbQY02" target="_blank" rel="noopener noreferrer" aria-label="Donate or pay now via Stripe">
-                    Donate/Pay Now (Stripe)
+                    Donate/Pay Now
                   </a>
                 </div>
             `;

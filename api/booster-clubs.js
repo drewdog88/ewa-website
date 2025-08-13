@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
         is_active,
         is_payment_enabled,
         zelle_url,
-        stripe_urls,
+        stripe_url,
         payment_instructions,
         qr_code_settings,
         created_at,

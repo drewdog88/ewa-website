@@ -280,7 +280,7 @@ app.use((req, res, next) => {
 // Rate limiting (simple in-memory store)
 const rateLimitStore = new Map();
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_MAX_REQUESTS = 100; // 100 requests per window
+const RATE_LIMIT_MAX_REQUESTS = 1000; // 1000 requests per window (temporarily increased for testing)
 
 app.use((req, res, next) => {
   const clientIP = req.ip || req.connection.remoteAddress;
@@ -3039,17 +3039,99 @@ app.get('/api/admin/payment-settings/club/:clubId', async (req, res) => {
 // Update payment settings for a club
 app.put('/api/admin/payment-settings/club/:clubId', async (req, res) => {
   try {
-    // Import the payment settings API handler
-    const paymentSettingsHandler = require('./api/admin/payment-settings');
+    const { clubId } = req.params;
+    const { 
+      is_payment_enabled, 
+      zelle_url, 
+      stripe_url, 
+      payment_instructions 
+    } = req.body;
     
-    // Call the handler
-    await paymentSettingsHandler(req, res);
+    if (!clubId) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Missing clubId parameter' 
+      });
+    }
+    
+    // Validate input
+    if (typeof is_payment_enabled !== 'boolean') {
+      return res.status(400).json({ 
+        success: false,
+        error: 'is_payment_enabled must be a boolean' 
+      });
+    }
+    
+    if (zelle_url && typeof zelle_url !== 'string') {
+      return res.status(400).json({ 
+        success: false,
+        error: 'zelle_url must be a string' 
+      });
+    }
+    
+    if (stripe_url && typeof stripe_url !== 'string') {
+      return res.status(400).json({ 
+        success: false,
+        error: 'stripe_url must be a string' 
+      });
+    }
+    
+    if (payment_instructions && typeof payment_instructions !== 'string') {
+      return res.status(400).json({ 
+        success: false,
+        error: 'payment_instructions must be a string' 
+      });
+    }
+    
+    const sql = require('./database/neon-functions').getSql();
+    
+    // Update the club's payment settings
+    const result = await sql`
+      UPDATE booster_clubs 
+      SET 
+        is_payment_enabled = ${is_payment_enabled},
+        zelle_url = ${zelle_url || null},
+        stripe_url = ${stripe_url || null},
+        payment_instructions = ${payment_instructions || null},
+        last_payment_update_by = 'admin',
+        last_payment_update_at = NOW()
+      WHERE id = ${clubId}
+      RETURNING 
+        id, 
+        name, 
+        zelle_url, 
+        stripe_url,
+        payment_instructions,
+        is_payment_enabled
+    `;
+    
+    if (result.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Club not found or inactive' 
+      });
+    }
+    
+    const updatedClub = result[0];
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        id: updatedClub.id,
+        name: updatedClub.name,
+        zelle_url: updatedClub.zelle_url,
+        stripe_url: updatedClub.stripe_url || null,
+        payment_instructions: updatedClub.payment_instructions,
+        is_payment_enabled: updatedClub.is_payment_enabled
+      }
+    });
     
   } catch (error) {
-    console.error('Error in payment settings PUT API:', error);
+    console.error('Error updating payment settings:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update payment settings'
+      error: 'Failed to update payment settings',
+      message: 'Please try again later or contact support.'
     });
   }
 });
@@ -3083,7 +3165,7 @@ app.get('/api/admin/payment-settings', async (req, res) => {
         id, 
         name, 
         zelle_url, 
-        stripe_urls,
+        stripe_url,
         payment_instructions,
         is_payment_enabled,
         last_payment_update_at
@@ -3098,7 +3180,7 @@ app.get('/api/admin/payment-settings', async (req, res) => {
         id: club.id,
         name: club.name,
         zelle_url: club.zelle_url,
-                  stripe_urls: club.stripe_urls || null,
+        stripe_url: club.stripe_url || null,
         payment_instructions: club.payment_instructions,
         is_payment_enabled: club.is_payment_enabled,
         last_payment_update_at: club.last_payment_update_at
