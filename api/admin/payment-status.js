@@ -55,8 +55,8 @@ module.exports = async (req, res) => {
       SELECT COUNT(*) as count
       FROM booster_clubs 
       WHERE stripe_urls IS NOT NULL 
-      AND stripe_urls != '{}'
-      AND stripe_urls != 'null'
+      AND stripe_urls != ''
+      AND stripe_urls NOT LIKE '%PLACEHOLDER%'
     `;
     
     // Get clubs with any payment method (Zelle OR Stripe)
@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
       SELECT COUNT(*) as count
       FROM booster_clubs 
       WHERE (zelle_url IS NOT NULL AND zelle_url != '' AND zelle_url NOT LIKE '%PLACEHOLDER%')
-         OR (stripe_urls IS NOT NULL AND stripe_urls != '{}' AND stripe_urls != 'null')
+         OR (stripe_urls IS NOT NULL AND stripe_urls != '' AND stripe_urls NOT LIKE '%PLACEHOLDER%')
     `;
     
     const stats = {

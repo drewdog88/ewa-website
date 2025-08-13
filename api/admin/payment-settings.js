@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
           id: clubData.id,
           name: clubData.name,
           zelle_url: clubData.zelle_url,
-          stripe_urls: clubData.stripe_urls || {},
+          stripe_urls: clubData.stripe_urls || null,
           payment_instructions: clubData.payment_instructions,
           is_payment_enabled: clubData.is_payment_enabled,
           qr_code_settings: clubData.qr_code_settings || {}
@@ -119,10 +119,10 @@ module.exports = async (req, res) => {
         });
       }
       
-      if (stripe_urls && typeof stripe_urls !== 'object') {
+      if (stripe_urls && typeof stripe_urls !== 'string') {
         return res.status(400).json({ 
           success: false,
-          error: 'stripe_urls must be an object' 
+          error: 'stripe_urls must be a string' 
         });
       }
       
@@ -139,7 +139,7 @@ module.exports = async (req, res) => {
         SET 
           is_payment_enabled = ${is_payment_enabled},
           zelle_url = ${zelle_url || null},
-          stripe_urls = ${stripe_urls ? JSON.stringify(stripe_urls) : null},
+          stripe_urls = ${stripe_urls || null},
           payment_instructions = ${payment_instructions || null},
           last_payment_update_by = 'admin',
           last_payment_update_at = NOW()
@@ -190,7 +190,7 @@ module.exports = async (req, res) => {
           id: updatedClub.id,
           name: updatedClub.name,
           zelle_url: updatedClub.zelle_url,
-          stripe_urls: updatedClub.stripe_urls || {},
+          stripe_urls: updatedClub.stripe_urls || null,
           payment_instructions: updatedClub.payment_instructions,
           is_payment_enabled: updatedClub.is_payment_enabled
         }
