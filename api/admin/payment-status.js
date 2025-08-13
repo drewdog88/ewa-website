@@ -41,30 +41,30 @@ module.exports = async (req, res) => {
       WHERE is_active = true
     `;
     
-    // Get clubs with Zelle URLs
+    // Get clubs with Zelle URLs (regardless of is_active)
     const clubsWithZelle = await sql`
       SELECT COUNT(*) as count
       FROM booster_clubs 
-      WHERE is_active = true 
-      AND zelle_url IS NOT NULL 
+      WHERE zelle_url IS NOT NULL 
       AND zelle_url != ''
+      AND zelle_url NOT LIKE '%PLACEHOLDER%'
     `;
     
-    // Get clubs with Stripe URLs
+    // Get clubs with Stripe URLs (regardless of is_active)
     const clubsWithStripe = await sql`
       SELECT COUNT(*) as count
       FROM booster_clubs 
-      WHERE is_active = true 
-      AND stripe_urls IS NOT NULL 
+      WHERE stripe_urls IS NOT NULL 
       AND stripe_urls != '{}'
+      AND stripe_urls != 'null'
     `;
     
-    // Get clubs with payment enabled
+    // Get clubs with any payment method (Zelle OR Stripe)
     const paymentEnabled = await sql`
       SELECT COUNT(*) as count
       FROM booster_clubs 
-      WHERE is_active = true 
-      AND is_payment_enabled = true
+      WHERE (zelle_url IS NOT NULL AND zelle_url != '' AND zelle_url NOT LIKE '%PLACEHOLDER%')
+         OR (stripe_urls IS NOT NULL AND stripe_urls != '{}' AND stripe_urls != 'null')
     `;
     
     const stats = {
