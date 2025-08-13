@@ -3098,7 +3098,7 @@ app.get('/api/admin/payment-settings', async (req, res) => {
         id: club.id,
         name: club.name,
         zelle_url: club.zelle_url,
-        stripe_urls: club.stripe_urls || {},
+                  stripe_urls: club.stripe_urls || null,
         payment_instructions: club.payment_instructions,
         is_payment_enabled: club.is_payment_enabled,
         last_payment_update_at: club.last_payment_update_at
