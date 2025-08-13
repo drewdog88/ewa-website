@@ -5488,9 +5488,7 @@
                 },
                 body: JSON.stringify({
                     stripe_urls: {
-                        donation: stripeUrl,
-                        membership: stripeUrl,
-                        fees: stripeUrl
+                        payment: stripeUrl
                     },
                     is_payment_enabled: stripeEnabled
                 })
@@ -5538,7 +5536,7 @@
             
             const zelleUrl = club.zelle_url || 'Not configured';
             const stripeUrls = club.stripe_urls || {};
-            const stripeUrl = stripeUrls.donation || stripeUrls.membership || stripeUrls.fees || 'Not configured';
+            const stripeUrl = stripeUrls.payment || 'Not configured';
             
             const status = club.is_payment_enabled ? 
                 '<span class="status-approved">Enabled</span>' : 

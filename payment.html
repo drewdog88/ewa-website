@@ -478,56 +478,27 @@
             
             if (hasStripeLinks) {
                 container.style.display = 'block';
-                let stripeHTML = '<div class="stripe-links">';
                 
-                // Add donation link if available
-                if (stripeUrls.donation) {
-                    stripeHTML += `
-                        <a class="stripe-btn" href="${stripeUrls.donation}" target="_blank" rel="noopener noreferrer" aria-label="Donate via Stripe">
-                            Donate (Stripe)
-                        </a>
+                // Use the single Stripe payment URL
+                let stripeUrl = stripeUrls.payment;
+                
+                if (stripeUrl) {
+                    container.innerHTML = `
+                        <div class="stripe-links">
+                            <a class="stripe-btn" href="${stripeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Pay via Stripe">
+                                Pay Now (Stripe)
+                            </a>
+                        </div>
                     `;
+                } else {
+                    // No Stripe links configured - hide the entire section
+                    container.style.display = 'none';
+                    container.setAttribute('aria-hidden', 'true');
                 }
-                
-                // Add membership link if available
-                if (stripeUrls.membership) {
-                    stripeHTML += `
-                        <a class="stripe-btn" href="${stripeUrls.membership}" target="_blank" rel="noopener noreferrer" aria-label="Pay membership via Stripe">
-                            Pay Membership (Stripe)
-                        </a>
-                    `;
-                }
-                
-                // Add fees link if available
-                if (stripeUrls.fees) {
-                    stripeHTML += `
-                        <a class="stripe-btn" href="${stripeUrls.fees}" target="_blank" rel="noopener noreferrer" aria-label="Pay fees via Stripe">
-                            Pay Fees (Stripe)
-                        </a>
-                    `;
-                }
-                
-                stripeHTML += '</div>';
-                container.innerHTML = stripeHTML;
             } else {
-                // No Stripe links configured
-                container.style.display = 'block';
-                container.innerHTML = `
-                    <div class="no-stripe-message" style="
-                        background-color: #f8f9fa;
-                        border: 2px dashed #dee2e6;
-                        border-radius: 8px;
-                        padding: 20px;
-                        text-align: center;
-                        margin: 20px 0;
-                        color: #6c757d;
-                    ">
-                        <p style="font-size: 1.1em; margin-bottom: 10px;">
-                            <strong>No Stripe Payment Links Available</strong>
-                        </p>
-                        <p>Contact your booster club board to set up online payment options</p>
-                    </div>
-                `;
+                // No Stripe links configured - hide the entire section
+                container.style.display = 'none';
+                container.setAttribute('aria-hidden', 'true');
             }
         }
         
