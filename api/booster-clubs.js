@@ -58,8 +58,7 @@ module.exports = async (req, res) => {
         created_at,
         updated_at
       FROM booster_clubs 
-      WHERE id = ${id} 
-      AND is_active = true
+      WHERE id = ${id}
     `;
     
     if (club.length === 0) {

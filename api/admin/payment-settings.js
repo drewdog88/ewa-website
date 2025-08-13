@@ -3,7 +3,6 @@ const multer = require('multer');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs').promises;
-const { validateStripeUrl, sanitizePaymentInstructions } = require('../utils/security-config');
 
 // Database connection
 let sql = null;
@@ -70,8 +69,7 @@ module.exports = async (req, res) => {
           is_payment_enabled,
           qr_code_settings
         FROM booster_clubs 
-        WHERE id = ${clubId} 
-        AND is_active = true
+        WHERE id = ${clubId}
       `;
       
       if (club.length === 0) {
@@ -128,32 +126,12 @@ module.exports = async (req, res) => {
         });
       }
       
-      // Validate Stripe URLs if provided
-      if (stripe_urls) {
-        const stripeUrlFields = ['donation', 'membership', 'fees'];
-        for (const field of stripeUrlFields) {
-          if (stripe_urls[field]) {
-            const validation = validateStripeUrl(stripe_urls[field]);
-            if (!validation.valid) {
-              return res.status(400).json({
-                success: false,
-                error: `Invalid Stripe URL for ${field}: ${validation.reason}`
-              });
-            }
-          }
-        }
-      }
-      
       if (payment_instructions && typeof payment_instructions !== 'string') {
         return res.status(400).json({ 
           success: false,
           error: 'payment_instructions must be a string' 
         });
       }
-      
-      // Sanitize payment instructions if provided
-      const sanitizedPaymentInstructions = payment_instructions ? 
-        sanitizePaymentInstructions(payment_instructions) : null;
       
       // Update the club's payment settings
       const result = await sql`
@@ -162,11 +140,10 @@ module.exports = async (req, res) => {
           is_payment_enabled = ${is_payment_enabled},
           zelle_url = ${zelle_url || null},
           stripe_urls = ${stripe_urls ? JSON.stringify(stripe_urls) : null},
-          payment_instructions = ${sanitizedPaymentInstructions || null},
+          payment_instructions = ${payment_instructions || null},
           last_payment_update_by = 'admin',
           last_payment_update_at = NOW()
-        WHERE id = ${clubId} 
-        AND is_active = true
+        WHERE id = ${clubId}
         RETURNING 
           id, 
           name, 

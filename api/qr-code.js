@@ -51,8 +51,7 @@ module.exports = async (req, res) => {
         qr_code_settings,
         is_payment_enabled
       FROM booster_clubs 
-      WHERE id = ${clubId} 
-      AND is_active = true
+      WHERE id = ${clubId}
     `;
     
     if (club.length === 0) {
