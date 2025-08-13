@@ -20,22 +20,29 @@ const corsOptions = {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      'https://ewa-website.com',
-      'https://www.ewa-website.com',
-      'https://eastlakewolfpack.org',
-      'https://www.eastlakewolfpack.org',
-      'https://ewa-website.vercel.app',
-      'https://ewa-website-n2dw0czus-andrews-projects-fcf60ac5.vercel.app',
-      'http://localhost:3000', // Development only
-      'http://localhost:3001'  // Development only
-    ];
+    // Temporarily allow all origins to debug CORS issue
+    console.log('CORS origin check:', origin);
+    callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    // TODO: Re-enable strict CORS after debugging
+    // const allowedOrigins = [
+    //   'https://ewa-website.com',
+    //   'https://www.ewa-website.com',
+    //   'https://eastlakewolfpack.org',
+    //   'https://www.eastlakewolfpack.org',
+    //   'https://ewa-website.vercel.app',
+    //   'https://ewa-website-n2dw0czus-andrews-projects-fcf60ac5.vercel.app',
+    //   'https://*.eastlakewolfpack.org',
+    //   'https://*.ewa-website.com',
+    //   'http://localhost:3000', // Development only
+    //   'http://localhost:3001'  // Development only
+    // ];
+    // 
+    // if (allowedOrigins.includes(origin)) {
+    //   callback(null, true);
+    // } else {
+    //   callback(new Error('Not allowed by CORS'));
+    // }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
