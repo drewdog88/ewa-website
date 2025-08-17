@@ -1,0 +1,121 @@
+# Database Safety Rules - CRITICAL
+
+## 🚨 MANDATORY SAFETY CHECKS
+
+### Before ANY Database Operation:
+1. **ALWAYS** verify current environment file (`.env.local` vs `.env.dev`)
+2. **ALWAYS** check database connection string for environment indicators
+3. **NEVER** proceed if uncertain about which database you're connected to
+4. **ALWAYS** run a test query to confirm database identity before modifications
+
+### Environment Identification:
+- **PRODUCTION**: `ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech`
+- **DEVELOPMENT**: `ep-floral-meadow-ad5lu8xi-pooler.c-2.us-east-1.aws.neon.tech`
+
+## 🔍 Verification Process
+
+### Step 1: Check Environment File
+```bash
+# Verify which environment file is active
+powershell -Command "Get-Content .env.local"
+```
+
+### Step 2: Verify Database Connection
+```javascript
+// ALWAYS run this test query before any database changes
+const testQuery = "SELECT current_database(), current_user, inet_server_addr();";
+// Verify the returned database name and server address
+```
+
+### Step 3: Environment Indicators
+- **Production**: Contains `ep-jolly-silence-afmn89zf`
+- **Development**: Contains `ep-floral-meadow-ad5lu8xi`
+
+## 🛡️ Safety Protocols
+
+### When Working on Database Changes:
+1. **Start with verification**: Always run environment check first
+2. **Use development branch**: Never work directly on main branch for DB changes
+3. **Test locally first**: All changes must be tested on dev database
+4. **Document changes**: Log all database modifications with timestamps
+5. **Backup before changes**: Create database backups before any schema changes
+
+### Prohibited Actions:
+- ❌ Running migrations against production without explicit confirmation
+- ❌ Modifying production data without backup
+- ❌ Working on database changes without environment verification
+- ❌ Pushing database changes without thorough testing
+
+### Required Actions:
+- ✅ Always verify environment before database operations
+- ✅ Use development database for all testing and development
+- ✅ Create backups before any database modifications
+- ✅ Test all changes thoroughly before production deployment
+- ✅ Document all database changes with clear reasoning
+
+## 📋 Safety Checklist
+
+Before any database operation, confirm:
+- [ ] Current environment file is correct
+- [ ] Database connection string points to intended environment
+- [ ] Test query confirms correct database
+- [ ] Working on development branch (not main)
+- [ ] Backup created if modifying existing data
+- [ ] Changes tested locally first
+
+## 🚨 Emergency Procedures
+
+If you accidentally connect to production:
+1. **STOP** all operations immediately
+2. **DO NOT** make any changes
+3. **VERIFY** no data was modified
+4. **REPORT** the incident
+5. **SWITCH** to development environment
+6. **DOCUMENT** what happened
+
+## 📝 Implementation Guidelines
+
+### Code Examples:
+```javascript
+// ✅ DO: Always verify environment before database operations
+async function verifyEnvironment() {
+    const result = await db.query("SELECT current_database(), inet_server_addr();");
+    const dbName = result.rows[0].current_database;
+    const serverAddr = result.rows[0].inet_server_addr;
+    
+    if (serverAddr.includes('ep-jolly-silence-afmn89zf')) {
+        throw new Error('🚨 CONNECTED TO PRODUCTION DATABASE - STOP IMMEDIATELY');
+    }
+    
+    console.log(`✅ Connected to development database: ${dbName}`);
+}
+
+// ❌ DON'T: Skip environment verification
+async function unsafeDatabaseOperation() {
+    // This is dangerous - no environment check
+    await db.query("UPDATE users SET status = 'active'");
+}
+```
+
+### Environment Switching:
+```bash
+# ✅ Safe way to switch to development
+copy .env.dev .env.local
+
+# ✅ Safe way to switch to production (only when needed)
+copy .env.production .env.local
+```
+
+## 🎯 Key Principles
+
+1. **Safety First**: Always prioritize data safety over development speed
+2. **Verification Required**: No database operation without environment verification
+3. **Documentation**: Log all database changes and environment switches
+4. **Testing**: All changes must be tested on development database first
+5. **Backup**: Always backup before any destructive operations
+
+Remember: **Production data is irreplaceable. When in doubt, verify first, act second.**
+description:
+globs:
+alwaysApply: false
+---

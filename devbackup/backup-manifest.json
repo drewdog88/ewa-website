@@ -1,0 +1,126 @@
+{
+  "backupDate": "2025-08-17T17:12:52.918Z",
+  "totalFiles": 15,
+  "files": [
+    {
+      "pathname": "Booster Treasurers Monthly Checklist.pdf",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/Booster%20Treasurers%20Monthly%20Checklist.pdf",
+      "size": 234498,
+      "uploadedAt": "2025-08-16T19:26:38.000Z",
+      "localSize": 234498,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\Booster Treasurers Monthly Checklist.pdf"
+    },
+    {
+      "pathname": "EWA-Insurance Questionairre.docx",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/EWA-Insurance%20Questionairre.docx",
+      "size": 21397,
+      "uploadedAt": "2025-08-16T19:26:38.000Z",
+      "localSize": 21397,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\EWA-Insurance Questionairre.docx"
+    },
+    {
+      "pathname": "Wolfpack Basics October 2025.pdf",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/Wolfpack%20Basics%20October%202025.pdf",
+      "size": 257215,
+      "uploadedAt": "2025-08-16T19:26:39.000Z",
+      "localSize": 257215,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\Wolfpack Basics October 2025.pdf"
+    },
+    {
+      "pathname": "backups/database/latest/db-backup-2025-08-17T06-17-58-148Z.sql",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/backups/database/latest/db-backup-2025-08-17T06-17-58-148Z.sql",
+      "size": 57661,
+      "uploadedAt": "2025-08-17T06:18:00.000Z",
+      "localSize": 57661,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\backups\\database\\latest\\db-backup-2025-08-17T06-17-58-148Z.sql"
+    },
+    {
+      "pathname": "backups/database/latest/db-backup-2025-08-17T06-25-40-228Z.sql",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/backups/database/latest/db-backup-2025-08-17T06-25-40-228Z.sql",
+      "size": 57661,
+      "uploadedAt": "2025-08-17T06:25:42.000Z",
+      "localSize": 57661,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\backups\\database\\latest\\db-backup-2025-08-17T06-25-40-228Z.sql"
+    },
+    {
+      "pathname": "backups/database/latest/db-backup-2025-08-17T06-28-00-292Z.sql",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/backups/database/latest/db-backup-2025-08-17T06-28-00-292Z.sql",
+      "size": 57661,
+      "uploadedAt": "2025-08-17T06:28:02.000Z",
+      "localSize": 57661,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\backups\\database\\latest\\db-backup-2025-08-17T06-28-00-292Z.sql"
+    },
+    {
+      "pathname": "backups/database/latest/db-backup-2025-08-17T06-28-19-278Z.sql",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/backups/database/latest/db-backup-2025-08-17T06-28-19-278Z.sql",
+      "size": 57661,
+      "uploadedAt": "2025-08-17T06:28:21.000Z",
+      "localSize": 57661,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\backups\\database\\latest\\db-backup-2025-08-17T06-28-19-278Z.sql"
+    },
+    {
+      "pathname": "backups/database/latest/db-backup-2025-08-17T16-59-41-312Z.sql",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/backups/database/latest/db-backup-2025-08-17T16-59-41-312Z.sql",
+      "size": 57965,
+      "uploadedAt": "2025-08-17T16:59:43.000Z",
+      "localSize": 57965,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\backups\\database\\latest\\db-backup-2025-08-17T16-59-41-312Z.sql"
+    },
+    {
+      "pathname": "coverage-data.json",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/coverage-data.json",
+      "size": 85,
+      "uploadedAt": "2025-08-16T19:26:39.000Z",
+      "localSize": 85,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\coverage-data.json"
+    },
+    {
+      "pathname": "security-report.json",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/security-report.json",
+      "size": 1589,
+      "uploadedAt": "2025-08-16T19:26:40.000Z",
+      "localSize": 1589,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\security-report.json"
+    },
+    {
+      "pathname": "test-1754420461134.txt",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/test-1754420461134.txt",
+      "size": 33,
+      "uploadedAt": "2025-08-16T19:26:40.000Z",
+      "localSize": 33,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\test-1754420461134.txt"
+    },
+    {
+      "pathname": "test-1754420755143.txt",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/test-1754420755143.txt",
+      "size": 33,
+      "uploadedAt": "2025-08-16T19:26:40.000Z",
+      "localSize": 33,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\test-1754420755143.txt"
+    },
+    {
+      "pathname": "test-1754421343821.txt",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/test-1754421343821.txt",
+      "size": 33,
+      "uploadedAt": "2025-08-16T19:26:40.000Z",
+      "localSize": 33,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\test-1754421343821.txt"
+    },
+    {
+      "pathname": "test-1754421389872.txt",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/test-1754421389872.txt",
+      "size": 33,
+      "uploadedAt": "2025-08-16T19:26:41.000Z",
+      "localSize": 33,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\test-1754421389872.txt"
+    },
+    {
+      "pathname": "w9-1754429778617-test.pdf",
+      "url": "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com/w9-1754429778617-test.pdf",
+      "size": 4,
+      "uploadedAt": "2025-08-16T19:26:41.000Z",
+      "localSize": 4,
+      "localPath": "D:\\Gitlocal\\ewa_website\\devbackup\\w9-1754429778617-test.pdf"
+    }
+  ]
+}
