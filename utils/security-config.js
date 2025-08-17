@@ -23,6 +23,8 @@ const corsOptions = {
     const allowedOrigins = [
       'https://*.eastlakewolfpack.org',
       'https://*.vercel.app',
+      'https://kre9xoivjggj03of.public.blob.vercel-storage.com',
+      'https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com',
       'http://localhost:3000', // Development only
       'http://localhost:3001'  // Development only
     ];
@@ -109,17 +111,20 @@ const helmetConfig = {
         "'self'",
         "data:",
         "blob:",
-        "https:",
         "https://buy.stripe.com",
         "https://donate.stripe.com",
-        "https://checkout.stripe.com"
+        "https://checkout.stripe.com",
+        "https://kre9xoivjggj03of.public.blob.vercel-storage.com",
+        "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com"
       ],
       connectSrc: [
         "'self'",
         "https://api.stripe.com",
         "https://buy.stripe.com",
         "https://donate.stripe.com",
-        "https://checkout.stripe.com"
+        "https://checkout.stripe.com",
+        "https://kre9xoivjggj03of.public.blob.vercel-storage.com",
+        "https://d3cmxyafiy0jv5ch.public.blob.vercel-storage.com"
       ],
       frameSrc: [
         "https://js.stripe.com",
