@@ -586,7 +586,7 @@ function parseRealSQLBackup(sqlContent) {
         // More precise record counting - look for complete record tuples
         // This regex looks for patterns like (value1, value2, ...) that are complete records
         // It avoids matching nested parentheses within the data values
-        const valuesMatch = statement.match(/VALUES\s*(.+)/i);
+        const valuesMatch = statement.match(/VALUES\s*(.+);/i);
         if (valuesMatch) {
           const valuesSection = valuesMatch[1];
           
