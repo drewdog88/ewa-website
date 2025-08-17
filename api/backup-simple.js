@@ -20,6 +20,7 @@ if (!BLOB_TOKEN) {
   console.log('✅ BLOB_READ_WRITE_TOKEN configured for backup system');
   console.log('💡 Environment:', process.env.NODE_ENV || 'development');
   console.log('💡 Token starts with:', BLOB_TOKEN.substring(0, 20) + '...');
+  console.log('💡 Production deployment test - ' + new Date().toISOString());
 }
 
 // Database connection for backup operations
