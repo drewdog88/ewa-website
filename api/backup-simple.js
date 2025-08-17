@@ -52,6 +52,13 @@ router.get('/test', async (req, res) => {
   };
 
   try {
+    // Debug: Log environment variable info
+    console.log('🔍 DEBUG: Environment variable check');
+    console.log('   NODE_ENV:', process.env.NODE_ENV);
+    console.log('   BLOB_TOKEN exists:', !!process.env.BLOB_READ_WRITE_TOKEN);
+    console.log('   BLOB_TOKEN starts with:', process.env.BLOB_READ_WRITE_TOKEN ? process.env.BLOB_READ_WRITE_TOKEN.substring(0, 20) + '...' : 'NOT SET');
+    console.log('   BLOB_TOKEN length:', process.env.BLOB_READ_WRITE_TOKEN ? process.env.BLOB_READ_WRITE_TOKEN.length : 0);
+
     // Test 1: Check blob storage connectivity
     try {
       const { blobs } = await list({ token: BLOB_TOKEN });
