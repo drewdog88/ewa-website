@@ -566,9 +566,9 @@ function parseRealSQLBackup(sqlContent) {
           const recordCount = valuesMatches ? valuesMatches.length : 1;
           
           analysis.tableDetails.push({
-            tableName,
-            recordCount,
-            size: trimmed.length
+            name: tableName,
+            records: recordCount,
+            description: `${recordCount} records`
           });
           
           analysis.totalRecords += recordCount;

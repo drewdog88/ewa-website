@@ -303,6 +303,18 @@
         </div>
     </div>
 
+    <!-- Analysis Modal -->
+    <div id="analysis-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <div id="analysis-content">
+                <!-- Analysis content will be inserted here -->
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button onclick="hideAnalysisModal()" class="action-btn btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Selective Cleanup Modal -->
     <div id="cleanup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;">
@@ -613,20 +625,41 @@
             const modal = document.getElementById('analysis-modal');
             const content = document.getElementById('analysis-content');
             
-            let html = '<h3>Backup Analysis</h3>';
-            html += '<table class="table table-sm">';
-            html += '<thead><tr><th>Table</th><th>Records</th><th>Description</th></tr></thead><tbody>';
+            let html = '<h3>📊 Backup Analysis Results</h3>';
             
-            analysis.tables.forEach(table => {
-                html += `<tr><td>${table.name}</td><td>${table.records}</td><td>${table.description}</td></tr>`;
-            });
+            if (analysis.warnings && analysis.warnings.length > 0) {
+                html += '<div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 15px;">';
+                html += '<strong>⚠️ Warnings:</strong><ul>';
+                analysis.warnings.forEach(warning => {
+                    html += `<li>${warning}</li>`;
+                });
+                html += '</ul></div>';
+            }
             
-            html += '</tbody></table>';
-            html += `<p><strong>Total Records:</strong> ${analysis.totalRecords}</p>`;
-            html += `<p><strong>Estimated Restore Time:</strong> ${analysis.estimatedTime}</p>`;
+            if (analysis.tableDetails && analysis.tableDetails.length > 0) {
+                html += '<table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">';
+                html += '<thead><tr style="background: #f8f9fa;"><th style="padding: 8px; border: 1px solid #dee2e6;">Table</th><th style="padding: 8px; border: 1px solid #dee2e6;">Records</th><th style="padding: 8px; border: 1px solid #dee2e6;">Description</th></tr></thead><tbody>';
+                
+                analysis.tableDetails.forEach(table => {
+                    html += `<tr><td style="padding: 8px; border: 1px solid #dee2e6;">${table.name}</td><td style="padding: 8px; border: 1px solid #dee2e6;">${table.records}</td><td style="padding: 8px; border: 1px solid #dee2e6;">${table.description || 'N/A'}</td></tr>`;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            html += `<p><strong>Total Tables:</strong> ${analysis.totalTables || 0}</p>`;
+            html += `<p><strong>Total Records:</strong> ${analysis.totalRecords || 0}</p>`;
+            
+            if (analysis.estimatedTime) {
+                html += `<p><strong>Estimated Restore Time:</strong> ${analysis.estimatedTime}</p>`;
+            }
             
             content.innerHTML = html;
             modal.style.display = 'block';
+        }
+
+        function hideAnalysisModal() {
+            document.getElementById('analysis-modal').style.display = 'none';
         }
 
         // Selective cleanup functions
