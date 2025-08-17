@@ -775,7 +775,7 @@ async function getBoosterClubs() {
         created_at, 
         updated_at
       FROM booster_clubs 
-      ORDER BY name
+      ORDER BY sort_order, name
     `;
     return clubs;
   } catch (error) {
