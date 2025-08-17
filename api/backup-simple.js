@@ -581,9 +581,9 @@ function parseRealSQLBackup(sqlContent) {
       if (tableMatch) {
         const tableName = tableMatch[1];
         
-        // Count VALUES clauses to get record count
-        const valuesMatches = statement.match(/VALUES\s*\(/gi);
-        const recordCount = valuesMatches ? valuesMatches.length : 1;
+        // Count record tuples - look for all (value,value,...) patterns
+        const recordMatches = statement.match(/\(\s*[^)]+\s*\)/g);
+        const recordCount = recordMatches ? recordMatches.length : 1;
         
         analysis.tableDetails.push({
           name: tableName,
