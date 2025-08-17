@@ -5,7 +5,7 @@
 Create a file called `.env.local` in the root directory with the following content:
 
 ```
-BLOB_READ_WRITE_TOKEN=vercel_blob_rw_UWH6nTy2XcA4BS7u_OS0oZHtQ56g3BjXFIWAqNSlxDPJVHV
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_kRe9XoIvjggJ03oF_JLbmM2kbj59CKUV5yrdsU1aa7lDTKt
 DATABASE_URL=postgres://neondb_owner:npg_Lj2UaqCig6HI@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require
 ```
 
@@ -17,7 +17,7 @@ Go to "Settings" → "Environment Variables" and add:
 
 **Blob Storage:**
 - **Name**: `BLOB_READ_WRITE_TOKEN`
-- **Value**: `vercel_blob_rw_UWH6nTy2XcA4BS7u_OS0oZHtQ56g3BjXFIWAqNSlxDPJVHV`
+- **Value**: `vercel_blob_rw_kRe9XoIvjggJ03oF_JLbmM2kbj59CKUV5yrdsU1aa7lDTKt`
 - **Environment**: Production (and optionally Preview/Development)
 
 **Neon Database:**
