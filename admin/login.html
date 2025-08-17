@@ -191,13 +191,14 @@
             .then(data => {
                 console.log('Response data:', data);
                 if (data.success) {
-                    // Simple session storage without external dependency
-                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
-                    sessionStorage.setItem('loginTime', new Date().getTime().toString());
+                    // Store session token in localStorage for backup management page
+                    localStorage.setItem('sessionToken', username);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    localStorage.setItem('loginTime', new Date().getTime().toString());
                     
                     showMessage('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = 'dashboard.html';
+                        window.location.href = 'backup-management.html';
                     }, 1000);
                 } else {
                     showMessage('Error: ' + data.message, 'error');
