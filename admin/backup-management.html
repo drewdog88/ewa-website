@@ -304,13 +304,36 @@
         </div>
     </div>
 
+    <!-- Selective Cleanup Modal -->
+    <div id="cleanup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h3>🧹 Selective Backup Cleanup</h3>
+            <p><strong>Warning:</strong> Selected backups will be permanently deleted. This action cannot be undone.</p>
+            
+            <div style="margin: 20px 0;">
+                <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+                    <input type="checkbox" id="select-all-backups" onchange="toggleSelectAll()">
+                    <strong>Select All Backups</strong>
+                </label>
+                
+                <div id="cleanup-backup-list" style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px;">
+                    <p style="text-align: center; color: #6c757d;">Loading backups...</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="hideCleanupModal()" class="action-btn btn-warning">Cancel</button>
+                <button onclick="performSelectiveCleanup()" class="action-btn btn-danger">Delete Selected</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let backupData = null;
 
         // Load backup status on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadBackupStatus();
-            loadBackupHistory();
         });
 
         async function loadBackupStatus() {
@@ -321,6 +344,8 @@
                 if (result.success) {
                     backupData = result.data;
                     updateStatusDisplay();
+                    // Load history after status is loaded
+                    loadBackupHistory();
                 } else {
                     showAlert('Failed to load backup status', 'danger');
                 }
@@ -361,6 +386,10 @@
 
         async function loadBackupHistory() {
             try {
+                // Show loading state
+                const tbody = document.getElementById('backup-history');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading backup history...</td></tr>';
+                
                 const response = await fetch('/api/backup/list');
                 const result = await response.json();
                 
@@ -378,32 +407,59 @@
         function displayBackupHistory(backups) {
             const tbody = document.getElementById('backup-history');
             
-            if (backups.length === 0) {
+            // Flatten the new structured backup response format
+            const flatBackups = [];
+            
+            // Add database backups
+            if (backups.database && backups.database.blob) {
+                backups.database.blob.forEach(backup => {
+                    flatBackups.push({
+                        ...backup,
+                        type: 'Database',
+                        timestamp: backup.uploadedAt,
+                        file: backup.pathname,
+                        size: backup.size
+                    });
+                });
+            }
+            
+            // Add full backups
+            if (backups.full && backups.full.blob) {
+                backups.full.blob.forEach(backup => {
+                    flatBackups.push({
+                        ...backup,
+                        type: 'Full',
+                        timestamp: backup.uploadedAt,
+                        file: backup.pathname,
+                        size: backup.size
+                    });
+                });
+            }
+            
+            if (flatBackups.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No backups found</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = backups.map(backup => {
+            // Sort by date (newest first)
+            flatBackups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            tbody.innerHTML = flatBackups.map(backup => {
                 const date = new Date(backup.timestamp).toLocaleString();
-                const duration = backup.duration ? (backup.duration / 1000).toFixed(1) + 's' : 'N/A';
-                const dbSize = backup.database ? (backup.database.size / 1024).toFixed(2) + ' KB' : 'N/A';
-                const blobSize = backup.blob ? (backup.blob.size / 1024 / 1024).toFixed(2) + ' MB' : 'N/A';
-                const totalSize = (backup.totalSize / 1024 / 1024).toFixed(2) + ' MB';
-                const age = Math.floor(backup.age / (1000 * 60 * 60 * 24)) + ' days ago';
+                const size = (backup.size / 1024).toFixed(2) + ' KB';
 
                 return `
                     <tr>
+                        <td>${backup.type}</td>
                         <td>${date}</td>
-                        <td>${duration}</td>
-                        <td>${dbSize}</td>
-                        <td>${blobSize}</td>
-                        <td>${totalSize}</td>
+                        <td>${size}</td>
+                        <td>${backup.pathname}</td>
                         <td class="backup-actions-cell">
-                            <button class="action-btn btn-sm btn-primary" onclick="downloadBackup('${backup.file}')">
+                            <button class="action-btn btn-sm btn-primary" onclick="window.open('${backup.url}', '_blank')">
                                 📥 Download
                             </button>
-                            <button class="action-btn btn-sm btn-danger" onclick="restoreBackup('${backup.timestamp}')">
-                                🔄 Restore
+                            <button class="action-btn btn-sm btn-warning" onclick="analyzeBackup('${backup.pathname}')">
+                                📊 Analyze
                             </button>
                         </td>
                     </tr>
@@ -417,9 +473,10 @@
             showProgress('Starting backup...');
             
             try {
-                const response = await fetch('/api/backup/perform', {
+                const response = await fetch('/api/backup/create', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'database' })
                 });
                 
                 const result = await response.json();
@@ -440,31 +497,7 @@
         }
 
         async function cleanupBackups() {
-            if (!confirm('Delete backups older than 30 days? This action cannot be undone.')) return;
-
-            showProgress('Cleaning up old backups...');
-            
-            try {
-                const response = await fetch('/api/backup/cleanup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showAlert(`Cleanup completed: ${result.data.deletedCount} files deleted, ${(result.data.freedSpace / 1024 / 1024).toFixed(2)} MB freed`, 'success');
-                    await loadBackupStatus();
-                    await loadBackupHistory();
-                } else {
-                    showAlert('Cleanup failed: ' + result.message, 'danger');
-                }
-            } catch (error) {
-                console.error('Error cleaning up backups:', error);
-                showAlert('Error cleaning up backups', 'danger');
-            } finally {
-                hideProgress();
-            }
+            showCleanupModal();
         }
 
         async function refreshStatus() {
@@ -539,9 +572,7 @@
             }
         }
 
-        function downloadBackup(filename) {
-            window.open(`/api/backup/download/${filename}`, '_blank');
-        }
+
 
         function showProgress(message) {
             document.getElementById('progress-container').style.display = 'block';
@@ -552,6 +583,185 @@
         function hideProgress() {
             document.getElementById('progress-container').style.display = 'none';
             document.getElementById('progress-fill').style.width = '0%';
+        }
+
+        async function analyzeBackup(backupPath) {
+            try {
+                showProgress('Analyzing backup...');
+                
+                const response = await fetch('/api/backup/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ backupPath })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showBackupAnalysis(result.data);
+                } else {
+                    showAlert('Analysis failed: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error analyzing backup:', error);
+                showAlert('Error analyzing backup', 'danger');
+            } finally {
+                hideProgress();
+            }
+        }
+
+        function showBackupAnalysis(analysis) {
+            const modal = document.getElementById('analysis-modal');
+            const content = document.getElementById('analysis-content');
+            
+            let html = '<h3>Backup Analysis</h3>';
+            html += '<table class="table table-sm">';
+            html += '<thead><tr><th>Table</th><th>Records</th><th>Description</th></tr></thead><tbody>';
+            
+            analysis.tables.forEach(table => {
+                html += `<tr><td>${table.name}</td><td>${table.records}</td><td>${table.description}</td></tr>`;
+            });
+            
+            html += '</tbody></table>';
+            html += `<p><strong>Total Records:</strong> ${analysis.totalRecords}</p>`;
+            html += `<p><strong>Estimated Restore Time:</strong> ${analysis.estimatedTime}</p>`;
+            
+            content.innerHTML = html;
+            modal.style.display = 'block';
+        }
+
+        // Selective cleanup functions
+        function showCleanupModal() {
+            document.getElementById('cleanup-modal').style.display = 'block';
+            populateCleanupList();
+        }
+
+        function hideCleanupModal() {
+            document.getElementById('cleanup-modal').style.display = 'none';
+        }
+
+        async function populateCleanupList() {
+            const container = document.getElementById('cleanup-backup-list');
+            container.innerHTML = '<p style="text-align: center; color: #6c757d;">Loading backups...</p>';
+            
+            try {
+                const response = await fetch('/api/backup/list');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayCleanupBackups(result.data);
+                } else {
+                    container.innerHTML = '<p style="text-align: center; color: #dc3545;">Failed to load backups</p>';
+                }
+            } catch (error) {
+                console.error('Error loading backups for cleanup:', error);
+                container.innerHTML = '<p style="text-align: center; color: #dc3545;">Error loading backups</p>';
+            }
+        }
+
+        function displayCleanupBackups(backups) {
+            const container = document.getElementById('cleanup-backup-list');
+            const flatBackups = [];
+            
+            // Add database backups
+            if (backups.database && backups.database.blob) {
+                backups.database.blob.forEach(backup => {
+                    flatBackups.push({
+                        ...backup,
+                        type: 'Database',
+                        timestamp: backup.uploadedAt,
+                        file: backup.pathname,
+                        size: backup.size
+                    });
+                });
+            }
+            
+            // Add full backups
+            if (backups.full && backups.full.blob) {
+                backups.full.blob.forEach(backup => {
+                    flatBackups.push({
+                        ...backup,
+                        type: 'Full',
+                        timestamp: backup.uploadedAt,
+                        file: backup.pathname,
+                        size: backup.size
+                    });
+                });
+            }
+            
+            if (flatBackups.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">No backups found</p>';
+                return;
+            }
+
+            // Sort by date (newest first)
+            flatBackups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            container.innerHTML = flatBackups.map(backup => {
+                const date = new Date(backup.timestamp).toLocaleString();
+                const size = (backup.size / 1024).toFixed(2) + ' KB';
+
+                return `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid #dee2e6;">
+                        <input type="checkbox" class="backup-checkbox" value="${backup.pathname}" data-size="${backup.size}">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">${backup.type} Backup</div>
+                            <div style="font-size: 12px; color: #6c757d;">${date} • ${size} • ${backup.pathname}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('select-all-backups');
+            const backupCheckboxes = document.querySelectorAll('.backup-checkbox');
+            
+            backupCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+
+        async function performSelectiveCleanup() {
+            const selectedCheckboxes = document.querySelectorAll('.backup-checkbox:checked');
+            
+            if (selectedCheckboxes.length === 0) {
+                showAlert('Please select at least one backup to delete', 'warning');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete ${selectedCheckboxes.length} selected backup(s)? This action cannot be undone.`)) {
+                return;
+            }
+
+            const filesToDelete = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+            let totalSize = Array.from(selectedCheckboxes).reduce((sum, checkbox) => sum + parseInt(checkbox.dataset.size), 0);
+
+            showProgress('Deleting selected backups...');
+            hideCleanupModal();
+            
+            try {
+                const response = await fetch('/api/backup/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ files: filesToDelete })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(`Cleanup completed: ${filesToDelete.length} files deleted, ${(totalSize / 1024 / 1024).toFixed(2)} MB freed`, 'success');
+                    await loadBackupStatus();
+                    await loadBackupHistory();
+                } else {
+                    showAlert('Cleanup failed: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error cleaning up backups:', error);
+                showAlert('Error cleaning up backups', 'danger');
+            } finally {
+                hideProgress();
+            }
         }
 
         function showAlert(message, type) {
