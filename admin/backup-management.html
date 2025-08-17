@@ -211,27 +211,27 @@
             <h2>📊 Backup Status</h2>
             <div class="status-grid">
                 <div class="status-card">
-                    <h3>Last Backup</h3>
+                    <h3>Last Backup Time</h3>
                     <div class="value" id="last-backup">Loading...</div>
                 </div>
                 <div class="status-card">
-                    <h3>Backup Status</h3>
+                    <h3>Last Backup Status</h3>
                     <div class="value" id="backup-status">Loading...</div>
                 </div>
                 <div class="status-card">
-                    <h3>Next Scheduled</h3>
+                    <h3>Next Scheduled Backup</h3>
                     <div class="value" id="next-backup">Loading...</div>
                 </div>
                 <div class="status-card">
-                    <h3>Total Backups</h3>
+                    <h3>Total Backup Files</h3>
                     <div class="value" id="total-backups">Loading...</div>
                 </div>
                 <div class="status-card">
-                    <h3>Total Size</h3>
+                    <h3>Total Backup Size</h3>
                     <div class="value" id="total-size">Loading...</div>
                 </div>
                 <div class="status-card">
-                    <h3>Storage Used</h3>
+                    <h3>Storage Usage (1GB Limit)</h3>
                     <div class="value" id="storage-used">Loading...</div>
                 </div>
             </div>
@@ -267,17 +267,16 @@
             <table class="backup-table">
                 <thead>
                     <tr>
+                        <th>Type</th>
                         <th>Date</th>
-                        <th>Duration</th>
-                        <th>Database Size</th>
-                        <th>Blob Size</th>
-                        <th>Total Size</th>
+                        <th>Size</th>
+                        <th>File Path</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="backup-history">
                     <tr>
-                        <td colspan="6" style="text-align: center;">Loading backup history...</td>
+                        <td colspan="5" style="text-align: center;">Loading backup history...</td>
                     </tr>
                 </tbody>
             </table>
@@ -381,7 +380,7 @@
             // Calculate storage usage (assuming 1GB limit for demo)
             const storageLimit = 1024; // 1GB in MB
             const usagePercent = Math.min((totalSizeMB / storageLimit) * 100, 100);
-            document.getElementById('storage-used').textContent = usagePercent.toFixed(1) + '%';
+            document.getElementById('storage-used').textContent = usagePercent.toFixed(1) + '% of 1GB';
         }
 
         async function loadBackupHistory() {
@@ -437,7 +436,7 @@
             }
             
             if (flatBackups.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No backups found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No backups found</td></tr>';
                 return;
             }
 
