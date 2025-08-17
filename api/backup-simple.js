@@ -8,8 +8,15 @@ const cron = require('node-cron');
 
 const router = express.Router();
 
-// Get blob token from environment - no fallback to prevent using wrong token
-const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+// Get blob token from environment - handle different tokens for different environments
+let BLOB_TOKEN;
+if (process.env.NODE_ENV === 'development') {
+  // Development uses the development-specific token
+  BLOB_TOKEN = process.env.***REMOVED***_READ_WRITE_TOKEN;
+} else {
+  // Production and Preview use the production token
+  BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+}
 
 // Safety check for blob token
 if (!BLOB_TOKEN) {
@@ -17,8 +24,9 @@ if (!BLOB_TOKEN) {
   console.error('💡 Please set BLOB_READ_WRITE_TOKEN in your environment');
   console.error('💡 Current environment:', process.env.NODE_ENV || 'development');
 } else {
-  console.log('✅ BLOB_READ_WRITE_TOKEN configured for backup system');
+  console.log('✅ Blob token configured for backup system');
   console.log('💡 Environment:', process.env.NODE_ENV || 'development');
+  console.log('💡 Token type:', process.env.NODE_ENV === 'development' ? 'Development' : 'Production/Preview');
   console.log('💡 Token starts with:', BLOB_TOKEN.substring(0, 20) + '...');
   console.log('💡 Production deployment test - ' + new Date().toISOString());
 }
