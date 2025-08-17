@@ -93,7 +93,6 @@ const helmetConfig = {
         "'unsafe-inline'",
         "https://js.stripe.com",
         "https://checkout.stripe.com",
-        "https://_vercel",
         "https://va.vercel-scripts.com"
       ],
       scriptSrcAttr: ["'unsafe-inline'"],

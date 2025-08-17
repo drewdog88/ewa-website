@@ -198,8 +198,6 @@
         .qr-preview img {
             max-width: 200px;
             max-height: 200px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
         }
 
         .qr-preview .no-qr {
@@ -383,7 +381,7 @@
             <li class="admin-only"><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
                                            <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
                                <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
-                               <li class="admin-only"><a href="#backup" class="nav-link" data-section="backup">Backup Management</a></li>
+                               <li class="admin-only"><a href="backup-management.html" class="nav-link" target="_blank">Backup Management</a></li>
                 <li class="admin-only"><a href="#payment-management" class="nav-link" data-section="payment-management">Payment Management</a></li>
             </ul>
         </div>
@@ -1192,71 +1190,7 @@
                 </div>
             </div>
 
-            <!-- Backup Management Section -->
-            <div id="backup" class="content-section">
-                <div class="section-header">
-                    <h2>Backup Management</h2>
-                    <p>Manage database backups and system data.</p>
-                </div>
-                
-                <!-- Backup Status -->
-                <div class="backup-status">
-                    <h3>📊 Backup Status</h3>
-                    <div class="status-grid">
-                        <div class="status-card">
-                            <h3>Last Backup</h3>
-                            <div class="value" id="last-backup">Loading...</div>
-                        </div>
-                        <div class="status-card">
-                            <h3>Backup Status</h3>
-                            <div class="value" id="backup-status">Loading...</div>
-                        </div>
-                        <div class="status-card">
-                            <h3>Next Scheduled</h3>
-                            <div class="value" id="next-backup">Loading...</div>
-                        </div>
-                        <div class="status-card">
-                            <h3>Total Backups</h3>
-                            <div class="value" id="total-backups">Loading...</div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Backup Actions -->
-                <div class="backup-actions">
-                    <button class="action-btn btn-primary" onclick="performBackup()">
-                        🔄 Perform Backup
-                    </button>
-                    <button class="action-btn btn-success" onclick="loadBackupHistory()">
-                        📋 Refresh History
-                    </button>
-                    <button class="action-btn btn-warning" onclick="cleanupBackups()">
-                        🧹 Cleanup Old Backups
-                    </button>
-                </div>
-
-                <!-- Backup History -->
-                <div class="backup-history">
-                    <h3>📋 Backup History</h3>
-                    <table class="data-table" id="backupTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Duration</th>
-                                <th>Database Size</th>
-                                <th>Blob Size</th>
-                                <th>Total Size</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="backup-history">
-                            <tr>
-                                <td colspan="6" style="text-align: center;">Loading backup history...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
             <!-- Payment Management Section -->
             <div id="payment-management" class="content-section">
@@ -1363,41 +1297,46 @@
         // Global flag to prevent data loading during logout
         let isLoggingOut = false;
         
-        // Navigation functionality
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove active class from all links and sections
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-                
-                // Add active class to clicked link
-                this.classList.add('active');
-                
-                // Show corresponding section
-                const sectionId = this.getAttribute('data-section');
-                document.getElementById(sectionId).classList.add('active');
-                
-                // Update URL hash for proper browser navigation
-                window.location.hash = sectionId;
-                
-                // Load security dashboard data when that section is shown
-                if (sectionId === 'security-dashboard') {
-                    loadSecurityDashboardData();
-                }
-                
-                // Load backup data when that section is shown
-                if (sectionId === 'backup') {
-                    loadBackupData();
-                }
-
-                // Load content management data when section is shown
-                if (sectionId === 'content') {
-                    loadContentManagementData();
-                }
+        // Navigation functionality - moved inside DOMContentLoaded
+        function setupNavigation() {
+            console.log('Found nav links:', document.querySelectorAll('.nav-link').length);
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    console.log('Nav link clicked:', this.href, 'target:', this.getAttribute('target'));
+                    // Allow external links (like backup-management.html) to work normally
+                    if (this.getAttribute('target') === '_blank' || this.href.includes('.html')) {
+                        console.log('Allowing external link to work normally');
+                        return; // Don't prevent default, let the link work normally
+                    }
+                    
+                    e.preventDefault();
+                    
+                    // Remove active class from all links and sections
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const sectionId = this.getAttribute('data-section');
+                    document.getElementById(sectionId).classList.add('active');
+                    
+                    // Update URL hash for proper browser navigation
+                    window.location.hash = sectionId;
+                    
+                    // Load security dashboard data when that section is shown
+                    if (sectionId === 'security-dashboard') {
+                        loadSecurityDashboardData();
+                    }
+                    
+                    // Load content management data when section is shown
+                    if (sectionId === 'content') {
+                        loadContentManagementData();
+                    }
+                });
             });
-        });
+        }
         
         // Prevent AI training
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -2307,6 +2246,9 @@
             
             // Set up role-based access control
             setupRoleBasedAccess(userData);
+            
+            // Set up navigation functionality
+            setupNavigation();
             
             // Load volunteer data when volunteers section is shown
             document.querySelector('[data-section="volunteers"]').addEventListener('click', function() {
@@ -5063,179 +5005,7 @@
         loadCoverageData();
     }
 
-    // Backup Management Functions
-    let backupData = null;
 
-    // Load backup status
-    async function loadBackupStatus() {
-        try {
-            const response = await fetch('/api/backup/status');
-            const result = await response.json();
-            
-            if (result.success) {
-                // Handle both local and production API response structures
-                backupData = result.data || result;
-                updateBackupStatus();
-            } else {
-                showAlert('Failed to load backup status', 'danger');
-            }
-        } catch (error) {
-            console.error('Error loading backup status:', error);
-            showAlert('Error loading backup status', 'danger');
-        }
-    }
-
-    // Update backup status display
-    function updateBackupStatus() {
-        if (!backupData) return;
-        
-        // Handle different API response structures
-        const status = backupData.status || {};
-        const nextScheduled = backupData.nextScheduledBackup;
-        
-        document.getElementById('last-backup').textContent = 
-            status.lastBackup ? 
-            new Date(status.lastBackup).toLocaleString() : 
-            'Never';
-        
-        const statusElement = document.getElementById('backup-status');
-        statusElement.textContent = status.lastBackupStatus || 'Unknown';
-        statusElement.className = 'value ' + (status.lastBackupStatus === 'success' ? 'success' : 'danger');
-        
-        document.getElementById('next-backup').textContent = 
-            nextScheduled ? 
-            new Date(nextScheduled).toLocaleString() : 
-            'Not scheduled';
-        
-        document.getElementById('total-backups').textContent = status.backupCount || 0;
-    }
-
-    // Load backup history
-    async function loadBackupHistory() {
-        try {
-            const response = await fetch('/api/backup/list');
-            const result = await response.json();
-            
-            if (result.success) {
-                // Handle both local and production API response structures
-                const backupList = result.data || result.backups || [];
-                displayBackupHistory(backupList);
-            } else {
-                showAlert('Failed to load backup history', 'danger');
-            }
-        } catch (error) {
-            console.error('Error loading backup history:', error);
-            showAlert('Error loading backup history', 'danger');
-        }
-    }
-
-    // Display backup history
-    function displayBackupHistory(backups) {
-        const tbody = document.getElementById('backup-history');
-        
-        if (backups.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No backups found</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = backups.map(backup => {
-            const date = new Date(backup.timestamp).toLocaleString();
-            const duration = backup.duration ? (backup.duration / 1000).toFixed(1) + 's' : 'N/A';
-            const dbSize = backup.database ? (backup.database.size / 1024).toFixed(2) + ' KB' : 'N/A';
-            const blobSize = backup.blob ? (backup.blob.size / 1024 / 1024).toFixed(2) + ' MB' : 'N/A';
-            const totalSize = (backup.totalSize / 1024 / 1024).toFixed(2) + ' MB';
-            
-            return `
-                <tr>
-                    <td>${date}</td>
-                    <td>${duration}</td>
-                    <td>${dbSize}</td>
-                    <td>${blobSize}</td>
-                    <td>${totalSize}</td>
-                    <td>
-                        <button class="btn-small" onclick="downloadBackup('${backup.file}')">Download</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    // Perform backup
-    async function performBackup() {
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = '🔄 Creating Backup...';
-        button.disabled = true;
-
-        try {
-            const response = await fetch('/api/backup/perform', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showAlert('Backup completed successfully!', 'success');
-                loadBackupStatus();
-                loadBackupHistory();
-            } else {
-                showAlert('Backup failed: ' + result.message, 'danger');
-            }
-        } catch (error) {
-            console.error('Error performing backup:', error);
-            showAlert('Error performing backup', 'danger');
-        } finally {
-            button.textContent = originalText;
-            button.disabled = false;
-        }
-    }
-
-    // Cleanup old backups
-    async function cleanupBackups() {
-        if (!confirm('Are you sure you want to cleanup old backups? This action cannot be undone.')) {
-            return;
-        }
-
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = '🧹 Cleaning...';
-        button.disabled = true;
-
-        try {
-            const response = await fetch('/api/backup/cleanup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showAlert('Backup cleanup completed!', 'success');
-                loadBackupStatus();
-                loadBackupHistory();
-            } else {
-                showAlert('Backup cleanup failed: ' + result.message, 'danger');
-            }
-        } catch (error) {
-            console.error('Error cleaning up backups:', error);
-            showAlert('Error cleaning up backups', 'danger');
-        } finally {
-            button.textContent = originalText;
-            button.disabled = false;
-        }
-    }
-
-    // Download backup
-    function downloadBackup(filename) {
-        window.open(`/api/backup/download/${filename}`, '_blank');
-    }
-
-    // Load backup data when section is shown
-    function loadBackupData() {
-        loadBackupStatus();
-        loadBackupHistory();
-    }
 
     // Content Management Functions
     let currentClubData = null;
@@ -5354,11 +5124,7 @@
             loadSecurityDashboardData();
         }
         
-        // Check if we're on the backup section
-        const backupSection = document.getElementById('backup');
-        if (backupSection && backupSection.style.display !== 'none') {
-            loadBackupData();
-        }
+
     });
 
     // ===== PAYMENT MANAGEMENT FUNCTIONALITY =====
