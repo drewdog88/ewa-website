@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backup UI Test</title>
+</head>
+<body>
+    <h1>Backup UI Test</h1>
+    
+    <button onclick="testBackupStatus()">Test Status</button>
+    <button onclick="testBackupCreate()">Test Create</button>
+    <button onclick="testBackupList()">Test List</button>
+    
+    <div id="results"></div>
+
+    <script>
+        async function testBackupStatus() {
+            try {
+                const response = await fetch('/api/backup/status');
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = 'Error: ' + error.message;
+            }
+        }
+
+        async function testBackupCreate() {
+            try {
+                const response = await fetch('/api/backup/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'database' })
+                });
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = 'Error: ' + error.message;
+            }
+        }
+
+        async function testBackupList() {
+            try {
+                const response = await fetch('/api/backup/list');
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
