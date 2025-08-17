@@ -604,6 +604,10 @@ function parseRealSQLBackup(sqlContent) {
       // Add more debugging info
       if (insertStatements.length > 0) {
         analysis.warnings.push(`First INSERT statement: ${insertStatements[0].substring(0, 200)}...`);
+        
+        // Test table name extraction on first statement
+        const testMatch = insertStatements[0].match(/INSERT INTO\s+["']?(\w+)["']?\s*\(/i);
+        analysis.warnings.push(`Table name extraction test: ${testMatch ? testMatch[1] : 'FAILED'}`);
       }
       
       // Check for INSERT patterns in the raw content
