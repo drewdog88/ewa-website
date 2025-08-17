@@ -15,6 +15,10 @@ const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 if (!BLOB_TOKEN) {
   console.error('❌ BLOB_READ_WRITE_TOKEN not configured - backup system will not work');
   console.error('💡 Please set BLOB_READ_WRITE_TOKEN in your environment');
+  console.error('💡 Current environment:', process.env.NODE_ENV || 'development');
+} else {
+  console.log('✅ BLOB_READ_WRITE_TOKEN configured for backup system');
+  console.log('💡 Environment:', process.env.NODE_ENV || 'development');
 }
 
 // Database connection for backup operations
@@ -129,7 +133,12 @@ function startScheduledBackups() {
     console.log('⏰ Scheduled backup starting...');
     try {
       // Create a full backup (includes database and blob files)
-      const response = await fetch('http://localhost:3000/api/backup/create', {
+      // Use environment-based URL for production vs development
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://www.eastlakewolfpack.org' 
+        : 'http://localhost:3000';
+      
+      const response = await fetch(`${baseUrl}/api/backup/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -176,6 +185,16 @@ async function getBlobList() {
 // Get backup status
 router.get('/status', async (req, res) => {
   try {
+    // Check if blob token is configured
+    if (!BLOB_TOKEN) {
+      return res.status(500).json({
+        success: false,
+        message: 'Backup system not configured - BLOB_READ_WRITE_TOKEN missing',
+        error: 'BLOB_READ_WRITE_TOKEN not configured'
+      });
+    }
+
+    console.log('📊 Getting backup status...');
     const blobs = await getBlobList();
     
     // Filter backup files
@@ -196,6 +215,11 @@ router.get('/status', async (req, res) => {
       totalBackupSize: [...databaseBackups, ...fullBackups].reduce((sum, blob) => sum + blob.size, 0)
     };
 
+    console.log('✅ Backup status retrieved successfully');
+    console.log(`   📦 Database backups: ${databaseBackups.length}`);
+    console.log(`   📦 Full backups: ${fullBackups.length}`);
+    console.log(`   📊 Total size: ${(status.totalBackupSize / 1024 / 1024).toFixed(2)} MB`);
+
     res.json({
       success: true,
       data: {
@@ -207,6 +231,7 @@ router.get('/status', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('❌ Failed to get backup status:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to get backup status',
@@ -218,11 +243,25 @@ router.get('/status', async (req, res) => {
 // List backups
 router.get('/list', async (req, res) => {
   try {
+    // Check if blob token is configured
+    if (!BLOB_TOKEN) {
+      return res.status(500).json({
+        success: false,
+        message: 'Backup system not configured - BLOB_READ_WRITE_TOKEN missing',
+        error: 'BLOB_READ_WRITE_TOKEN not configured'
+      });
+    }
+
+    console.log('📋 Listing backups...');
     const blobs = await getBlobList();
     
     // Filter backup files
     const databaseBackups = blobs.filter(blob => blob.pathname.startsWith('backups/database/'));
     const fullBackups = blobs.filter(blob => blob.pathname.startsWith('backups/full/'));
+    
+    console.log('✅ Backup list retrieved successfully');
+    console.log(`   📦 Database backups: ${databaseBackups.length}`);
+    console.log(`   📦 Full backups: ${fullBackups.length}`);
     
     res.json({
       success: true,
@@ -232,6 +271,7 @@ router.get('/list', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('❌ Failed to list backups:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to list backups',
