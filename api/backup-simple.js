@@ -8,8 +8,14 @@ const cron = require('node-cron');
 
 const router = express.Router();
 
-// Get blob token from environment or use default for local development
-const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_D3cmXYAFiy0Jv5Ch_Nfez7DLKTwQPUzZbMiPvu3j5zAQlLa';
+// Get blob token from environment - no fallback to prevent using wrong token
+const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+
+// Safety check for blob token
+if (!BLOB_TOKEN) {
+  console.error('❌ BLOB_READ_WRITE_TOKEN not configured - backup system will not work');
+  console.error('💡 Please set BLOB_READ_WRITE_TOKEN in your environment');
+}
 
 // Database connection for backup operations
 let dbPool;
@@ -311,15 +317,8 @@ router.post('/create', async (req, res) => {
         }
       }
       
-      // Upload to blob storage
+      // Upload to blob storage (date-based organization only)
       await put(`backups/database/${dateFolder}/${backupId}.sql`, Buffer.from(sqlContent), {
-        access: 'public',
-        addRandomSuffix: false,
-        token: BLOB_TOKEN
-      });
-
-      // Update latest symlink
-      await put(`backups/database/latest/${backupId}.sql`, Buffer.from(sqlContent), {
         access: 'public',
         addRandomSuffix: false,
         token: BLOB_TOKEN
@@ -349,15 +348,8 @@ router.post('/create', async (req, res) => {
         try {
           const zipBuffer = Buffer.concat(chunks);
           
-          // Upload to blob storage
+          // Upload to blob storage (date-based organization only)
           await put(`backups/full/${dateFolder}/${backupId}.zip`, zipBuffer, {
-            access: 'public',
-            addRandomSuffix: false,
-            token: BLOB_TOKEN
-          });
-
-          // Update latest symlink
-          await put(`backups/full/latest/${backupId}.zip`, zipBuffer, {
             access: 'public',
             addRandomSuffix: false,
             token: BLOB_TOKEN
