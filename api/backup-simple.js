@@ -576,8 +576,8 @@ function parseRealSQLBackup(sqlContent) {
     
     // Process INSERT statements
     for (const statement of insertStatements) {
-      // Extract table name - handle quoted identifiers
-      const tableMatch = statement.match(/INSERT INTO\s+["']?(\w+)["']?\s*\(/i);
+      // Extract table name - handle quoted identifiers and optional column list
+      const tableMatch = statement.match(/INSERT INTO\s+["']?(\w+)["']?\s*(?:\([^)]*\))?\s*VALUES/i);
       if (tableMatch) {
         const tableName = tableMatch[1];
         
