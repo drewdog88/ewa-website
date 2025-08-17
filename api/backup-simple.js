@@ -549,30 +549,49 @@ function parseRealSQLBackup(sqlContent) {
   };
 
   try {
-    // Split SQL into statements
-    const statements = sqlContent.split(';').filter(stmt => stmt.trim());
+    // More robust SQL parsing - handle multi-line statements
+    const lines = sqlContent.split('\n');
+    let currentStatement = '';
+    let insertStatements = [];
     
-    for (const statement of statements) {
-      const trimmed = statement.trim();
+    for (const line of lines) {
+      const trimmedLine = line.trim();
       
-      // Look for INSERT statements
-      if (trimmed.toUpperCase().startsWith('INSERT INTO')) {
-        const tableMatch = trimmed.match(/INSERT INTO\s+(\w+)\s*\(/i);
-        if (tableMatch) {
-          const tableName = tableMatch[1];
-          
-          // Count VALUES clauses to get record count
-          const valuesMatches = trimmed.match(/VALUES\s*\(/gi);
-          const recordCount = valuesMatches ? valuesMatches.length : 1;
-          
-          analysis.tableDetails.push({
-            name: tableName,
-            records: recordCount,
-            description: `${recordCount} records`
-          });
-          
-          analysis.totalRecords += recordCount;
+      // Skip comments and empty lines
+      if (trimmedLine.startsWith('--') || trimmedLine === '') {
+        continue;
+      }
+      
+      currentStatement += ' ' + trimmedLine;
+      
+      // If line ends with semicolon, we have a complete statement
+      if (trimmedLine.endsWith(';')) {
+        const statement = currentStatement.trim();
+        if (statement.toUpperCase().includes('INSERT INTO')) {
+          insertStatements.push(statement);
         }
+        currentStatement = '';
+      }
+    }
+    
+    // Process INSERT statements
+    for (const statement of insertStatements) {
+      // Extract table name - handle quoted identifiers
+      const tableMatch = statement.match(/INSERT INTO\s+["']?(\w+)["']?\s*\(/i);
+      if (tableMatch) {
+        const tableName = tableMatch[1];
+        
+        // Count VALUES clauses to get record count
+        const valuesMatches = statement.match(/VALUES\s*\(/gi);
+        const recordCount = valuesMatches ? valuesMatches.length : 1;
+        
+        analysis.tableDetails.push({
+          name: tableName,
+          records: recordCount,
+          description: `${recordCount} records`
+        });
+        
+        analysis.totalRecords += recordCount;
       }
     }
     
@@ -580,6 +599,7 @@ function parseRealSQLBackup(sqlContent) {
     
     if (analysis.totalTables === 0) {
       analysis.warnings.push('No INSERT statements found in backup');
+      analysis.warnings.push(`Debug: Found ${insertStatements.length} INSERT statements in raw parsing`);
     }
     
   } catch (error) {
