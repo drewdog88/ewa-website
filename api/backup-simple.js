@@ -581,9 +581,55 @@ function parseRealSQLBackup(sqlContent) {
       if (tableMatch) {
         const tableName = tableMatch[1];
         
-        // Count record tuples - look for all (value,value,...) patterns
-        const recordMatches = statement.match(/\(\s*[^)]+\s*\)/g);
-        const recordCount = recordMatches ? recordMatches.length : 1;
+        // More precise record counting - look for complete record tuples
+        // This regex looks for patterns like (value1, value2, ...) that are complete records
+        // It avoids matching nested parentheses within the data values
+        const valuesMatch = statement.match(/VALUES\s*(.+)/i);
+        if (valuesMatch) {
+          const valuesSection = valuesMatch[1];
+          
+          // Split by commas that are outside of parentheses
+          // This is a more sophisticated approach to count actual records
+          let recordCount = 0;
+          let parenDepth = 0;
+          let inString = false;
+          let stringChar = '';
+          
+          for (let i = 0; i < valuesSection.length; i++) {
+            const char = valuesSection[i];
+            
+            // Handle string literals
+            if ((char === "'" || char === '"') && (i === 0 || valuesSection[i-1] !== '\\')) {
+              if (!inString) {
+                inString = true;
+                stringChar = char;
+              } else if (char === stringChar) {
+                inString = false;
+              }
+            }
+            
+            // Only process parentheses when not inside a string
+            if (!inString) {
+              if (char === '(') {
+                parenDepth++;
+                // If this is the start of a new record tuple
+                if (parenDepth === 1) {
+                  recordCount++;
+                }
+              } else if (char === ')') {
+                parenDepth--;
+              }
+            }
+          }
+          
+          // Ensure we have at least 1 record if no parentheses found
+          if (recordCount === 0) {
+            recordCount = 1;
+          }
+        } else {
+          // Fallback: if we can't parse the VALUES section, assume 1 record
+          recordCount = 1;
+        }
         
         analysis.tableDetails.push({
           name: tableName,
