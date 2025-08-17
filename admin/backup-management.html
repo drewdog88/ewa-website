@@ -369,8 +369,8 @@
             statusElement.className = 'value ' + (backupData.status.lastBackupStatus === 'success' ? 'success' : 'danger');
 
             document.getElementById('next-backup').textContent = 
-                backupData.nextScheduledBackup ? 
-                new Date(backupData.nextScheduledBackup).toLocaleString() : 
+                backupData.status.nextScheduledBackup ? 
+                new Date(backupData.status.nextScheduledBackup).toLocaleString() : 
                 'Not scheduled';
 
             document.getElementById('total-backups').textContent = backupData.status.backupCount || 0;
