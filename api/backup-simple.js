@@ -611,6 +611,7 @@ function parseRealSQLBackup(sqlContent) {
     const lines = sqlContent.split('\n');
     let currentStatement = '';
     let insertStatements = [];
+    let inInsertStatement = false;
     
     for (const line of lines) {
       const trimmedLine = line.trim();
@@ -620,15 +621,21 @@ function parseRealSQLBackup(sqlContent) {
         continue;
       }
       
-      currentStatement += ' ' + trimmedLine;
+      // Check if this line starts an INSERT statement
+      if (trimmedLine.toUpperCase().startsWith('INSERT INTO')) {
+        inInsertStatement = true;
+        currentStatement = trimmedLine;
+      } else if (inInsertStatement) {
+        // Continue building the INSERT statement
+        currentStatement += ' ' + trimmedLine;
+      }
       
-      // If line ends with semicolon, we have a complete statement
-      if (trimmedLine.endsWith(';')) {
+      // If line ends with semicolon and we're in an INSERT statement, complete it
+      if (trimmedLine.endsWith(';') && inInsertStatement) {
         const statement = currentStatement.trim();
-        if (statement.toUpperCase().includes('INSERT INTO')) {
-          insertStatements.push(statement);
-        }
+        insertStatements.push(statement);
         currentStatement = '';
+        inInsertStatement = false;
       }
     }
     

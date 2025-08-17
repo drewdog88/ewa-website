@@ -720,6 +720,21 @@
             document.getElementById('analysis-modal').style.display = 'none';
         }
 
+        // Add click outside to close functionality
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('analysis-modal');
+            if (event.target === modal) {
+                hideAnalysisModal();
+            }
+        });
+
+        // Add escape key to close modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideAnalysisModal();
+            }
+        });
+
         // Selective cleanup functions
         function showCleanupModal() {
             document.getElementById('cleanup-modal').style.display = 'block';
