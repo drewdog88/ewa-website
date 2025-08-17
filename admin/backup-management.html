@@ -343,15 +343,65 @@
 
     <script>
         let backupData = null;
+        let sessionToken = null;
 
-        // Load backup status on page load
+        // Check authentication on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadBackupStatus();
+            checkAuthentication();
         });
+
+        // Check if user is authenticated
+        async function checkAuthentication() {
+            try {
+                // Check if we have a session token in localStorage
+                sessionToken = localStorage.getItem('sessionToken');
+                
+                if (!sessionToken) {
+                    // No session token, redirect to login
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+
+                // Verify the session token
+                const response = await fetch('/api/session?token=' + sessionToken);
+                const result = await response.json();
+                
+                if (!result.success || !result.isLoggedIn) {
+                    // Invalid session, redirect to login
+                    localStorage.removeItem('sessionToken');
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+
+                // Check if user has admin role
+                if (result.user.role !== 'admin') {
+                    alert('Admin access required');
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+
+                // Authentication successful, load backup status
+                loadBackupStatus();
+            } catch (error) {
+                console.error('Authentication check failed:', error);
+                localStorage.removeItem('sessionToken');
+                window.location.href = '/admin/login.html';
+            }
+        }
+
+        // Add authentication headers to all fetch requests
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'x-session-token': sessionToken
+            };
+        }
 
         async function loadBackupStatus() {
             try {
-                const response = await fetch('/api/backup/status');
+                const response = await fetch('/api/backup/status', {
+                    headers: getAuthHeaders()
+                });
                 const result = await response.json();
                 
                 if (result.success) {
@@ -403,7 +453,9 @@
                 const tbody = document.getElementById('backup-history');
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading backup history...</td></tr>';
                 
-                const response = await fetch('/api/backup/list');
+                const response = await fetch('/api/backup/list', {
+                    headers: getAuthHeaders()
+                });
                 const result = await response.json();
                 
                 if (result.success) {
@@ -488,7 +540,7 @@
             try {
                 const response = await fetch('/api/backup/create', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ type: 'database' })
                 });
                 
@@ -604,7 +656,7 @@
                 
                 const response = await fetch('/api/backup/analyze', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ filePath: backupPath })
                 });
                 
@@ -683,7 +735,9 @@
             container.innerHTML = '<p style="text-align: center; color: #6c757d;">Loading backups...</p>';
             
             try {
-                const response = await fetch('/api/backup/list');
+                const response = await fetch('/api/backup/list', {
+                    headers: getAuthHeaders()
+                });
                 const result = await response.json();
                 
                 if (result.success) {
@@ -781,7 +835,7 @@
             try {
                 const response = await fetch('/api/backup/delete', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ files: filesToDelete })
                 });
                 
