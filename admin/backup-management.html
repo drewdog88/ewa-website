@@ -610,6 +610,10 @@
                 
                 const result = await response.json();
                 
+                // Debug logging
+                console.log('🔍 API Response:', result);
+                console.log('🔍 Table Details:', result.data?.tableDetails);
+                
                 if (result.success) {
                     showBackupAnalysis(result.data);
                 } else {
