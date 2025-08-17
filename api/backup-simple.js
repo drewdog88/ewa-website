@@ -23,7 +23,7 @@ const requireAdmin = async (req, res, next) => {
     }
 
     // Import the getUsers function
-    const { getUsers } = require('../database/functions');
+    const { getUsers } = require('../database/neon-functions');
     const users = await getUsers();
     const user = users[sessionToken];
 
