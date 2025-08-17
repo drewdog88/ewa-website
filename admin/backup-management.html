@@ -592,7 +592,7 @@
                 const response = await fetch('/api/backup/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ backupPath })
+                    body: JSON.stringify({ filePath: backupPath })
                 });
                 
                 const result = await response.json();
@@ -776,6 +776,12 @@
                 alert.remove();
             }, 5000);
         }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Backup management page loaded, initializing...');
+            loadBackupStatus();
+        });
     </script>
 </body>
 </html>
