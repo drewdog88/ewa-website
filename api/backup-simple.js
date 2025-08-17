@@ -599,20 +599,6 @@ function parseRealSQLBackup(sqlContent) {
     
     if (analysis.totalTables === 0) {
       analysis.warnings.push('No INSERT statements found in backup');
-      analysis.warnings.push(`Debug: Found ${insertStatements.length} INSERT statements in raw parsing`);
-      
-      // Add more debugging info
-      if (insertStatements.length > 0) {
-        analysis.warnings.push(`First INSERT statement: ${insertStatements[0].substring(0, 200)}...`);
-        
-        // Test table name extraction on first statement
-        const testMatch = insertStatements[0].match(/INSERT INTO\s+["']?(\w+)["']?\s*(?:\([^)]*\))?\s*VALUES/i);
-        analysis.warnings.push(`Table name extraction test: ${testMatch ? testMatch[1] : 'FAILED'}`);
-      }
-      
-      // Check for INSERT patterns in the raw content
-      const rawInsertMatches = sqlContent.match(/INSERT INTO/gi);
-      analysis.warnings.push(`Raw INSERT INTO matches: ${rawInsertMatches ? rawInsertMatches.length : 0}`);
     }
     
   } catch (error) {
