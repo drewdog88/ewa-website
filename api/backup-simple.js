@@ -639,7 +639,9 @@ function parseRealSQLBackup(sqlContent) {
       }
     }
     
-    // Process INSERT statements
+    // Process INSERT statements and aggregate by table name
+    const tableCounts = {};
+    
     for (const statement of insertStatements) {
       // Extract table name - handle quoted identifiers and optional column list
       const tableMatch = statement.match(/INSERT INTO\s+["']?(\w+)["']?\s*(?:\([^)]*\))?\s*VALUES/i);
@@ -695,14 +697,24 @@ function parseRealSQLBackup(sqlContent) {
           }
         }
         
-        analysis.tableDetails.push({
-          name: tableName,
-          records: recordCount,
-          description: `${recordCount} records`
-        });
-        
-        analysis.totalRecords += recordCount;
+        // Aggregate records by table name
+        if (tableCounts[tableName]) {
+          tableCounts[tableName] += recordCount;
+        } else {
+          tableCounts[tableName] = recordCount;
+        }
       }
+    }
+    
+    // Convert aggregated counts to tableDetails array
+    for (const [tableName, recordCount] of Object.entries(tableCounts)) {
+      analysis.tableDetails.push({
+        name: tableName,
+        records: recordCount,
+        description: `${recordCount} records`
+      });
+      
+      analysis.totalRecords += recordCount;
     }
     
     analysis.totalTables = analysis.tableDetails.length;
