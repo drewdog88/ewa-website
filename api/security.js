@@ -5,16 +5,62 @@ const path = require('path');
 
 const router = express.Router();
 
-// Middleware to check if user is admin (temporarily disabled for testing)
-const requireAdmin = (req, res, next) => {
-  // Temporarily bypass admin check for testing
-  // if (!req.session || req.session.role !== 'admin') {
-  //   return res.status(403).json({
-  //     success: false,
-  //     message: 'Admin access required'
-  //   });
-  // }
-  next();
+// Middleware to check if user is admin
+const requireAdmin = async (req, res, next) => {
+  try {
+    // Get the session token from the request headers or query params
+    const sessionToken = req.headers['x-session-token'] || req.query.token;
+        
+    if (!sessionToken) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required. Please log in.',
+        error: 'No session token provided'
+      });
+    }
+
+    // Import the getUsers function
+    const { getUsers } = require('../database/functions');
+    const users = await getUsers();
+    const user = users[sessionToken];
+
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication failed. Please log in again.',
+        error: 'Invalid session token'
+      });
+    }
+
+    // Check if account is locked
+    if (user.isLocked) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Account is locked. Please contact administrator.',
+        error: 'Account locked'
+      });
+    }
+
+    // Check if user has admin role
+    if (user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Admin access required',
+        error: 'Insufficient permissions'
+      });
+    }
+
+    // Add user info to request for potential use
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Authentication system error',
+      error: error.message
+    });
+  }
 };
 
 // Get security dashboard data

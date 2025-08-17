@@ -8,6 +8,64 @@ const cron = require('node-cron');
 
 const router = express.Router();
 
+// Authentication middleware for admin access
+const requireAdmin = async (req, res, next) => {
+  try {
+    // Get the session token from the request headers or query params
+    const sessionToken = req.headers['x-session-token'] || req.query.token;
+        
+    if (!sessionToken) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required. Please log in.',
+        error: 'No session token provided'
+      });
+    }
+
+    // Import the getUsers function
+    const { getUsers } = require('../database/functions');
+    const users = await getUsers();
+    const user = users[sessionToken];
+
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication failed. Please log in again.',
+        error: 'Invalid session token'
+      });
+    }
+
+    // Check if account is locked
+    if (user.isLocked) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Account is locked. Please contact administrator.',
+        error: 'Account locked'
+      });
+    }
+
+    // Check if user has admin role
+    if (user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Admin access required',
+        error: 'Insufficient permissions'
+      });
+    }
+
+    // Add user info to request for potential use
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Authentication system error',
+      error: error.message
+    });
+  }
+};
+
 // Get blob token from environment - handle different tokens for different environments
 let BLOB_TOKEN;
 if (process.env.NODE_ENV === 'development') {
@@ -54,7 +112,7 @@ function getTimestamp() {
 }
 
 // Test endpoint
-router.get('/test', async (req, res) => {
+router.get('/test', requireAdmin, async (req, res) => {
   const testResults = {
     tests: {}
   };
@@ -200,7 +258,7 @@ async function getBlobList() {
 }
 
 // Get backup status
-router.get('/status', async (req, res) => {
+router.get('/status', requireAdmin, async (req, res) => {
   try {
     // Check if blob token is configured
     if (!BLOB_TOKEN) {
@@ -258,7 +316,7 @@ router.get('/status', async (req, res) => {
 });
 
 // List backups
-router.get('/list', async (req, res) => {
+router.get('/list', requireAdmin, async (req, res) => {
   try {
     // Check if blob token is configured
     if (!BLOB_TOKEN) {
@@ -298,7 +356,7 @@ router.get('/list', async (req, res) => {
 });
 
 // Create backup
-router.post('/create', async (req, res) => {
+router.post('/create', requireAdmin, async (req, res) => {
   try {
     // Clear cache when creating new backup
     blobCache = null;
@@ -453,7 +511,7 @@ router.post('/create', async (req, res) => {
 });
 
 // Delete backup
-router.post('/delete', async (req, res) => {
+router.post('/delete', requireAdmin, async (req, res) => {
   try {
     // Clear cache when deleting backups
     blobCache = null;
@@ -498,7 +556,7 @@ router.post('/delete', async (req, res) => {
 });
 
 // Analyze backup (parse SQL to count records)
-router.post('/analyze', async (req, res) => {
+router.post('/analyze', requireAdmin, async (req, res) => {
   try {
     const { filePath } = req.body;
     
@@ -654,7 +712,7 @@ function parseRealSQLBackup(sqlContent) {
 }
 
 // Restore database (placeholder - not implemented for safety)
-router.post('/restore', async (req, res) => {
+router.post('/restore', requireAdmin, async (req, res) => {
   res.status(501).json({
     success: false,
     message: 'Database restore not implemented yet - requires non-production database for testing'
@@ -662,7 +720,7 @@ router.post('/restore', async (req, res) => {
 });
 
 // Start scheduled backups
-router.post('/schedule/start', async (req, res) => {
+router.post('/schedule/start', requireAdmin, async (req, res) => {
   try {
     startScheduledBackups();
     res.json({
@@ -680,7 +738,7 @@ router.post('/schedule/start', async (req, res) => {
 });
 
 // Stop scheduled backups
-router.post('/schedule/stop', async (req, res) => {
+router.post('/schedule/stop', requireAdmin, async (req, res) => {
   try {
     stopScheduledBackups();
     res.json({
@@ -697,7 +755,7 @@ router.post('/schedule/stop', async (req, res) => {
 });
 
 // Get schedule status
-router.get('/schedule/status', async (req, res) => {
+router.get('/schedule/status', requireAdmin, async (req, res) => {
   try {
     res.json({
       success: true,
