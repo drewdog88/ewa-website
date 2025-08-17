@@ -4,6 +4,7 @@ const archiver = require('archiver');
 const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
+const cron = require('node-cron');
 
 const router = express.Router();
 
@@ -92,6 +93,68 @@ let blobCache = null;
 let blobCacheTime = 0;
 const CACHE_DURATION = 30000; // 30 seconds
 
+// Scheduled backup configuration
+let scheduledBackupJob = null;
+const BACKUP_SCHEDULE = '0 2 * * *'; // Daily at 2:00 AM
+const BACKUP_TIMEZONE = 'America/Los_Angeles'; // PST/PDT
+
+// Calculate next scheduled backup time
+function getNextScheduledBackup() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const backupTime = new Date(today);
+  backupTime.setHours(2, 0, 0, 0); // 2:00 AM
+  
+  // If it's past 2 AM today, schedule for tomorrow
+  if (now >= backupTime) {
+    backupTime.setDate(backupTime.getDate() + 1);
+  }
+  
+  return backupTime;
+}
+
+// Start scheduled backups
+function startScheduledBackups() {
+  if (scheduledBackupJob) {
+    scheduledBackupJob.stop();
+  }
+  
+  scheduledBackupJob = cron.schedule(BACKUP_SCHEDULE, async () => {
+    console.log('⏰ Scheduled backup starting...');
+    try {
+      // Create a full backup (includes database and blob files)
+      const response = await fetch('http://localhost:3000/api/backup/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ type: 'full' })
+      });
+      
+      if (response.ok) {
+        console.log('✅ Scheduled backup completed successfully');
+      } else {
+        console.error('❌ Scheduled backup failed:', await response.text());
+      }
+    } catch (error) {
+      console.error('❌ Scheduled backup failed:', error.message);
+    }
+  }, {
+    timezone: BACKUP_TIMEZONE
+  });
+  
+  console.log('📅 Scheduled backups enabled - nightly at 2:00 AM PST');
+}
+
+// Stop scheduled backups
+function stopScheduledBackups() {
+  if (scheduledBackupJob) {
+    scheduledBackupJob.stop();
+    scheduledBackupJob = null;
+    console.log('⏹️ Scheduled backups disabled');
+  }
+}
+
 async function getBlobList() {
   const now = Date.now();
   if (blobCache && (now - blobCacheTime) < CACHE_DURATION) {
@@ -122,7 +185,7 @@ router.get('/status', async (req, res) => {
     const status = {
       lastBackup: latestDatabase ? latestDatabase.uploadedAt : null,
       lastBackupStatus: 'success', // Assuming successful if file exists
-      nextScheduledBackup: null, // Not implemented yet
+      nextScheduledBackup: getNextScheduledBackup().toISOString(),
       backupCount: databaseBackups.length + fullBackups.length,
       totalBackupSize: [...databaseBackups, ...fullBackups].reduce((sum, blob) => sum + blob.size, 0)
     };
@@ -485,4 +548,65 @@ router.post('/restore', async (req, res) => {
   });
 });
 
-module.exports = router;
+// Start scheduled backups
+router.post('/schedule/start', async (req, res) => {
+  try {
+    startScheduledBackups();
+    res.json({
+      success: true,
+      message: 'Scheduled backups started',
+      nextBackup: getNextScheduledBackup().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to start scheduled backups',
+      error: error.message
+    });
+  }
+});
+
+// Stop scheduled backups
+router.post('/schedule/stop', async (req, res) => {
+  try {
+    stopScheduledBackups();
+    res.json({
+      success: true,
+      message: 'Scheduled backups stopped'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to stop scheduled backups',
+      error: error.message
+    });
+  }
+});
+
+// Get schedule status
+router.get('/schedule/status', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      data: {
+        isRunning: scheduledBackupJob !== null,
+        schedule: BACKUP_SCHEDULE,
+        timezone: BACKUP_TIMEZONE,
+        nextBackup: getNextScheduledBackup().toISOString()
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get schedule status',
+      error: error.message
+    });
+  }
+});
+
+module.exports = {
+  router,
+  startScheduledBackups,
+  stopScheduledBackups,
+  getNextScheduledBackup
+};

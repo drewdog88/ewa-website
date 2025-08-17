@@ -138,7 +138,7 @@ const {
 // }
 
 // NEW: Import structured backup API module
-const backupRoutes = require('./api/backup-simple');
+const { router: backupRoutes, startScheduledBackups } = require('./api/backup-simple');
 let blob;
 if (process.env.BLOB_READ_WRITE_TOKEN) {
   try {
@@ -3254,6 +3254,9 @@ if (require.main === module) {
         
     // Initialize database connection
     await initializeDatabase();
+    
+    // Start scheduled backups
+    startScheduledBackups();
   });
 }
 
