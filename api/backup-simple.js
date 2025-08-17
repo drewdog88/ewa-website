@@ -581,6 +581,8 @@ function parseRealSQLBackup(sqlContent) {
       if (tableMatch) {
         const tableName = tableMatch[1];
         
+        let recordCount = 1; // Default fallback
+        
         // More precise record counting - look for complete record tuples
         // This regex looks for patterns like (value1, value2, ...) that are complete records
         // It avoids matching nested parentheses within the data values
@@ -590,7 +592,7 @@ function parseRealSQLBackup(sqlContent) {
           
           // Split by commas that are outside of parentheses
           // This is a more sophisticated approach to count actual records
-          let recordCount = 0;
+          recordCount = 0;
           let parenDepth = 0;
           let inString = false;
           let stringChar = '';
@@ -626,9 +628,6 @@ function parseRealSQLBackup(sqlContent) {
           if (recordCount === 0) {
             recordCount = 1;
           }
-        } else {
-          // Fallback: if we can't parse the VALUES section, assume 1 record
-          recordCount = 1;
         }
         
         analysis.tableDetails.push({
