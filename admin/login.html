@@ -191,13 +191,25 @@
             .then(data => {
                 console.log('Response data:', data);
                 if (data.success) {
-                    // Store session token in localStorage for backup management page
-                    localStorage.setItem('sessionToken', username);
-                    localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    localStorage.setItem('loginTime', new Date().getTime().toString());
+                    console.log('✅ Login successful, storing session data...');
+                    // Store session token in sessionStorage for consistency with user-session.js
+                    sessionStorage.setItem('sessionToken', username);
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    sessionStorage.setItem('loginTime', new Date().getTime().toString());
+                    
+                    console.log('💾 Session data stored in sessionStorage');
+                    console.log('🔑 sessionToken:', username);
+                    console.log('👤 currentUser:', data.user);
+                    
+                    // Verify the data was stored correctly
+                    const storedToken = sessionStorage.getItem('sessionToken');
+                    const storedUser = sessionStorage.getItem('currentUser');
+                    console.log('🔍 Verification - stored token:', storedToken);
+                    console.log('🔍 Verification - stored user:', storedUser);
                     
                     showMessage('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
+                        console.log('🔄 Redirecting to dashboard...');
                         window.location.href = 'dashboard.html';
                     }, 1000);
                 } else {

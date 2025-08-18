@@ -2231,12 +2231,23 @@
 
         
         // Demo data loading
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🏠 Dashboard DOMContentLoaded - waiting for session initialization...');
+            
+            // Wait for userSession to be fully initialized
+            await userSession.waitForInit();
+            
+            console.log('🔐 userSession.isLoggedIn:', userSession.isLoggedIn);
+            console.log('👤 userSession.currentUser:', userSession.currentUser);
+            
             // Check if user is logged in using session manager
             if (!userSession.isLoggedIn || !userSession.currentUser) {
+                console.log('❌ User not logged in, redirecting to login');
                 window.location.href = 'login.html';
                 return;
             }
+            
+            console.log('✅ User is logged in, proceeding with dashboard initialization');
             
             // Check session timeout
             checkSessionTimeout();
