@@ -767,10 +767,16 @@ async function getBoosterClubs() {
         website_url, 
         donation_url, 
         is_active, 
+        is_payment_enabled,
+        zelle_url,
+        stripe_url,
+        payment_instructions,
+        qr_code_settings,
+        sort_order,
         created_at, 
         updated_at
       FROM booster_clubs 
-      ORDER BY name
+      ORDER BY sort_order, name
     `;
     return clubs;
   } catch (error) {
