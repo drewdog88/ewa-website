@@ -2480,6 +2480,10 @@ app.use(express.static('.', {
 const securityRoutes = require('./api/security');
 app.use('/api/security', securityRoutes);
 
+// Admin Dashboard API routes
+const adminDashboardRoutes = require('./api/admin-dashboard');
+app.use('/api/admin-dashboard', adminDashboardRoutes);
+
 // Dashboard statistics endpoint
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
