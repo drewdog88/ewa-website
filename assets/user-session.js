@@ -27,18 +27,32 @@ class UserSessionManager {
   }
 
   async checkSession() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      console.log('🔍 Session check skipped - no current user');
+      return;
+    }
+
+    // Get the session token from sessionStorage
+    const sessionToken = sessionStorage.getItem('sessionToken');
+    if (!sessionToken) {
+      console.log('🔍 Session check skipped - no session token');
+      return;
+    }
 
     try {
-      const response = await fetch(`/api/session?token=${this.currentUser.username}`);
+      console.log('🔍 Checking session for user:', this.currentUser.username);
+      const response = await fetch(`/api/session?token=${sessionToken}`);
       const data = await response.json();
 
       if (!data.success || !data.isLoggedIn) {
+        console.log('❌ Session check failed, clearing session');
         this.clearSession();
         window.location.reload();
+      } else {
+        console.log('✅ Session check passed');
       }
     } catch (error) {
-      console.error('Error checking session:', error);
+      console.error('❌ Error checking session:', error);
     }
   }
 

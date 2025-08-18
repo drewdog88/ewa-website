@@ -1770,5 +1770,80 @@ app.get('/backup/download/:filename', async (req, res) => {
   }
 });
 
+// Session validation endpoint
+app.get('/session', async (req, res) => {
+  try {
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        isLoggedIn: false,
+        message: 'No session token provided'
+      });
+    }
+
+    // Get users from database
+    const users = await getUsers();
+    const user = users[token]; // token is the username
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        isLoggedIn: false,
+        message: 'Invalid session token'
+      });
+    }
+
+    // Check if account is locked
+    if (user.isLocked) {
+      return res.status(403).json({
+        success: false,
+        isLoggedIn: false,
+        message: 'Account is locked'
+      });
+    }
+
+    // Session is valid
+    res.json({
+      success: true,
+      isLoggedIn: true,
+      user: {
+        username: user.username,
+        role: user.role,
+        club: user.club,
+        clubName: user.clubName
+      }
+    });
+  } catch (error) {
+    console.error('Session validation error:', error);
+    res.status(500).json({
+      success: false,
+      isLoggedIn: false,
+      message: 'Session validation error'
+    });
+  }
+});
+
+// Logout endpoint
+app.post('/logout', async (req, res) => {
+  try {
+    // Since we're using client-side session storage, 
+    // the logout is primarily handled on the client side
+    // This endpoint just confirms the logout action
+    
+    res.json({
+      success: true,
+      message: 'Logout successful'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Logout error'
+    });
+  }
+});
+
 // Export for Vercel
 module.exports = app; 
