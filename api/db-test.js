@@ -14,8 +14,8 @@ module.exports = async (req, res) => {
     // Get booster clubs count
     const clubsResult = await pool.query('SELECT COUNT(*) as club_count FROM booster_clubs');
     
-    // Get a few sample clubs
-    const sampleClubs = await pool.query('SELECT name, status FROM booster_clubs LIMIT 5');
+    // Get a few sample clubs (fix the column name)
+    const sampleClubs = await pool.query('SELECT name, is_active FROM booster_clubs LIMIT 5');
     
     // Get users count
     const usersResult = await pool.query('SELECT COUNT(*) as user_count FROM users');
@@ -38,6 +38,7 @@ module.exports = async (req, res) => {
         sampleClubs: sampleClubs.rows
       },
       environment: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV,
       timestamp: new Date().toISOString()
     };
 
@@ -48,6 +49,7 @@ module.exports = async (req, res) => {
     res.status(500).json({
       error: error.message,
       environment: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV,
       databaseUrl: process.env.DATABASE_URL ? 'SET' : 'NOT SET'
     });
   }
