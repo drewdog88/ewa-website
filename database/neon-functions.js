@@ -759,6 +759,7 @@ async function getBoosterClubs() {
   if (!sql) return [];
     
   try {
+    // Use only the columns that exist in the current dev database schema
     const clubs = await sql`
       SELECT 
         id, 
@@ -767,16 +768,10 @@ async function getBoosterClubs() {
         website_url, 
         donation_url, 
         is_active, 
-        is_payment_enabled,
-        zelle_url,
-        stripe_url,
-        payment_instructions,
-        qr_code_settings,
-        sort_order,
         created_at, 
         updated_at
       FROM booster_clubs 
-      ORDER BY sort_order, name
+      ORDER BY name
     `;
     return clubs;
   } catch (error) {
@@ -803,11 +798,6 @@ async function getBoosterClubByName(clubName) {
         website_url, 
         donation_url, 
         is_active, 
-        is_payment_enabled,
-        zelle_url,
-        stripe_url,
-        payment_instructions,
-        qr_code_settings,
         created_at, 
         updated_at
       FROM booster_clubs 
