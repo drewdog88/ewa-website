@@ -191,7 +191,12 @@
             .then(data => {
                 console.log('Response data:', data);
                 if (data.success) {
-                    // Store session token in localStorage for backup management page
+                    // Store session token in sessionStorage for user-session.js
+                    sessionStorage.setItem('sessionToken', username);
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    sessionStorage.setItem('loginTime', new Date().getTime().toString());
+                    
+                    // Also store in localStorage for backup management page compatibility
                     localStorage.setItem('sessionToken', username);
                     localStorage.setItem('currentUser', JSON.stringify(data.user));
                     localStorage.setItem('loginTime', new Date().getTime().toString());
