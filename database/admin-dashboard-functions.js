@@ -67,12 +67,13 @@ async function searchEverything(query) {
         const officers = await sql`
             SELECT 
                 'officers' as category,
-                CONCAT(name, ' - ', booster_club) as title,
-                CONCAT('Officer: ', name, ' (', booster_club, ')') as description,
+                CONCAT(name, ' - ', club_name) as title,
+                CONCAT('Officer: ', name, ' (', club_name, ')') as description,
                 'officers' as section
             FROM officers 
             WHERE name ILIKE ${searchTerm} 
-            OR booster_club ILIKE ${searchTerm}
+            OR club_name ILIKE ${searchTerm}
+            OR position ILIKE ${searchTerm}
             LIMIT 5
         `;
         
@@ -89,18 +90,24 @@ async function searchEverything(query) {
             LIMIT 5
         `;
         
-        // Search volunteers
-        const volunteers = await sql`
-            SELECT 
-                'volunteers' as category,
-                CONCAT(name, ' - ', club) as title,
-                CONCAT('Volunteer: ', name, ' (', club, ')') as description,
-                'volunteers' as section
-            FROM volunteers 
-            WHERE name ILIKE ${searchTerm} 
-            OR club ILIKE ${searchTerm}
-            LIMIT 5
-        `;
+        // Search volunteers (if table exists)
+        let volunteers = [];
+        try {
+            volunteers = await sql`
+                SELECT 
+                    'volunteers' as category,
+                    CONCAT(name, ' - ', club) as title,
+                    CONCAT('Volunteer: ', name, ' (', club, ')') as description,
+                    'volunteers' as section
+                FROM volunteers 
+                WHERE name ILIKE ${searchTerm} 
+                OR club ILIKE ${searchTerm}
+                LIMIT 5
+            `;
+        } catch (error) {
+            // Volunteers table doesn't exist, return empty array
+            console.log('Volunteers table not found, skipping volunteer search');
+        }
         
         // Search admin activity
         const activity = await sql`
