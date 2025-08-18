@@ -353,8 +353,8 @@
         // Check if user is authenticated
         async function checkAuthentication() {
             try {
-                // Check if we have a session token in localStorage
-                sessionToken = localStorage.getItem('sessionToken');
+                // Check if we have a session token in sessionStorage for consistency
+                sessionToken = sessionStorage.getItem('sessionToken');
                 
                 if (!sessionToken) {
                     // No session token, redirect to login
@@ -368,7 +368,7 @@
                 
                 if (!result.success || !result.isLoggedIn) {
                     // Invalid session, redirect to login
-                    localStorage.removeItem('sessionToken');
+                    sessionStorage.removeItem('sessionToken');
                     window.location.href = '/admin/login.html';
                     return;
                 }
@@ -384,7 +384,7 @@
                 loadBackupStatus();
             } catch (error) {
                 console.error('Authentication check failed:', error);
-                localStorage.removeItem('sessionToken');
+                sessionStorage.removeItem('sessionToken');
                 window.location.href = '/admin/login.html';
             }
         }

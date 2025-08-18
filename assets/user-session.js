@@ -5,40 +5,68 @@ class UserSessionManager {
   constructor() {
     this.currentUser = null;
     this.isLoggedIn = false;
+    this.initialized = false;
     this.init();
   }
 
-  async init() {
-    // Check if user is logged in from sessionStorage
+  init() {
+    console.log('🔐 UserSessionManager initializing...');
+    // Check if user is logged in from sessionStorage - make this synchronous
     const storedUser = sessionStorage.getItem('currentUser');
+    console.log('📦 Stored user data:', storedUser ? 'Found' : 'Not found');
+    
     if (storedUser) {
       try {
         this.currentUser = JSON.parse(storedUser);
         this.isLoggedIn = true;
+        console.log('✅ User session restored:', this.currentUser.username);
         this.updateUI();
       } catch (error) {
-        console.error('Error parsing stored user:', error);
+        console.error('❌ Error parsing stored user:', error);
         this.clearSession();
       }
+    } else {
+      console.log('ℹ️ No stored user session found');
     }
+
+    // Mark as initialized with a small delay to ensure everything is ready
+    setTimeout(() => {
+      this.initialized = true;
+      console.log('✅ UserSessionManager initialization complete');
+    }, 50);
 
     // Set up periodic session check
     setInterval(() => this.checkSession(), 5 * 60 * 1000); // Check every 5 minutes
   }
 
+  // Method to wait for initialization
+  async waitForInit() {
+    while (!this.initialized) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    return this;
+  }
+
   async checkSession() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      console.log('🔍 Session check skipped - no current user');
+      return;
+    }
 
     try {
+      console.log('🔍 Checking session for user:', this.currentUser.username);
       const response = await fetch(`/api/session?token=${this.currentUser.username}`);
       const data = await response.json();
 
       if (!data.success || !data.isLoggedIn) {
+        console.log('❌ Session check failed, clearing session');
         this.clearSession();
         window.location.reload();
+      } else {
+        console.log('✅ Session check passed');
       }
     } catch (error) {
-      console.error('Error checking session:', error);
+      console.error('❌ Error checking session:', error);
     }
   }
 
