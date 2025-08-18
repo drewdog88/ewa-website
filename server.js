@@ -2865,14 +2865,19 @@ app.post('/api/links/:id/click', async (req, res) => {
 // Get all booster clubs
 app.get('/api/booster-clubs', async (req, res) => {
   try {
+    console.log('🔍 /api/booster-clubs endpoint called');
+    console.log('📋 Calling getBoosterClubs()...');
+    
     const clubs = await getBoosterClubs();
+    
+    console.log(`✅ getBoosterClubs() returned ${clubs.length} clubs`);
     
     res.json({
       success: true,
       data: clubs
     });
   } catch (error) {
-    console.error('Error getting booster clubs:', error);
+    console.error('❌ Error getting booster clubs:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to get booster clubs'
