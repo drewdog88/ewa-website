@@ -14,6 +14,14 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/db-test.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/test-env.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "*.html",
       "use": "@vercel/static"
     },
@@ -38,6 +46,14 @@
     {
       "src": "/api/security/(.*)",
       "dest": "/api/security-dashboard.js"
+    },
+    {
+      "src": "/api/db-test",
+      "dest": "/api/db-test.js"
+    },
+    {
+      "src": "/api/test-env",
+      "dest": "/api/test-env.js"
     },
     {
       "src": "/api/(.*)",
