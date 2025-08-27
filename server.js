@@ -3264,8 +3264,9 @@ if (require.main === module) {
     // Initialize database connection
     await initializeDatabase();
     
-    // Start scheduled backups
-    startScheduledBackups();
+    // Start scheduled backups (DISABLED - using Vercel Cron instead)
+    // startScheduledBackups();
+    console.log('📅 Scheduled backups: Using Vercel Cron Job (daily at 10:00 AM UTC / 2:00 AM PST)');
   });
 }
 
