@@ -449,52 +449,52 @@ router.post('/create', requireAdmin, async (req, res) => {
         }
       });
     } else if (type === 'full') {
-      // Create full backup (database + files)
-      const timestamp = getTimestamp();
-      const dateFolder = getDateFolder();
-      const backupId = `full-backup-${timestamp}`;
-      
-      // Create a simple ZIP with database dump
-      const archive = archiver('zip', { zlib: { level: 9 } });
-      const chunks = [];
-      
-      archive.on('data', chunk => chunks.push(chunk));
-      archive.on('end', async () => {
-        try {
-          const zipBuffer = Buffer.concat(chunks);
-          
-          // Upload to blob storage (date-based organization only)
-          await put(`backups/full/${dateFolder}/${backupId}.zip`, zipBuffer, {
-            access: 'public',
-            addRandomSuffix: false,
-            token: BLOB_TOKEN
-          });
+      // Create full backup using the working BackupManager
+      try {
+        console.log('🚀 Starting full backup via API...');
+        
+        const BackupManager = require('../backup/backup-manager');
+        console.log('✅ BackupManager loaded successfully');
+        
+        const backupManager = new BackupManager();
+        console.log('✅ BackupManager instance created');
+        
+        const result = await backupManager.performFullBackup();
+        console.log('✅ BackupManager.performFullBackup() completed');
+        console.log('📋 BackupManager result:', JSON.stringify(result, null, 2));
+        
+        console.log('✅ Full backup completed via API');
+        console.log(`   📊 Database: ${(result.databaseSize / 1024).toFixed(2)} KB`);
+        console.log(`   📁 Blob Files: ${result.blobCount || 0} files`);
+        console.log(`   📦 Total Size: ${(result.totalSize / 1024 / 1024).toFixed(2)} MB`);
 
-          res.json({
-            success: true,
-            message: 'Full backup created successfully',
-            data: {
-              backupId,
-              timestamp,
-              size: zipBuffer.length
+        res.json({
+          success: true,
+          message: 'Full backup created successfully',
+          data: {
+            backupId: `full-backup-${result.timestamp}`,
+            timestamp: result.timestamp,
+            size: result.totalSize,
+            duration: result.duration,
+            database: {
+              size: result.databaseSize,
+              file: 'database/database-backup.sql'
+            },
+            blob: {
+              size: result.blobSize,
+              fileCount: result.blobCount
             }
-          });
-        } catch (error) {
-          res.status(500).json({
-            success: false,
-            message: 'Failed to upload full backup',
-            error: error.message
-          });
-        }
-      });
-
-      // Add database dump to archive
-      if (dbPool) {
-        const result = await dbPool.query('SELECT NOW() as backup_time');
-        archive.append(`-- Database backup created at ${result.rows[0].backup_time}\n`, { name: 'database.sql' });
+          }
+        });
+      } catch (error) {
+        console.error('❌ Full backup failed via API:', error.message);
+        console.error('❌ Full error stack:', error.stack);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to create full backup',
+          error: error.message
+        });
       }
-      
-      archive.finalize();
     } else {
       res.status(400).json({
         success: false,
