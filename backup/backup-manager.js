@@ -1,35 +1,35 @@
 const { Pool } = require('pg');
 const { list } = require('@vercel/blob');
-const fs = require('fs').promises;
-const path = require('path');
-const cron = require('node-cron');
 const archiver = require('archiver');
 const { createWriteStream } = require('fs');
+const fs = require('fs').promises;
+const path = require('path');
+
 require('dotenv').config({ path: '.env.local' });
 
 class BackupManager {
   constructor() {
-    this.backupDir = path.join(__dirname, 'backups');
     this.dbPool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
+      connectionString: process.env.DATABASE_URL
     });
+    
+    this.backupDir = path.join(__dirname, 'backups');
     this.backupStatus = {
       lastBackup: null,
-      lastBackupStatus: null,
-      nextScheduledBackup: null,
+      lastBackupStatus: 'unknown',
       backupCount: 0,
       totalBackupSize: 0
     };
-    this.initializeBackupDirectory();
+    
+    this.ensureBackupDir();
+    this.loadBackupStatus();
   }
 
-  async initializeBackupDirectory() {
+  async ensureBackupDir() {
     try {
       await fs.mkdir(this.backupDir, { recursive: true });
-      await this.loadBackupStatus();
     } catch (error) {
-      console.error('Error initializing backup directory:', error);
+      console.error('❌ Failed to create backup directory:', error);
     }
   }
 
@@ -39,8 +39,8 @@ class BackupManager {
       const data = await fs.readFile(statusFile, 'utf8');
       this.backupStatus = JSON.parse(data);
     } catch (error) {
-      // Status file doesn't exist yet, use defaults
-      console.log('No existing backup status found, starting fresh');
+      // Status file doesn't exist or is invalid, use defaults
+      await this.saveBackupStatus();
     }
   }
 
@@ -49,7 +49,7 @@ class BackupManager {
       const statusFile = path.join(this.backupDir, 'backup-status.json');
       await fs.writeFile(statusFile, JSON.stringify(this.backupStatus, null, 2));
     } catch (error) {
-      console.error('Error saving backup status:', error);
+      console.error('❌ Failed to save backup status:', error);
     }
   }
 
@@ -59,7 +59,27 @@ class BackupManager {
         
     try {
       console.log('📊 Creating database backup...');
+      const dbBackup = await this.createDatabaseBackupContent();
+      
+      await fs.writeFile(backupFile, dbBackup.content);
             
+      const stats = await fs.stat(backupFile);
+      console.log(`✅ Database backup created: ${backupFile} (${(stats.size / 1024).toFixed(2)} KB)`);
+            
+      return {
+        type: 'database',
+        file: backupFile,
+        size: stats.size,
+        timestamp: timestamp
+      };
+    } catch (error) {
+      console.error('❌ Database backup failed:', error);
+      throw error;
+    }
+  }
+
+  async createDatabaseBackupContent() {
+    try {
       // Get all tables
       const tablesResult = await this.dbPool.query(`
                 SELECT table_name 
@@ -73,9 +93,11 @@ class BackupManager {
       backupContent += `-- Created: ${new Date().toISOString()}\n`;
       backupContent += `-- Database: ${process.env.DATABASE_URL?.split('/').pop()?.split('?')[0]}\n\n`;
 
+      const tables = [];
       // Backup each table
       for (const table of tablesResult.rows) {
         const tableName = table.table_name;
+        tables.push(tableName);
                 
         // Get table schema
         const schemaResult = await this.dbPool.query(`
@@ -116,19 +138,13 @@ class BackupManager {
         }
       }
 
-      await fs.writeFile(backupFile, backupContent);
-            
-      const stats = await fs.stat(backupFile);
-      console.log(`✅ Database backup created: ${backupFile} (${(stats.size / 1024).toFixed(2)} KB)`);
-            
       return {
-        type: 'database',
-        file: backupFile,
-        size: stats.size,
-        timestamp: timestamp
+        content: backupContent,
+        size: Buffer.byteLength(backupContent, 'utf8'),
+        tables: tables
       };
     } catch (error) {
-      console.error('❌ Database backup failed:', error);
+      console.error('❌ Database backup content creation failed:', error);
       throw error;
     }
   }
@@ -139,11 +155,9 @@ class BackupManager {
         
     try {
       console.log('📁 Creating blob storage backup...');
-            
-      // List all blobs
-      const { blobs } = await list();
-            
-      if (blobs.length === 0) {
+      const blobBackup = await this.createBlobBackupContent();
+      
+      if (blobBackup.blobs.length === 0) {
         console.log('ℹ️  No blobs found to backup');
         return {
           type: 'blob',
@@ -161,13 +175,13 @@ class BackupManager {
       return new Promise((resolve, reject) => {
         output.on('close', async () => {
           const stats = await fs.stat(backupFile);
-          console.log(`✅ Blob backup created: ${backupFile} (${(stats.size / 1024 / 1024).toFixed(2)} MB, ${blobs.length} files)`);
+          console.log(`✅ Blob backup created: ${backupFile} (${(stats.size / 1024 / 1024).toFixed(2)} MB, ${blobBackup.blobs.length} files)`);
           resolve({
             type: 'blob',
             file: backupFile,
             size: stats.size,
             timestamp: timestamp,
-            blobCount: blobs.length
+            blobCount: blobBackup.blobs.length
           });
         });
 
@@ -175,7 +189,7 @@ class BackupManager {
         archive.pipe(output);
 
         // Add each blob to the archive
-        blobs.forEach(blob => {
+        blobBackup.blobs.forEach(blob => {
           const blobUrl = blob.url;
           const fileName = blob.pathname.split('/').pop() || 'unknown';
           archive.append(blobUrl, { name: fileName });
@@ -189,40 +203,146 @@ class BackupManager {
     }
   }
 
+  async createBlobBackupContent() {
+    try {
+      // List all blobs
+      const { blobs } = await list();
+      
+      let totalSize = 0;
+      for (const blob of blobs) {
+        totalSize += blob.size || 0;
+      }
+      
+      return {
+        blobs: blobs,
+        totalSize: totalSize
+      };
+    } catch (error) {
+      console.error('❌ Blob backup content creation failed:', error);
+      throw error;
+    }
+  }
+
   async performFullBackup() {
     const startTime = Date.now();
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupFile = path.join(this.backupDir, `full-backup-${timestamp}.zip`);
         
     try {
       console.log('🚀 Starting full system backup...');
+      
+      // Create database backup content first
+      console.log('💾 Creating database backup...');
+      const dbBackup = await this.createDatabaseBackupContent();
+      
+      // Create blob backup content
+      console.log('📁 Creating blob backup...');
+      const blobBackup = await this.createBlobBackupContent();
             
-      // Create both backups
-      const dbBackup = await this.createDatabaseBackup();
-      const blobBackup = await this.createBlobBackup();
+      // Create a single ZIP archive containing both database and blob data
+      const output = createWriteStream(backupFile);
+      const archive = archiver('zip', { zlib: { level: 9 } });
+
+      return new Promise(async (resolve, reject) => {
+        output.on('close', async () => {
+          try {
+            const stats = await fs.stat(backupFile);
             
-      // Create backup manifest
-      const manifest = {
-        timestamp: timestamp,
-        duration: Date.now() - startTime,
-        database: dbBackup,
-        blob: blobBackup,
-        totalSize: dbBackup.size + blobBackup.size
-      };
+            // Create backup manifest
+            const manifest = {
+              timestamp: timestamp,
+              duration: Date.now() - startTime,
+              type: 'full',
+              file: backupFile,
+              size: stats.size,
+              databaseSize: dbBackup.size,
+              blobSize: blobBackup.totalSize,
+              blobCount: blobBackup.blobs.length,
+              totalSize: stats.size
+            };
 
-      const manifestFile = path.join(this.backupDir, `backup-manifest-${dbBackup.timestamp}.json`);
-      await fs.writeFile(manifestFile, JSON.stringify(manifest, null, 2));
+            const manifestFile = path.join(this.backupDir, `backup-manifest-${timestamp}.json`);
+            await fs.writeFile(manifestFile, JSON.stringify(manifest, null, 2));
 
-      // Update backup status
-      this.backupStatus.lastBackup = timestamp;
-      this.backupStatus.lastBackupStatus = 'success';
-      this.backupStatus.backupCount++;
-      this.backupStatus.totalBackupSize += manifest.totalSize;
-      await this.saveBackupStatus();
-
-      console.log(`✅ Full backup completed in ${manifest.duration}ms`);
-      console.log(`📊 Total size: ${(manifest.totalSize / 1024 / 1024).toFixed(2)} MB`);
+            // Upload the backup file to blob storage
+            console.log('📤 Uploading backup to blob storage...');
+            const { put } = require('@vercel/blob');
             
-      return manifest;
+            // Get blob token
+            let BLOB_TOKEN;
+            if (process.env.NODE_ENV === 'development') {
+              BLOB_TOKEN = process.env.vercel_blob_rw_D3cmXYAFiy0Jv5Ch_Nfez7DLKTwQPUzZbMiPvu3j5zAQlLa_READ_WRITE_TOKEN;
+            } else {
+              BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+            }
+            
+            if (BLOB_TOKEN) {
+              const dateFolder = new Date().toISOString().split('T')[0];
+              const backupPath = `backups/full/${dateFolder}/full-backup-${timestamp}.zip`;
+              
+              // Read the backup file and upload it
+              const backupBuffer = await fs.readFile(backupFile);
+              await put(backupPath, backupBuffer, {
+                access: 'public',
+                addRandomSuffix: false,
+                token: BLOB_TOKEN
+              });
+              
+              console.log(`✅ Backup uploaded to blob storage: ${backupPath}`);
+            } else {
+              console.warn('⚠️  No blob token available - backup not uploaded to blob storage');
+            }
+
+            // Update backup status
+            this.backupStatus.lastBackup = timestamp;
+            this.backupStatus.lastBackupStatus = 'success';
+            this.backupStatus.backupCount++;
+            this.backupStatus.totalBackupSize += manifest.totalSize;
+            await this.saveBackupStatus();
+
+            console.log(`✅ Full backup completed in ${manifest.duration}ms`);
+            console.log(`📊 Total size: ${(manifest.totalSize / 1024 / 1024).toFixed(2)} MB`);
+            console.log(`💾 Database: ${(manifest.databaseSize / 1024).toFixed(2)} KB`);
+            console.log(`📁 Blob files: ${manifest.blobCount} files (${(manifest.blobSize / 1024 / 1024).toFixed(2)} MB)`);
+            
+            resolve(manifest);
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        archive.on('error', reject);
+        archive.pipe(output);
+
+        try {
+          // Add database backup to archive
+          archive.append(dbBackup.content, { name: 'database/database-backup.sql' });
+          
+          // Add blob files to archive
+          for (const blob of blobBackup.blobs) {
+            const response = await fetch(blob.url);
+            const buffer = await response.arrayBuffer();
+            archive.append(Buffer.from(buffer), { name: `blob/${blob.pathname}` });
+          }
+          
+          // Add metadata
+          const metadata = {
+            timestamp: timestamp,
+            databaseSize: dbBackup.size,
+            blobCount: blobBackup.blobs.length,
+            blobSize: blobBackup.totalSize,
+            tables: dbBackup.tables
+          };
+          
+          archive.append(JSON.stringify(metadata, null, 2), { name: 'backup-metadata.json' });
+          
+          // Finalize the archive
+          await archive.finalize();
+          
+        } catch (error) {
+          reject(error);
+        }
+      });
     } catch (error) {
       this.backupStatus.lastBackupStatus = 'failed';
       await this.saveBackupStatus();
@@ -287,37 +407,13 @@ class BackupManager {
       backups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
       return {
-        status: this.backupStatus,
-        backups: backups,
-        nextScheduledBackup: this.getNextScheduledBackup()
+        ...this.backupStatus,
+        backups: backups
       };
     } catch (error) {
-      console.error('Error getting backup status:', error);
-      throw error;
+      console.error('❌ Failed to get backup status:', error);
+      return this.backupStatus;
     }
-  }
-
-  getNextScheduledBackup() {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(2, 0, 0, 0); // 2 AM
-    return tomorrow.toISOString();
-  }
-
-  startScheduledBackups() {
-    // Schedule nightly backup at 2 AM
-    cron.schedule('0 2 * * *', async () => {
-      console.log('⏰ Scheduled backup starting...');
-      try {
-        await this.performFullBackup();
-        await this.cleanupOldBackups();
-      } catch (error) {
-        console.error('❌ Scheduled backup failed:', error);
-      }
-    });
-
-    console.log('📅 Scheduled backups enabled - nightly at 2 AM');
   }
 
   async restoreFromBackup(backupTimestamp) {
@@ -352,6 +448,12 @@ class BackupManager {
     } catch (error) {
       console.error('❌ Restore failed:', error);
       throw error;
+    }
+  }
+
+  async close() {
+    if (this.dbPool) {
+      await this.dbPool.end();
     }
   }
 }

@@ -242,7 +242,10 @@
         <!-- Backup Actions -->
         <div class="backup-actions">
             <button class="action-btn btn-primary" onclick="performBackup()">
-                🔄 Perform Backup
+                🔄 Database Backup
+            </button>
+            <button class="action-btn btn-success" onclick="performFullBackup()">
+                🗂️ Full Backup
             </button>
             <button class="action-btn btn-success" onclick="refreshStatus()">
                 🔄 Refresh Status
@@ -533,9 +536,9 @@
         }
 
         async function performBackup() {
-            if (!confirm('Start a new backup? This may take several minutes.')) return;
+            if (!confirm('Start a new database backup? This may take several minutes.')) return;
 
-            showProgress('Starting backup...');
+            showProgress('Starting database backup...');
             
             try {
                 const response = await fetch('/api/backup/create', {
@@ -547,15 +550,46 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showAlert('Backup completed successfully!', 'success');
+                    showAlert('Database backup completed successfully!', 'success');
                     await loadBackupStatus();
                     await loadBackupHistory();
                 } else {
-                    showAlert('Backup failed: ' + result.message, 'danger');
+                    showAlert('Database backup failed: ' + result.message, 'danger');
                 }
             } catch (error) {
-                console.error('Error performing backup:', error);
-                showAlert('Error performing backup', 'danger');
+                console.error('Error performing database backup:', error);
+                showAlert('Error performing database backup', 'danger');
+            } finally {
+                hideProgress();
+            }
+        }
+
+        async function performFullBackup() {
+            if (!confirm('Start a new full backup (database + all files)? This may take several minutes.')) return;
+
+            showProgress('Starting full backup...');
+            
+            try {
+                const response = await fetch('/api/backup/create', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ type: 'full' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const sizeMB = (result.data.size / 1024 / 1024).toFixed(2);
+                    const duration = result.data.duration ? ` (${result.data.duration}ms)` : '';
+                    showAlert(`Full backup completed successfully! Size: ${sizeMB} MB${duration}`, 'success');
+                    await loadBackupStatus();
+                    await loadBackupHistory();
+                } else {
+                    showAlert('Full backup failed: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error performing full backup:', error);
+                showAlert('Error performing full backup', 'danger');
             } finally {
                 hideProgress();
             }
