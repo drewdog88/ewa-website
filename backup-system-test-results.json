@@ -1,0 +1,30 @@
+{
+  "environment": {
+    "DATABASE_URL": {
+      "configured": true,
+      "length": 124,
+      "preview": "postgres://neondb_ow..."
+    },
+    "BLOB_READ_WRITE_TOKEN": {
+      "configured": true,
+      "length": 62,
+      "preview": "vercel_blob_rw_kRe9X..."
+    }
+  },
+  "blobStorage": {
+    "status": "healthy",
+    "fileCount": 14,
+    "totalSize": 42379546,
+    "backupFiles": 7
+  },
+  "database": {
+    "status": "healthy",
+    "currentTime": "2025-09-05T03:31:23.297Z",
+    "version": "PostgreSQL 17.5"
+  },
+  "cronEndpoint": {
+    "status": "error",
+    "error": "fetch failed"
+  },
+  "overall": "healthy"
+}

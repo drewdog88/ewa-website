@@ -44,6 +44,16 @@ const {
   updateBoosterClubWebsite
 } = require('../database/neon-functions');
 
+// Import analytics functions
+const {
+  getDashboardMetrics,
+  getAnalyticsData,
+  getRecentActivity,
+  logPageView,
+  logLinkClick,
+  logAdminActivity
+} = require('../database/admin-dashboard-functions');
+
 // Import Vercel Blob for file storage
 let blob;
 if (process.env.BLOB_READ_WRITE_TOKEN) {
@@ -1841,6 +1851,168 @@ app.post('/logout', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Logout error'
+    });
+  }
+});
+
+// Analytics API endpoints
+
+// Get dashboard metrics
+app.get('/api/analytics/overview', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const metrics = await getDashboardMetrics();
+    const analyticsData = await getAnalyticsData(30); // Get last 30 days
+    
+    // Calculate total page views
+    const totalPageViews = analyticsData.pageViews.reduce((sum, day) => sum + parseInt(day.views), 0);
+    
+    res.json({
+      success: true,
+      data: {
+        totalClubs: metrics.totalClubs,
+        visitorsThisMonth: metrics.visitorsThisMonth,
+        totalPageViews: totalPageViews,
+        topLinks: analyticsData.topLinks,
+        topPages: analyticsData.topPages,
+        backupStatus: metrics.backupStatus,
+        lastBackupDate: metrics.lastBackupDate
+      }
+    });
+  } catch (error) {
+    console.error('Error getting analytics overview:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get analytics overview'
+    });
+  }
+});
+
+// Get detailed analytics data
+app.get('/api/analytics/data', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { days = 30 } = req.query;
+    const analyticsData = await getAnalyticsData(parseInt(days));
+    
+    res.json({
+      success: true,
+      data: analyticsData
+    });
+  } catch (error) {
+    console.error('Error getting analytics data:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get analytics data'
+    });
+  }
+});
+
+// Get recent activity
+app.get('/api/analytics/recent-activity', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { limit = 10 } = req.query;
+    const recentActivity = await getRecentActivity(parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: recentActivity
+    });
+  } catch (error) {
+    console.error('Error getting recent activity:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get recent activity'
+    });
+  }
+});
+
+// Generate analytics report
+app.post('/api/analytics/report', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    const { reportType, dateRange } = req.body;
+    
+    let reportData = {};
+    
+    switch (reportType) {
+      case 'usage':
+        reportData = await getAnalyticsData(parseInt(dateRange));
+        break;
+      case 'links':
+        const analyticsData = await getAnalyticsData(parseInt(dateRange));
+        reportData = { topLinks: analyticsData.topLinks };
+        break;
+      case 'officers':
+        const officers = await getOfficers();
+        reportData = { officers: officers.length };
+        break;
+      case 'documents':
+        const documents = await getForm1099();
+        reportData = { documents: documents.length };
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid report type'
+        });
+    }
+    
+    res.json({
+      success: true,
+      data: reportData,
+      reportType,
+      dateRange,
+      generatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error generating report:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate report'
+    });
+  }
+});
+
+// Log page view (for tracking)
+app.post('/api/analytics/page-view', async (req, res) => {
+  try {
+    const { pageUrl, visitorIp, userAgent, referrer, sessionId, isAdmin } = req.body;
+    
+    await logPageView(pageUrl, visitorIp, userAgent, referrer, sessionId, isAdmin);
+    
+    res.json({
+      success: true,
+      message: 'Page view logged'
+    });
+  } catch (error) {
+    console.error('Error logging page view:', error);
+    // Don't fail the request if logging fails
+    res.json({
+      success: true,
+      message: 'Page view logged (with errors)'
+    });
+  }
+});
+
+// Log link click (for tracking)
+app.post('/api/analytics/link-click', async (req, res) => {
+  try {
+    const { linkUrl, linkText, pageSource, visitorIp, sessionId, isAdmin } = req.body;
+    
+    await logLinkClick(linkUrl, linkText, pageSource, visitorIp, sessionId, isAdmin);
+    
+    res.json({
+      success: true,
+      message: 'Link click logged'
+    });
+  } catch (error) {
+    console.error('Error logging link click:', error);
+    // Don't fail the request if logging fails
+    res.json({
+      success: true,
+      message: 'Link click logged (with errors)'
     });
   }
 });

@@ -209,7 +209,7 @@ async function getAnalyticsData(days = 30) {
                 COUNT(*) as views,
                 COUNT(DISTINCT session_id) as unique_visitors
             FROM page_views 
-            WHERE viewed_at >= CURRENT_DATE - INTERVAL '${days} days'
+            WHERE viewed_at >= CURRENT_DATE - INTERVAL '30 days'
             AND is_admin = false
             GROUP BY DATE(viewed_at)
             ORDER BY date DESC
@@ -221,7 +221,7 @@ async function getAnalyticsData(days = 30) {
                 page_url,
                 COUNT(*) as views
             FROM page_views 
-            WHERE viewed_at >= CURRENT_DATE - INTERVAL '${days} days'
+            WHERE viewed_at >= CURRENT_DATE - INTERVAL '30 days'
             AND is_admin = false
             GROUP BY page_url
             ORDER BY views DESC
@@ -233,12 +233,12 @@ async function getAnalyticsData(days = 30) {
             SELECT 
                 link_url,
                 link_text,
-                COUNT(*) as clicks
+                COUNT(*) as click_count
             FROM link_clicks 
-            WHERE clicked_at >= CURRENT_DATE - INTERVAL '${days} days'
+            WHERE clicked_at >= CURRENT_DATE - INTERVAL '30 days'
             AND is_admin = false
             GROUP BY link_url, link_text
-            ORDER BY clicks DESC
+            ORDER BY click_count DESC
             LIMIT 10
         `;
         

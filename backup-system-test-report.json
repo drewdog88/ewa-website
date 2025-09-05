@@ -1,0 +1,154 @@
+{
+  "passed": 21,
+  "failed": 2,
+  "tests": [
+    {
+      "name": "Environment: DATABASE_URL exists",
+      "passed": true,
+      "message": "Environment variable is properly configured",
+      "timestamp": "2025-09-05T03:47:04.486Z"
+    },
+    {
+      "name": "Environment: BLOB_READ_WRITE_TOKEN exists",
+      "passed": true,
+      "message": "Environment variable is properly configured",
+      "timestamp": "2025-09-05T03:47:04.487Z"
+    },
+    {
+      "name": "Environment: BLOB_READ_WRITE_TOKEN is valid format",
+      "passed": true,
+      "message": "Environment variable is properly configured",
+      "timestamp": "2025-09-05T03:47:04.487Z"
+    },
+    {
+      "name": "Database Backup: Content Creation",
+      "passed": true,
+      "message": "Database backup content created (80933 bytes, 13 tables)",
+      "timestamp": "2025-09-05T03:47:04.914Z"
+    },
+    {
+      "name": "Database Backup: File Creation",
+      "passed": true,
+      "message": "Database backup file created: D:\\Gitlocal\\ewa_website\\backup\\backups\\db-backup-2025-09-05T03-47-04-914Z.sql (80933 bytes)",
+      "timestamp": "2025-09-05T03:47:05.221Z"
+    },
+    {
+      "name": "Database Backup: File Accessibility",
+      "passed": true,
+      "message": "Backup file is accessible",
+      "timestamp": "2025-09-05T03:47:05.221Z"
+    },
+    {
+      "name": "Database Backup: Content Validation",
+      "passed": true,
+      "message": "Backup contains table schemas and data",
+      "timestamp": "2025-09-05T03:47:05.222Z"
+    },
+    {
+      "name": "Blob Backup: Token Authentication",
+      "passed": true,
+      "message": "Blob listing successful with token (16 blobs found)",
+      "timestamp": "2025-09-05T03:47:05.644Z"
+    },
+    {
+      "name": "Blob Backup: Content Creation",
+      "passed": true,
+      "message": "Blob backup content created (6 blobs, 1699131 bytes)",
+      "timestamp": "2025-09-05T03:47:05.841Z"
+    },
+    {
+      "name": "Blob Backup: Infinite Loop Prevention",
+      "passed": true,
+      "message": "Backup files properly filtered out",
+      "timestamp": "2025-09-05T03:47:05.841Z"
+    },
+    {
+      "name": "Full Backup: Creation",
+      "passed": true,
+      "message": "Full backup created in 2234ms (1381246 bytes)",
+      "timestamp": "2025-09-05T03:47:08.075Z"
+    },
+    {
+      "name": "Full Backup: File Accessibility",
+      "passed": true,
+      "message": "Full backup file is accessible",
+      "timestamp": "2025-09-05T03:47:08.076Z"
+    },
+    {
+      "name": "Full Backup: Manifest Creation",
+      "passed": true,
+      "message": "Backup manifest created",
+      "timestamp": "2025-09-05T03:47:08.076Z"
+    },
+    {
+      "name": "Full Backup: Manifest Content",
+      "passed": true,
+      "message": "Manifest includes local assets (440 files, 15941330 bytes)",
+      "timestamp": "2025-09-05T03:47:08.076Z"
+    },
+    {
+      "name": "Error Handling: Invalid Token",
+      "passed": true,
+      "message": "Invalid token properly rejected with access denied error",
+      "timestamp": "2025-09-05T03:47:08.183Z"
+    },
+    {
+      "name": "Error Handling: Invalid Database",
+      "passed": false,
+      "message": "Should have failed with invalid database URL",
+      "timestamp": "2025-09-05T03:47:08.503Z"
+    },
+    {
+      "name": "Local Assets: Backup Creation",
+      "passed": true,
+      "message": "Local assets backup created (440 files)",
+      "timestamp": "2025-09-05T03:47:08.588Z"
+    },
+    {
+      "name": "Local Assets: Assets Directory Scan",
+      "passed": true,
+      "message": "Assets directory files included",
+      "timestamp": "2025-09-05T03:47:08.588Z"
+    },
+    {
+      "name": "Local Assets: Root Directory Scan",
+      "passed": true,
+      "message": "Root directory files included",
+      "timestamp": "2025-09-05T03:47:08.589Z"
+    },
+    {
+      "name": "Local Assets: Development Directory Exclusion",
+      "passed": false,
+      "message": "Development directories not properly excluded",
+      "timestamp": "2025-09-05T03:47:08.589Z"
+    },
+    {
+      "name": "Infinite Loop Prevention: Backup File Filtering",
+      "passed": true,
+      "message": "Backup files properly filtered out",
+      "timestamp": "2025-09-05T03:47:08.792Z"
+    },
+    {
+      "name": "Infinite Loop Prevention: Duplicate Prevention",
+      "passed": true,
+      "message": "No duplicate files found (6 total, 6 unique)",
+      "timestamp": "2025-09-05T03:47:08.792Z"
+    },
+    {
+      "name": "Timeout Protection: Full Backup Completion",
+      "passed": true,
+      "message": "Full backup completed in 2292ms (within 10 minute limit)",
+      "timestamp": "2025-09-05T03:47:11.086Z"
+    }
+  ],
+  "startTime": 1757044024484,
+  "environment": "development",
+  "duration": 6603,
+  "successRate": 91.3,
+  "summary": {
+    "totalTests": 23,
+    "passed": 21,
+    "failed": 2,
+    "successRate": 91.3
+  }
+}

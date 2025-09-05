@@ -599,8 +599,8 @@
                     
                     <div class="dashboard-card">
                         <h3>Site Visitors</h3>
-                        <div class="stat-number" id="siteVisitors">N/A</div>
-                        <div class="stat-label">Analytics not configured</div>
+                        <div class="stat-number" id="siteVisitors">Loading...</div>
+                        <div class="stat-label">This month</div>
                     </div>
                 </div>
                 
@@ -614,25 +614,6 @@
                     </div>
                 </div>
                 
-                <div class="recent-activity">
-                    <h3>Recent Activity</h3>
-                    <div class="activity-item">
-                        <div class="activity-time">2 hours ago</div>
-                        <div class="activity-text">New officer added to Eastlake Band Boosters</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-time">1 day ago</div>
-                        <div class="activity-text">1099 form submitted by EHS Football Boosters</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-time">2 days ago</div>
-                        <div class="activity-text">News post published: "Spring Sports Registration"</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-time">3 days ago</div>
-                        <div class="activity-text">New link added: "Eastlake Athletics Calendar"</div>
-                    </div>
-                </div>
             </div>
             
             <!-- Officer Management Section -->
@@ -1098,26 +1079,26 @@
                 <div class="dashboard-grid">
                     <div class="dashboard-card">
                         <h3>Page Views</h3>
-                        <div class="stat-number">5,234</div>
+                        <div class="stat-number" id="analyticsPageViews">Loading...</div>
                         <div class="stat-label">This month</div>
                     </div>
                     
                     <div class="dashboard-card">
                         <h3>Unique Visitors</h3>
-                        <div class="stat-number">1,247</div>
+                        <div class="stat-number" id="analyticsUniqueVisitors">Loading...</div>
                         <div class="stat-label">This month</div>
                     </div>
                     
                     <div class="dashboard-card">
                         <h3>Most Popular Page</h3>
-                        <div class="stat-number">Home</div>
-                        <div class="stat-label">2,156 views</div>
+                        <div class="stat-number" id="analyticsPopularPage">Loading...</div>
+                        <div class="stat-label" id="analyticsPopularPageViews">Loading...</div>
                     </div>
                     
                     <div class="dashboard-card">
                         <h3>Top External Link</h3>
-                        <div class="stat-number">LWSD Athletics</div>
-                        <div class="stat-label">89 clicks</div>
+                        <div class="stat-number" id="analyticsTopLink">Loading...</div>
+                        <div class="stat-label" id="analyticsTopLinkClicks">Loading...</div>
                     </div>
                 </div>
                 
@@ -2496,29 +2477,59 @@
         async function loadDashboardStats() {
             try {
                 console.log('📊 Loading dashboard statistics...');
-                const response = await fetch('/api/dashboard/stats');
-                const result = await response.json();
                 
-                if (result.success) {
-                    const stats = result.stats;
+                // Load analytics overview
+                const analyticsResponse = await fetch('/api/analytics/overview');
+                const analyticsResult = await analyticsResponse.json();
+                
+                if (analyticsResult.success) {
+                    const metrics = analyticsResult.data;
                     
-                    // Update dashboard cards with real data
-                    document.getElementById('totalOfficers').textContent = stats.totalOfficers;
-                    document.getElementById('pendingDocuments').textContent = stats.pendingDocuments;
-                    document.getElementById('siteVisitors').textContent = stats.siteVisitors;
+                    // Update dashboard cards with real analytics data
+                    document.getElementById('siteVisitors').textContent = metrics.visitorsThisMonth || '0';
                     
-                    console.log('✅ Dashboard stats loaded:', stats);
+                    console.log('✅ Analytics data loaded:', metrics);
                 } else {
-                    console.error('❌ Failed to load dashboard stats:', result.message);
-                    // Show error state
+                    console.error('❌ Failed to load analytics data:', analyticsResult.message);
+                    document.getElementById('siteVisitors').textContent = 'N/A';
+                }
+                
+                // Load other dashboard stats (officers, documents)
+                try {
+                    const officersResponse = await fetch('/api/officers');
+                    const officersResult = await officersResponse.json();
+                    
+                    if (officersResult.success) {
+                        document.getElementById('totalOfficers').textContent = officersResult.data.length;
+                    } else {
+                        document.getElementById('totalOfficers').textContent = 'Error';
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading officers:', error);
                     document.getElementById('totalOfficers').textContent = 'Error';
+                }
+                
+                try {
+                    const documentsResponse = await fetch('/api/1099');
+                    const documentsResult = await documentsResponse.json();
+                    
+                    if (documentsResult.success) {
+                        const pendingCount = documentsResult.data.filter(doc => doc.status === 'pending').length;
+                        document.getElementById('pendingDocuments').textContent = pendingCount;
+                    } else {
+                        document.getElementById('pendingDocuments').textContent = 'Error';
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading documents:', error);
                     document.getElementById('pendingDocuments').textContent = 'Error';
                 }
+                
             } catch (error) {
                 console.error('❌ Error loading dashboard stats:', error);
                 // Show error state
                 document.getElementById('totalOfficers').textContent = 'Error';
                 document.getElementById('pendingDocuments').textContent = 'Error';
+                document.getElementById('siteVisitors').textContent = 'Error';
             }
         }
         
@@ -4228,16 +4239,41 @@
     
     // Update analytics display
     function updateAnalyticsDisplay(data) {
-        // Update the dashboard cards with real data
-        const pageViewsElement = document.querySelector('#analytics .dashboard-card:nth-child(1) .stat-number');
-        const uniqueVisitorsElement = document.querySelector('#analytics .dashboard-card:nth-child(2) .stat-number');
-        const popularPageElement = document.querySelector('#analytics .dashboard-card:nth-child(3) .stat-number');
-        const topLinkElement = document.querySelector('#analytics .dashboard-card:nth-child(4) .stat-number');
+        const metrics = data.data;
         
-        if (pageViewsElement) pageViewsElement.textContent = data.pageViews || '0';
-        if (uniqueVisitorsElement) uniqueVisitorsElement.textContent = data.uniqueVisitors || '0';
-        if (popularPageElement) popularPageElement.textContent = data.popularPage || 'Home';
-        if (topLinkElement) topLinkElement.textContent = data.topLink || 'None';
+        // Update the dashboard cards with real data using the correct IDs
+        const pageViewsElement = document.getElementById('analyticsPageViews');
+        const uniqueVisitorsElement = document.getElementById('analyticsUniqueVisitors');
+        const popularPageElement = document.getElementById('analyticsPopularPage');
+        const popularPageViewsElement = document.getElementById('analyticsPopularPageViews');
+        const topLinkElement = document.getElementById('analyticsTopLink');
+        const topLinkClicksElement = document.getElementById('analyticsTopLinkClicks');
+        
+        // Update page views and unique visitors
+        if (pageViewsElement) pageViewsElement.textContent = metrics.totalPageViews || '0';
+        if (uniqueVisitorsElement) uniqueVisitorsElement.textContent = metrics.visitorsThisMonth || '0';
+        
+        // Update most popular page
+        if (popularPageElement) {
+            if (metrics.topPages && metrics.topPages.length > 0) {
+                popularPageElement.textContent = metrics.topPages[0].page_url || 'Home';
+                popularPageViewsElement.textContent = `${metrics.topPages[0].views} views`;
+            } else {
+                popularPageElement.textContent = 'Home';
+                popularPageViewsElement.textContent = '0 views';
+            }
+        }
+        
+        // Update top external link
+        if (topLinkElement) {
+            if (metrics.topLinks && metrics.topLinks.length > 0) {
+                topLinkElement.textContent = metrics.topLinks[0].link_text || 'None';
+                topLinkClicksElement.textContent = `${metrics.topLinks[0].click_count} clicks`;
+            } else {
+                topLinkElement.textContent = 'None';
+                topLinkClicksElement.textContent = '0 clicks';
+            }
+        }
     }
     
     // Generate report
