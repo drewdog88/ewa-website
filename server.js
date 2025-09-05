@@ -1751,16 +1751,32 @@ app.delete('/api/officers/:id', async (req, res) => {
 // Get analytics overview
 app.get('/api/analytics/overview', async (req, res) => {
   try {
-    // For now, return mock data
-    // In a real application, you would query your analytics database
-    const analyticsData = {
-      pageViews: Math.floor(Math.random() * 10000) + 1000,
-      uniqueVisitors: Math.floor(Math.random() * 3000) + 500,
-      popularPage: 'Home',
-      topLink: 'LWSD Athletics'
-    };
-        
-    res.json({ success: true, ...analyticsData });
+    const { getDashboardMetrics, getAnalyticsData } = require('./database/admin-dashboard-functions');
+    
+    // Get dashboard metrics (includes visitors, top links, etc.)
+    const metrics = await getDashboardMetrics();
+    
+    // Get detailed analytics data
+    const analyticsData = await getAnalyticsData();
+    
+    // Get total page views
+    const { neon } = require('@neondatabase/serverless');
+    const sql = neon(process.env.DATABASE_URL);
+    const totalPageViewsResult = await sql`SELECT COUNT(*) as count FROM page_views WHERE is_admin = false`;
+    const totalPageViews = totalPageViewsResult[0]?.count || 0;
+    
+    res.json({
+      success: true,
+      data: {
+        totalClubs: metrics.totalClubs,
+        visitorsThisMonth: metrics.visitorsThisMonth,
+        totalPageViews: totalPageViews,
+        topLinks: analyticsData.topLinks,
+        topPages: analyticsData.topPages,
+        backupStatus: metrics.backupStatus,
+        lastBackupDate: metrics.lastBackupDate
+      }
+    });
   } catch (error) {
     console.error('Error getting analytics overview:', error);
     res.status(500).json({ 
