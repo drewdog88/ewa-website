@@ -2500,13 +2500,13 @@
                     const officersResult = await officersResponse.json();
                     
                     if (officersResult.success) {
-                        document.getElementById('totalOfficers').textContent = officersResult.data.length;
+                        document.getElementById('totalOfficers').textContent = officersResult.data.length || '0';
                     } else {
-                        document.getElementById('totalOfficers').textContent = 'Error';
+                        document.getElementById('totalOfficers').textContent = '0';
                     }
                 } catch (error) {
                     console.error('❌ Error loading officers:', error);
-                    document.getElementById('totalOfficers').textContent = 'Error';
+                    document.getElementById('totalOfficers').textContent = '0';
                 }
                 
                 try {
@@ -2515,21 +2515,21 @@
                     
                     if (documentsResult.success) {
                         const pendingCount = documentsResult.data.filter(doc => doc.status === 'pending').length;
-                        document.getElementById('pendingDocuments').textContent = pendingCount;
+                        document.getElementById('pendingDocuments').textContent = pendingCount || '0';
                     } else {
-                        document.getElementById('pendingDocuments').textContent = 'Error';
+                        document.getElementById('pendingDocuments').textContent = '0';
                     }
                 } catch (error) {
                     console.error('❌ Error loading documents:', error);
-                    document.getElementById('pendingDocuments').textContent = 'Error';
+                    document.getElementById('pendingDocuments').textContent = '0';
                 }
                 
             } catch (error) {
                 console.error('❌ Error loading dashboard stats:', error);
-                // Show error state
-                document.getElementById('totalOfficers').textContent = 'Error';
-                document.getElementById('pendingDocuments').textContent = 'Error';
-                document.getElementById('siteVisitors').textContent = 'Error';
+                // Show fallback state
+                document.getElementById('totalOfficers').textContent = '0';
+                document.getElementById('pendingDocuments').textContent = '0';
+                document.getElementById('siteVisitors').textContent = '0';
             }
         }
         
