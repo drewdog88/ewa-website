@@ -354,6 +354,190 @@
         .btn-secondary:hover {
             background-color: #5a6268;
         }
+
+        /* Security Report Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .report-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .report-section h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .report-section h4 {
+            color: #555;
+            margin: 20px 0 10px 0;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dependency-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .dependency-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dependency-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .dependency-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .recommendation-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendation-list li {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-priority {
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .priority-critical {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-high {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-medium {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .priority-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -4980,6 +5164,9 @@
             
             if (data.success) {
                 updateCoverage(data.data.overallCoverage);
+            } else {
+                console.log('No coverage data available:', data.message);
+                updateCoverage(null);
             }
         } catch (error) {
             console.error('Error loading coverage:', error);
@@ -4990,13 +5177,154 @@
     function updateCoverage(coverage) {
         const container = document.getElementById('codeCoverage');
         if (container) {
-            container.textContent = coverage + '%';
+            if (coverage === null || coverage === undefined) {
+                container.textContent = 'N/A';
+                container.title = 'No coverage data available. Run tests with coverage to generate data.';
+                container.style.color = '#6c757d';
+            } else {
+                container.textContent = coverage + '%';
+                container.title = 'Test coverage percentage';
+                container.style.color = '#28a745';
+            }
         }
     }
 
     // View security report
-    function viewSecurityReport() {
-        window.open('/api/security/report', '_blank');
+    async function viewSecurityReport() {
+        try {
+            const response = await fetch('/api/security/report');
+            const data = await response.json();
+            
+            if (data.success) {
+                displayBeautifulSecurityReport(data.data);
+                document.getElementById('securityReportModal').style.display = 'block';
+            } else {
+                showAlert('Failed to load security report: ' + data.message, 'danger');
+            }
+        } catch (error) {
+            console.error('Error loading security report:', error);
+            showAlert('Error loading security report', 'danger');
+        }
+    }
+
+    // Display beautiful formatted security report
+    function displayBeautifulSecurityReport(reportData) {
+        const container = document.getElementById('securityReportContent');
+        
+        const html = `
+            <div class="report-section">
+                <h3>📊 Security Summary</h3>
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" style="color: #28a745;">${reportData.summary.totalVulnerabilities}</div>
+                        <div class="metric-label">Total Vulnerabilities</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" style="color: #667eea;">${reportData.summary.totalIssues}</div>
+                        <div class="metric-label">Code Issues</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" style="color: #ffc107;">${reportData.summary.recommendations}</div>
+                        <div class="metric-label">Recommendations</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" style="color: #17a2b8;">${new Date(reportData.summary.timestamp).toLocaleDateString()}</div>
+                        <div class="metric-label">Scan Date</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h3>📦 Dependency Analysis</h3>
+                <div class="dependency-stats">
+                    <div class="dependency-stat">
+                        <div class="dependency-number">${reportData.details.dependencies.metadata.dependencies.prod}</div>
+                        <div class="dependency-label">Production</div>
+                    </div>
+                    <div class="dependency-stat">
+                        <div class="dependency-number">${reportData.details.dependencies.metadata.dependencies.dev}</div>
+                        <div class="dependency-label">Development</div>
+                    </div>
+                    <div class="dependency-stat">
+                        <div class="dependency-number">${reportData.details.dependencies.metadata.dependencies.optional}</div>
+                        <div class="dependency-label">Optional</div>
+                    </div>
+                    <div class="dependency-stat">
+                        <div class="dependency-number">${reportData.details.dependencies.metadata.dependencies.total}</div>
+                        <div class="dependency-label">Total</div>
+                    </div>
+                </div>
+                
+                <h4>Vulnerability Breakdown</h4>
+                <div class="dependency-stats">
+                    <div class="dependency-stat">
+                        <div class="dependency-number" style="color: #dc3545;">${reportData.details.dependencies.severityCounts.critical}</div>
+                        <div class="dependency-label">Critical</div>
+                    </div>
+                    <div class="dependency-stat">
+                        <div class="dependency-number" style="color: #fd7e14;">${reportData.details.dependencies.severityCounts.high}</div>
+                        <div class="dependency-label">High</div>
+                    </div>
+                    <div class="dependency-stat">
+                        <div class="dependency-number" style="color: #ffc107;">${reportData.details.dependencies.severityCounts.moderate}</div>
+                        <div class="dependency-label">Moderate</div>
+                    </div>
+                    <div class="dependency-stat">
+                        <div class="dependency-number" style="color: #28a745;">${reportData.details.dependencies.severityCounts.low}</div>
+                        <div class="dependency-label">Low</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h3>🔍 Code Quality Analysis</h3>
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" style="color: #667eea;">${reportData.details.codeIssues.totalIssues}</div>
+                        <div class="metric-label">Total Issues</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" style="color: #dc3545;">${reportData.details.codeIssues.securityIssues.length}</div>
+                        <div class="metric-label">Security Issues</div>
+                    </div>
+                </div>
+                ${reportData.details.codeIssues.error ? 
+                    `<p style="color: #fd7e14; background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid #ffc107;">
+                        <strong>Note:</strong> ${reportData.details.codeIssues.error}
+                    </p>` : ''
+                }
+            </div>
+
+            <div class="report-section">
+                <h3>💡 Security Recommendations</h3>
+                <ul class="recommendation-list">
+                    ${reportData.details.recommendations.map(rec => `
+                        <li>
+                            <div class="recommendation-priority priority-${rec.priority}">
+                                ${rec.priority.toUpperCase()}: ${rec.category}
+                            </div>
+                            <div style="margin: 5px 0;">${rec.message}</div>
+                            <div style="font-size: 0.9rem; color: #666; font-style: italic;">
+                                Action: ${rec.action}
+                            </div>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+
+            <div class="report-section">
+                <h3>📅 Scan Information</h3>
+                <p><strong>Scan Timestamp:</strong> ${new Date(reportData.details.timestamp).toLocaleString()}</p>
+                <p><strong>Report Generated:</strong> ${new Date().toLocaleString()}</p>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+    }
+
+    // Close security report modal
+    function closeSecurityReportModal() {
+        document.getElementById('securityReportModal').style.display = 'none';
     }
 
     // Load security dashboard data when section is shown
@@ -5516,7 +5844,27 @@
         });
     }
 
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('securityReportModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
 
 </script>
+
+<!-- Security Report Modal -->
+<div id="securityReportModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🔒 Full Security Report</h2>
+            <span class="close" onclick="closeSecurityReportModal()">&times;</span>
+        </div>
+        <div class="modal-body" id="securityReportContent">
+            <div class="loading">Loading full report...</div>
+        </div>
+    </div>
+</div>
 </body>
 </html> 

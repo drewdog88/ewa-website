@@ -66,27 +66,21 @@ const requireAdmin = async (req, res, next) => {
   }
 };
 
-// Get blob token from environment - handle different tokens for different environments
-let BLOB_TOKEN;
-if (process.env.NODE_ENV === 'development') {
-  // Development uses the development-specific token
-  BLOB_TOKEN = process.env.vercel_blob_rw_D3cmXYAFiy0Jv5Ch_Nfez7DLKTwQPUzZbMiPvu3j5zAQlLa_READ_WRITE_TOKEN;
-} else {
-  // Production and Preview use the production token
-  BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
-}
+// Standardized blob token configuration
+const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 // Safety check for blob token
 if (!BLOB_TOKEN) {
   console.error('❌ BLOB_READ_WRITE_TOKEN not configured - backup system will not work');
   console.error('💡 Please set BLOB_READ_WRITE_TOKEN in your environment');
   console.error('💡 Current environment:', process.env.NODE_ENV || 'development');
+  console.error('💡 Available environment variables:', Object.keys(process.env).filter(key => key.includes('BLOB')));
 } else {
   console.log('✅ Blob token configured for backup system');
   console.log('💡 Environment:', process.env.NODE_ENV || 'development');
-  console.log('💡 Token type:', process.env.NODE_ENV === 'development' ? 'Development' : 'Production/Preview');
   console.log('💡 Token starts with:', BLOB_TOKEN.substring(0, 20) + '...');
-  console.log('💡 Production deployment test - ' + new Date().toISOString());
+  console.log('💡 Token length:', BLOB_TOKEN.length);
+  console.log('💡 Configuration validated at:', new Date().toISOString());
 }
 
 // Database connection for backup operations
@@ -789,6 +783,83 @@ router.get('/schedule/status', requireAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to get schedule status',
+      error: error.message
+    });
+  }
+});
+
+// Health check endpoint for monitoring
+router.get('/health', async (req, res) => {
+  try {
+    const health = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      components: {}
+    };
+
+    // Check blob storage
+    if (BLOB_TOKEN) {
+      try {
+        const { blobs } = await list({ token: BLOB_TOKEN });
+        health.components.blobStorage = {
+          status: 'healthy',
+          fileCount: blobs.length,
+          totalSize: blobs.reduce((sum, blob) => sum + (blob.size || 0), 0)
+        };
+      } catch (error) {
+        health.components.blobStorage = {
+          status: 'unhealthy',
+          error: error.message
+        };
+        health.status = 'degraded';
+      }
+    } else {
+      health.components.blobStorage = {
+        status: 'unavailable',
+        error: 'BLOB_READ_WRITE_TOKEN not configured'
+      };
+      health.status = 'degraded';
+    }
+
+    // Check database
+    if (dbPool) {
+      try {
+        const result = await dbPool.query('SELECT NOW() as current_time');
+        health.components.database = {
+          status: 'healthy',
+          currentTime: result.rows[0].current_time
+        };
+      } catch (error) {
+        health.components.database = {
+          status: 'unhealthy',
+          error: error.message
+        };
+        health.status = 'degraded';
+      }
+    } else {
+      health.components.database = {
+        status: 'unavailable',
+        error: 'Database pool not initialized'
+      };
+      health.status = 'degraded';
+    }
+
+    // Check CRON job status
+    health.components.cronJob = {
+      status: 'configured',
+      schedule: '0 10 * * * (Daily at 10:00 AM UTC)',
+      endpoint: '/api/cron-backup',
+      note: 'Vercel CRON job - status cannot be determined from this endpoint'
+    };
+
+    const statusCode = health.status === 'healthy' ? 200 : 503;
+    res.status(statusCode).json(health);
+
+  } catch (error) {
+    res.status(500).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
       error: error.message
     });
   }

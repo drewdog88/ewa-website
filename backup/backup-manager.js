@@ -268,13 +268,8 @@ class BackupManager {
             console.log('📤 Uploading backup to blob storage...');
             const { put } = require('@vercel/blob');
             
-            // Get blob token
-            let BLOB_TOKEN;
-            if (process.env.NODE_ENV === 'development') {
-              BLOB_TOKEN = process.env.vercel_blob_rw_D3cmXYAFiy0Jv5Ch_Nfez7DLKTwQPUzZbMiPvu3j5zAQlLa_READ_WRITE_TOKEN;
-            } else {
-              BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
-            }
+            // Get blob token (standardized)
+            const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
             
             if (BLOB_TOKEN) {
               const dateFolder = new Date().toISOString().split('T')[0];
@@ -318,12 +313,50 @@ class BackupManager {
           // Add database backup to archive
           archive.append(dbBackup.content, { name: 'database/database-backup.sql' });
           
-          // Add blob files to archive
+          // Add blob files to archive with error handling
+          let successfulBlobs = 0;
+          let failedBlobs = 0;
+          
           for (const blob of blobBackup.blobs) {
-            const response = await fetch(blob.url);
-            const buffer = await response.arrayBuffer();
-            archive.append(Buffer.from(buffer), { name: `blob/${blob.pathname}` });
+            try {
+              console.log(`📥 Downloading blob: ${blob.pathname} (${(blob.size / 1024).toFixed(2)} KB)`);
+              
+              const response = await fetch(blob.url, { 
+                timeout: 30000,  // 30 second timeout
+                headers: {
+                  'User-Agent': 'EWA-Backup-System/1.0'
+                }
+              });
+              
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+              }
+              
+              const buffer = await response.arrayBuffer();
+              archive.append(Buffer.from(buffer), { name: `blob/${blob.pathname}` });
+              successfulBlobs++;
+              console.log(`✅ Downloaded: ${blob.pathname}`);
+              
+            } catch (error) {
+              console.error(`❌ Failed to download ${blob.pathname}:`, error.message);
+              failedBlobs++;
+              
+              // Add error info to archive instead of failing completely
+              const errorInfo = {
+                pathname: blob.pathname,
+                size: blob.size,
+                url: blob.url,
+                error: error.message,
+                timestamp: new Date().toISOString()
+              };
+              
+              archive.append(JSON.stringify(errorInfo, null, 2), { 
+                name: `blob-errors/${blob.pathname}.error.json` 
+              });
+            }
           }
+          
+          console.log(`📊 Blob download summary: ${successfulBlobs} successful, ${failedBlobs} failed`);
           
           // Add metadata
           const metadata = {
@@ -331,7 +364,11 @@ class BackupManager {
             databaseSize: dbBackup.size,
             blobCount: blobBackup.blobs.length,
             blobSize: blobBackup.totalSize,
-            tables: dbBackup.tables
+            successfulBlobs: successfulBlobs,
+            failedBlobs: failedBlobs,
+            tables: dbBackup.tables,
+            backupVersion: '2.0',
+            environment: process.env.NODE_ENV || 'development'
           };
           
           archive.append(JSON.stringify(metadata, null, 2), { name: 'backup-metadata.json' });
