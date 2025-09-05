@@ -40,7 +40,11 @@
     "security:ci": "npm audit --audit-level=high --production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:full": "npm run lint && npm run test:all && npm run test:e2e && npm run security:audit"
+    "test:full": "npm run lint && npm run test:all && npm run test:e2e && npm run security:audit",
+    "test:backup:quick": "node test-backup-quick.js",
+    "test:backup:comprehensive": "node test-backup-system-comprehensive.js",
+    "test:backup:both": "node run-backup-tests.js both",
+    "test:backup": "npm run test:backup:both"
   },
   "engines": {
     "node": ">=20.16.0 <21.0.0"

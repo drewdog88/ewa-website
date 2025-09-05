@@ -272,7 +272,8 @@ class BackupManager {
       try {
         const rootFiles = await this.scanDirectory(rootDir, '', [
           'node_modules', '.git', '.vercel', 'coverage', 'backups', 
-          'ManualBackups', 'NeonDBBackup', 'devbackup', 'backup'
+          'ManualBackups', 'NeonDBBackup', 'devbackup', 'backup',
+          '__tests__', 'tests', '.env', '.env.local', '.env.production'
         ]);
         localFiles.push(...rootFiles);
         console.log(`📁 Found ${rootFiles.length} files in root directory`);
