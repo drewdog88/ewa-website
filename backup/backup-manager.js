@@ -205,22 +205,127 @@ class BackupManager {
 
   async createBlobBackupContent() {
     try {
-      // List all blobs
-      const { blobs } = await list();
+      // Get blob token
+      const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+      
+      if (!BLOB_TOKEN) {
+        console.log('⚠️ No blob token available, skipping blob backup');
+        return {
+          blobs: [],
+          totalSize: 0
+        };
+      }
+      
+      // List all blobs with token
+      const { blobs } = await list({ token: BLOB_TOKEN });
+      
+      // Filter out existing backup files to prevent infinite loops
+      const filteredBlobs = blobs.filter(blob => {
+        const pathname = blob.pathname.toLowerCase();
+        // Exclude backup files and temporary files
+        return !pathname.includes('backup') && 
+               !pathname.includes('temp') && 
+               !pathname.includes('tmp') &&
+               !pathname.endsWith('.zip') &&
+               !pathname.endsWith('.tar.gz');
+      });
+      
+      console.log(`📁 Found ${blobs.length} total blobs, ${filteredBlobs.length} after filtering`);
       
       let totalSize = 0;
-      for (const blob of blobs) {
+      for (const blob of filteredBlobs) {
         totalSize += blob.size || 0;
       }
       
       return {
-        blobs: blobs,
+        blobs: filteredBlobs,
         totalSize: totalSize
       };
     } catch (error) {
       console.error('❌ Blob backup content creation failed:', error);
       throw error;
     }
+  }
+
+  async createLocalAssetsBackup() {
+    try {
+      console.log('📂 Scanning local assets...');
+      
+      const assetsDir = path.join(__dirname, '..', 'assets');
+      const rootDir = path.join(__dirname, '..');
+      
+      const localFiles = [];
+      
+      // Check if assets directory exists
+      try {
+        const assetsExists = await fs.access(assetsDir).then(() => true).catch(() => false);
+        if (assetsExists) {
+          const assetsFiles = await this.scanDirectory(assetsDir, 'assets/');
+          localFiles.push(...assetsFiles);
+          console.log(`📁 Found ${assetsFiles.length} files in assets directory`);
+        }
+      } catch (error) {
+        console.log('⚠️ Assets directory not accessible:', error.message);
+      }
+      
+      // Scan root directory for important files (excluding node_modules, .git, etc.)
+      try {
+        const rootFiles = await this.scanDirectory(rootDir, '', [
+          'node_modules', '.git', '.vercel', 'coverage', 'backups', 
+          'ManualBackups', 'NeonDBBackup', 'devbackup', 'backup'
+        ]);
+        localFiles.push(...rootFiles);
+        console.log(`📁 Found ${rootFiles.length} files in root directory`);
+      } catch (error) {
+        console.log('⚠️ Root directory scan failed:', error.message);
+      }
+      
+      return localFiles;
+    } catch (error) {
+      console.error('❌ Local assets backup failed:', error);
+      return [];
+    }
+  }
+  
+  async scanDirectory(dirPath, prefix = '', excludeDirs = []) {
+    const files = [];
+    
+    try {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name);
+        const relativePath = prefix + entry.name;
+        
+        // Skip excluded directories
+        if (excludeDirs.includes(entry.name)) {
+          continue;
+        }
+        
+        if (entry.isDirectory()) {
+          // Recursively scan subdirectories
+          const subFiles = await this.scanDirectory(fullPath, relativePath + '/', excludeDirs);
+          files.push(...subFiles);
+        } else {
+          // Add file to list
+          try {
+            const stats = await fs.stat(fullPath);
+            files.push({
+              path: fullPath,
+              relativePath: relativePath,
+              size: stats.size,
+              modified: stats.mtime
+            });
+          } catch (error) {
+            console.log(`⚠️ Could not access file: ${relativePath}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(`⚠️ Could not scan directory: ${dirPath}`);
+    }
+    
+    return files;
   }
 
   async performFullBackup() {
@@ -238,14 +343,25 @@ class BackupManager {
       // Create blob backup content
       console.log('📁 Creating blob backup...');
       const blobBackup = await this.createBlobBackupContent();
+      
+      // Create local assets backup
+      console.log('📂 Creating local assets backup...');
+      const localAssets = await this.createLocalAssetsBackup();
             
-      // Create a single ZIP archive containing both database and blob data
+      // Create a single ZIP archive containing database, blob data, and local assets
       const output = createWriteStream(backupFile);
       const archive = archiver('zip', { zlib: { level: 9 } });
 
       return new Promise(async (resolve, reject) => {
+        // Set timeout for archive creation (10 minutes)
+        const archiveTimeout = setTimeout(() => {
+          console.error('❌ Archive creation timeout after 10 minutes');
+          reject(new Error('Archive creation timeout'));
+        }, 10 * 60 * 1000);
+
         output.on('close', async () => {
           try {
+            clearTimeout(archiveTimeout);
             const stats = await fs.stat(backupFile);
             
             // Create backup manifest
@@ -258,6 +374,8 @@ class BackupManager {
               databaseSize: dbBackup.size,
               blobSize: blobBackup.totalSize,
               blobCount: blobBackup.blobs.length,
+              localAssetsCount: localAssets.length,
+              localAssetsSize: localAssets.reduce((sum, file) => sum + file.size, 0),
               totalSize: stats.size
             };
 
