@@ -768,10 +768,11 @@ async function getBoosterClubs() {
         website_url, 
         donation_url, 
         is_active, 
+        sort_order,
         created_at, 
         updated_at
       FROM booster_clubs 
-      ORDER BY name
+      ORDER BY sort_order, name
     `;
     return clubs;
   } catch (error) {
