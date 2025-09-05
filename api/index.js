@@ -235,7 +235,7 @@ app.get('/officers', async (req, res) => {
   try {
     await ensureDatabaseInitialized();
     const officers = await getOfficers();
-    res.json({ success: true, officers });
+    res.json({ success: true, data: officers });
   } catch (error) {
     console.error('Error getting officers:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
@@ -249,7 +249,7 @@ app.get('/officers/:club', async (req, res) => {
     const { club } = req.params;
     const officers = await getOfficers();
     const clubOfficers = officers.filter(officer => officer.club === club);
-    res.json({ success: true, officers: clubOfficers });
+    res.json({ success: true, data: clubOfficers });
   } catch (error) {
     console.error('Error getting club officers:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
