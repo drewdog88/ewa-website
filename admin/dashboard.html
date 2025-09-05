@@ -2510,23 +2510,7 @@
             try {
                 console.log('📊 Loading dashboard statistics...');
                 
-                // Load analytics overview
-                const analyticsResponse = await fetch('/api/analytics/overview');
-                const analyticsResult = await analyticsResponse.json();
-                
-                if (analyticsResult.success) {
-                    const metrics = analyticsResult.data;
-                    
-                    // Update dashboard cards with real analytics data
-                    document.getElementById('siteVisitors').textContent = metrics.visitorsThisMonth || '0';
-                    
-                    console.log('✅ Analytics data loaded:', metrics);
-                } else {
-                    console.error('❌ Failed to load analytics data:', analyticsResult.message);
-                    document.getElementById('siteVisitors').textContent = 'N/A';
-                }
-                
-                // Load other dashboard stats (officers, top link)
+                // Load officers count (real data)
                 try {
                     const officersResponse = await fetch('/api/officers');
                     const officersResult = await officersResponse.json();
@@ -2541,35 +2525,30 @@
                     document.getElementById('totalOfficers').textContent = '0';
                 }
                 
-                // Load top 5 links data from analytics
-                try {
-                    const topLinksList = document.getElementById('topLinksList');
-                    if (analyticsResult.success && analyticsResult.data.topLinks && analyticsResult.data.topLinks.length > 0) {
-                        const top5Links = analyticsResult.data.topLinks.slice(0, 5);
-                        let html = '';
-                        top5Links.forEach((link, index) => {
-                            html += `
-                                <div class="top-link-item">
-                                    <span class="top-link-name">${link.link_text || 'Unknown Link'}</span>
-                                    <span class="top-link-count">${link.click_count} clicks</span>
-                                </div>
-                            `;
-                        });
-                        topLinksList.innerHTML = html;
-                    } else {
-                        topLinksList.innerHTML = '<div class="top-link-item"><span class="top-link-name">No link data available</span><span class="top-link-count">0 clicks</span></div>';
-                    }
-                } catch (error) {
-                    console.error('❌ Error loading top links:', error);
-                    document.getElementById('topLinksList').innerHTML = '<div class="top-link-item"><span class="top-link-name">Error loading data</span><span class="top-link-count">0 clicks</span></div>';
-                }
+                // Update site visitors with link to Vercel Analytics
+                const siteVisitorsElement = document.getElementById('siteVisitors');
+                siteVisitorsElement.innerHTML = `
+                    <a href="https://vercel.com/dashboard" target="_blank" style="color: #007bff; text-decoration: none;">
+                        View Analytics →
+                    </a>
+                `;
+                
+                // Update top links with simple message
+                const topLinksList = document.getElementById('topLinksList');
+                topLinksList.innerHTML = `
+                    <div class="top-link-item">
+                        <span class="top-link-name">Analytics available in Vercel Dashboard</span>
+                        <span class="top-link-count">Click "View Analytics" above</span>
+                    </div>
+                `;
+                
+                console.log('✅ Dashboard stats loaded with Vercel Analytics integration');
                 
             } catch (error) {
                 console.error('❌ Error loading dashboard stats:', error);
-                // Show fallback state
                 document.getElementById('totalOfficers').textContent = '0';
-                document.getElementById('topLinksList').innerHTML = '<div class="top-link-item"><span class="top-link-name">Error loading data</span><span class="top-link-count">0 clicks</span></div>';
-                document.getElementById('siteVisitors').textContent = '0';
+                document.getElementById('siteVisitors').textContent = 'N/A';
+                document.getElementById('topLinksList').innerHTML = '<div class="top-link-item"><span class="top-link-name">Error loading data</span></div>';
             }
         }
         
@@ -4277,44 +4256,7 @@
             });
     }
     
-    // Update analytics display
-    function updateAnalyticsDisplay(data) {
-        const metrics = data.data;
-        
-        // Update the dashboard cards with real data using the correct IDs
-        const pageViewsElement = document.getElementById('analyticsPageViews');
-        const uniqueVisitorsElement = document.getElementById('analyticsUniqueVisitors');
-        const popularPageElement = document.getElementById('analyticsPopularPage');
-        const popularPageViewsElement = document.getElementById('analyticsPopularPageViews');
-        const topLinkElement = document.getElementById('analyticsTopLink');
-        const topLinkClicksElement = document.getElementById('analyticsTopLinkClicks');
-        
-        // Update page views and unique visitors
-        if (pageViewsElement) pageViewsElement.textContent = metrics.totalPageViews || '0';
-        if (uniqueVisitorsElement) uniqueVisitorsElement.textContent = metrics.visitorsThisMonth || '0';
-        
-        // Update most popular page
-        if (popularPageElement) {
-            if (metrics.topPages && metrics.topPages.length > 0) {
-                popularPageElement.textContent = metrics.topPages[0].page_url || 'Home';
-                popularPageViewsElement.textContent = `${metrics.topPages[0].views} views`;
-            } else {
-                popularPageElement.textContent = 'Home';
-                popularPageViewsElement.textContent = '0 views';
-            }
-        }
-        
-        // Update top external link
-        if (topLinkElement) {
-            if (metrics.topLinks && metrics.topLinks.length > 0) {
-                topLinkElement.textContent = metrics.topLinks[0].link_text || 'None';
-                topLinkClicksElement.textContent = `${metrics.topLinks[0].click_count} clicks`;
-            } else {
-                topLinkElement.textContent = 'None';
-                topLinkClicksElement.textContent = '0 clicks';
-            }
-        }
-    }
+    // Analytics display removed - using Vercel Analytics instead
     
     // Generate report
     function generateReport() {
