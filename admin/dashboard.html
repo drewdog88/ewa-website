@@ -595,7 +595,6 @@
                             <li><a href="#1099" class="nav-link" data-section="1099">1099 Information</a></li>
             <li><a href="#profile" class="nav-link" data-section="profile">Security Settings</a></li>
             <li class="admin-only"><a href="#security-dashboard" class="nav-link" data-section="security-dashboard">Security Dashboard</a></li>
-            <li class="admin-only"><a href="#analytics" class="nav-link" data-section="analytics">Analytics & Reports</a></li>
                                            <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
                                <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
                                <li class="admin-only"><a href="backup-management.html" class="nav-link" target="_blank">Backup Management</a></li>
@@ -642,7 +641,6 @@
                         <a href="#officers" class="action-btn nav-link" data-section="officers">Add New Officer</a>
                         <a href="#news" class="action-btn nav-link" data-section="news">Post News</a>
                         <a href="#documents" class="action-btn nav-link" data-section="documents">Review Documents</a>
-                        <a href="#analytics" class="action-btn secondary nav-link" data-section="analytics">View Reports</a>
                     </div>
                 </div>
                 
@@ -1101,64 +1099,6 @@
                 </div>
             </div>
             
-            <!-- Analytics Section -->
-            <div id="analytics" class="content-section">
-                <div class="section-header">
-                    <h2>Analytics & Reports</h2>
-                    <p>View site usage statistics and generate reports.</p>
-                </div>
-                
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <h3>Page Views</h3>
-                        <div class="stat-number" id="analyticsPageViews">Loading...</div>
-                        <div class="stat-label">This month</div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <h3>Unique Visitors</h3>
-                        <div class="stat-number" id="analyticsUniqueVisitors">Loading...</div>
-                        <div class="stat-label">This month</div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <h3>Most Popular Page</h3>
-                        <div class="stat-number" id="analyticsPopularPage">Loading...</div>
-                        <div class="stat-label" id="analyticsPopularPageViews">Loading...</div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <h3>Top External Link</h3>
-                        <div class="stat-number" id="analyticsTopLink">Loading...</div>
-                        <div class="stat-label" id="analyticsTopLinkClicks">Loading...</div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Generate Report</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="reportType">Report Type</label>
-                            <select id="reportType">
-                                <option value="usage">Site Usage</option>
-                                <option value="links">Link Analytics</option>
-                                <option value="officers">Officer Activity</option>
-                                <option value="documents">Document Submissions</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="reportDateRange">Date Range</label>
-                            <select id="reportDateRange">
-                                <option value="7">Last 7 days</option>
-                                <option value="30">Last 30 days</option>
-                                <option value="90">Last 90 days</option>
-                                <option value="365">Last year</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="action-btn" onclick="generateReport()">Generate Report</button>
-                </div>
-            </div>
             
             <!-- Content Management Section -->
             <div id="content" class="content-section">
@@ -4228,154 +4168,8 @@
                     // Initialize website links display
         displayWebsiteLinks();
         
-        // Add event listener for analytics section
-        const analyticsLink = document.querySelector('a[data-section="analytics"]');
-        if (analyticsLink) {
-            analyticsLink.addEventListener('click', function() {
-                loadAnalyticsData();
-            });
-        }
     });
     
-    // Analytics & Reports Functions
-    
-    // Load analytics data
-    function loadAnalyticsData() {
-        // Load basic analytics data
-        fetch('/api/analytics/overview')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateAnalyticsDisplay(data);
-                } else {
-                    console.error('Error loading analytics:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-    
-    // Analytics display removed - using Vercel Analytics instead
-    
-    // Generate report
-    function generateReport() {
-        const reportType = document.getElementById('reportType').value;
-        const dateRange = document.getElementById('reportDateRange').value;
-        
-        if (!reportType) {
-            alert('Please select a report type.');
-            return;
-        }
-        
-        // Show loading state
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = 'Generating...';
-        button.disabled = true;
-        
-        fetch('/api/analytics/report', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                type: reportType,
-                dateRange: parseInt(dateRange)
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Create and download the report
-                downloadReport(data.report, reportType, dateRange);
-            } else {
-                alert('Error generating report: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error generating report. Please try again.');
-        })
-        .finally(() => {
-            // Restore button state
-            button.textContent = originalText;
-            button.disabled = false;
-        });
-    }
-    
-    // Download report
-    function downloadReport(reportData, type, dateRange) {
-        let filename = `ewa_report_${type}_${dateRange}days_${new Date().toISOString().split('T')[0]}.csv`;
-        let csvContent = '';
-        
-        switch (type) {
-            case 'usage':
-                csvContent = generateUsageReport(reportData);
-                break;
-            case 'links':
-                csvContent = generateLinksReport(reportData);
-                break;
-            case 'officers':
-                csvContent = generateOfficersReport(reportData);
-                break;
-            case 'documents':
-                csvContent = generateDocumentsReport(reportData);
-                break;
-            default:
-                alert('Unknown report type');
-                return;
-        }
-        
-        // Create download link
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        
-        alert('Report generated and downloaded successfully!');
-    }
-    
-    // Generate usage report CSV
-    function generateUsageReport(data) {
-        let csv = 'Date,Page Views,Unique Visitors,Most Popular Page\n';
-        data.forEach(row => {
-            csv += `${row.date},${row.pageViews},${row.uniqueVisitors},"${row.popularPage}"\n`;
-        });
-        return csv;
-    }
-    
-    // Generate links report CSV
-    function generateLinksReport(data) {
-        let csv = 'Link,Club,Clicks,Last Clicked\n';
-        data.forEach(row => {
-            csv += `"${row.url}","${row.club}",${row.clicks},"${row.lastClicked}"\n`;
-        });
-        return csv;
-    }
-    
-    // Generate officers report CSV
-    function generateOfficersReport(data) {
-        let csv = 'Name,Position,Email,Club,Status\n';
-        data.forEach(row => {
-            csv += `"${row.name}","${row.position}","${row.email}","${row.club}","${row.status}"\n`;
-        });
-        return csv;
-    }
-    
-    // Generate documents report CSV
-    function generateDocumentsReport(data) {
-        let csv = 'Type,Club,Submitted Date,Status\n';
-        data.forEach(row => {
-            csv += `"${row.type}","${row.club}","${row.submittedDate}","${row.status}"\n`;
-        });
-        return csv;
-    }
     
     // Payment amount validation function
     function validatePaymentAmount(input) {
@@ -4528,9 +4322,6 @@
                     case '1099':
                         load1099Data();
                         break;
-                    case 'analytics':
-                        loadAnalyticsData();
-                        break;
                     case 'content':
                         loadContentData();
                         break;
@@ -4597,9 +4388,6 @@
                             break;
                         case '1099':
                             load1099Data();
-                            break;
-                        case 'analytics':
-                            loadAnalyticsData();
                             break;
                         case 'content':
                             loadContentData();
