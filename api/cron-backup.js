@@ -231,26 +231,76 @@ async function cleanupOldBackups() {
   }
 }
 
+// Environment validation function
+function validateEnvironment() {
+  const required = ['DATABASE_URL', 'BLOB_READ_WRITE_TOKEN'];
+  const missing = required.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    throw new Error(`Missing environment variables: ${missing.join(', ')}`);
+  }
+  
+  console.log('✅ Environment validation passed');
+  console.log('🔍 Environment Debug:');
+  console.log('  NODE_ENV:', process.env.NODE_ENV);
+  console.log('  BLOB_TOKEN exists:', !!BLOB_TOKEN);
+  console.log('  BLOB_TOKEN length:', BLOB_TOKEN ? BLOB_TOKEN.length : 0);
+  console.log('  DATABASE_URL exists:', !!DATABASE_URL);
+  console.log('  DATABASE_URL starts with:', DATABASE_URL ? DATABASE_URL.substring(0, 20) + '...' : 'NOT SET');
+}
+
 // Vercel Function Handler
 module.exports = async (req, res) => {
   console.log('🚀 Vercel Cron Job triggered for backup');
   console.log('User Agent:', req.headers['user-agent']);
+  console.log('Request Method:', req.method);
+  console.log('Request URL:', req.url);
+  console.log('Timestamp:', new Date().toISOString());
   
-  // Verify this is a Vercel cron request
-  if (req.headers['user-agent'] !== 'vercel-cron/1.0') {
+  // Validate environment first
+  try {
+    validateEnvironment();
+  } catch (error) {
+    console.error('❌ Environment validation failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Environment validation failed',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  // Verify this is a Vercel cron request (more flexible)
+  const userAgent = req.headers['user-agent'];
+  if (!userAgent || !userAgent.includes('vercel-cron')) {
     console.log('⚠️ Request not from Vercel cron, ignoring');
+    console.log('  Expected: vercel-cron user agent');
+    console.log('  Received:', userAgent);
     return res.status(403).json({
       success: false,
-      message: 'Access denied - only Vercel cron jobs allowed'
+      message: 'Access denied - only Vercel cron jobs allowed',
+      receivedUserAgent: userAgent,
+      timestamp: new Date().toISOString()
     });
   }
   
   try {
+    console.log('🔄 Starting backup process...');
+    
     // Perform backup
     const backupResult = await createBackup();
     
+    if (!backupResult.success) {
+      throw new Error(`Backup creation failed: ${backupResult.error || 'Unknown error'}`);
+    }
+    
+    console.log('✅ Backup created successfully');
+    console.log(`📊 Backup details: ${backupResult.fileName}, ${(backupResult.size / 1024 / 1024).toFixed(2)} MB`);
+    
     // Clean up old backups
+    console.log('🧹 Starting cleanup process...');
     await cleanupOldBackups();
+    console.log('✅ Cleanup completed');
     
     console.log('✅ Cron backup completed successfully');
     
@@ -258,22 +308,47 @@ module.exports = async (req, res) => {
       success: true,
       message: 'Backup completed successfully',
       data: backupResult,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      environment: {
+        nodeEnv: process.env.NODE_ENV,
+        blobTokenConfigured: !!BLOB_TOKEN,
+        databaseUrlConfigured: !!DATABASE_URL
+      }
     });
     
   } catch (error) {
     console.error('❌ Cron backup failed:', error);
+    console.error('❌ Error stack:', error.stack);
+    
+    // Log additional context for debugging
+    console.error('🔍 Failure context:');
+    console.error('  Environment:', process.env.NODE_ENV);
+    console.error('  Blob token available:', !!BLOB_TOKEN);
+    console.error('  Database URL available:', !!DATABASE_URL);
+    console.error('  User agent:', req.headers['user-agent']);
     
     res.status(500).json({
       success: false,
       message: 'Backup failed',
       error: error.message,
-      timestamp: new Date().toISOString()
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      context: {
+        environment: process.env.NODE_ENV,
+        blobTokenConfigured: !!BLOB_TOKEN,
+        databaseUrlConfigured: !!DATABASE_URL,
+        userAgent: req.headers['user-agent']
+      }
     });
   } finally {
     // Close database connection
     if (dbPool) {
-      await dbPool.end();
+      try {
+        await dbPool.end();
+        console.log('🔌 Database connection closed');
+      } catch (closeError) {
+        console.error('❌ Error closing database connection:', closeError.message);
+      }
     }
   }
 };

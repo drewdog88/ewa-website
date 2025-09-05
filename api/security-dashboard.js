@@ -261,7 +261,7 @@ app.post('/api/security/test-coverage', requireAdmin, async (req, res) => {
 // Get code coverage report
 app.get('/api/security/coverage', requireAdmin, async (req, res) => {
   try {
-    // Try to get coverage data from Vercel Blob first
+    // Try to get coverage data from Vercel Blob
     try {
       const blob = await get('coverage-data.json');
       if (blob) {
@@ -280,53 +280,26 @@ app.get('/api/security/coverage', requireAdmin, async (req, res) => {
         return;
       }
     } catch (blobError) {
-      console.log('No coverage data found in Blob, trying local fallback');
+      console.log('No coverage data found in Vercel Blob:', blobError.message);
     }
     
-    // Fallback: try to read from local coverage-data.json if it exists
-    const coverageDataPath = path.join(__dirname, '..', 'coverage-data.json');
-    
-    if (fs.existsSync(coverageDataPath)) {
-      const coverageData = JSON.parse(fs.readFileSync(coverageDataPath, 'utf8'));
-      
-      res.json({
-        success: true,
-        data: {
-          overallCoverage: coverageData.coverage,
-          timestamp: coverageData.timestamp,
-          testsPassed: coverageData.testsPassed,
-          message: 'Coverage data from local file'
-        }
-      });
-      return;
-    }
-    
-    // Final fallback: try to read lcov.info if it exists
-    const coveragePath = path.join(__dirname, '..', 'coverage', 'lcov.info');
-
-    if (!fs.existsSync(coveragePath)) {
-      return res.status(404).json({
-        success: false,
-        message: 'No coverage report found. Run tests with coverage first.'
-      });
-    }
-
-    // Read lcov.info and calculate coverage
-    const lcovData = fs.readFileSync(coveragePath, 'utf8');
-    const totalCoverage = calculateCoverageFromLcov(lcovData);
-
-    res.json({
-      success: true,
+    // No coverage data available
+    res.status(404).json({
+      success: false,
+      message: 'Test coverage data not available. Run tests with coverage first to generate data.',
       data: {
-        overallCoverage: totalCoverage,
-        message: 'Coverage calculated from Jest test results'
+        overallCoverage: null,
+        timestamp: null,
+        testsPassed: null,
+        message: 'No coverage data found'
       }
     });
   } catch (error) {
     console.error('Error getting coverage report:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to load coverage report'
+      message: 'Failed to load coverage report',
+      error: error.message
     });
   }
 });
