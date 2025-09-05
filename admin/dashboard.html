@@ -32,6 +32,39 @@
             margin-bottom: 10px;
         }
         
+        /* Top links list styles */
+        .top-links-list {
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .top-link-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .top-link-item:last-child {
+            border-bottom: none;
+        }
+        
+        .top-link-name {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .top-link-count {
+            color: #666;
+            font-size: 12px;
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
         .file-upload-info {
             color: #666;
         }
@@ -592,9 +625,8 @@
                     </div>
                     
                     <div class="dashboard-card">
-                        <h3>Pending Documents</h3>
-                        <div class="stat-number" id="pendingDocuments">Loading...</div>
-                        <div class="stat-label">1099 forms due</div>
+                        <h3>Top 5 Links</h3>
+                        <div class="top-links-list" id="topLinksList">Loading...</div>
                     </div>
                     
                     <div class="dashboard-card">
@@ -2494,7 +2526,7 @@
                     document.getElementById('siteVisitors').textContent = 'N/A';
                 }
                 
-                // Load other dashboard stats (officers, documents)
+                // Load other dashboard stats (officers, top link)
                 try {
                     const officersResponse = await fetch('/api/officers');
                     const officersResult = await officersResponse.json();
@@ -2509,26 +2541,34 @@
                     document.getElementById('totalOfficers').textContent = '0';
                 }
                 
+                // Load top 5 links data from analytics
                 try {
-                    const documentsResponse = await fetch('/api/1099');
-                    const documentsResult = await documentsResponse.json();
-                    
-                    if (documentsResult.success) {
-                        const pendingCount = documentsResult.data.filter(doc => doc.status === 'pending').length;
-                        document.getElementById('pendingDocuments').textContent = pendingCount || '0';
+                    const topLinksList = document.getElementById('topLinksList');
+                    if (analyticsResult.success && analyticsResult.data.topLinks && analyticsResult.data.topLinks.length > 0) {
+                        const top5Links = analyticsResult.data.topLinks.slice(0, 5);
+                        let html = '';
+                        top5Links.forEach((link, index) => {
+                            html += `
+                                <div class="top-link-item">
+                                    <span class="top-link-name">${link.link_text || 'Unknown Link'}</span>
+                                    <span class="top-link-count">${link.click_count} clicks</span>
+                                </div>
+                            `;
+                        });
+                        topLinksList.innerHTML = html;
                     } else {
-                        document.getElementById('pendingDocuments').textContent = '0';
+                        topLinksList.innerHTML = '<div class="top-link-item"><span class="top-link-name">No link data available</span><span class="top-link-count">0 clicks</span></div>';
                     }
                 } catch (error) {
-                    console.error('❌ Error loading documents:', error);
-                    document.getElementById('pendingDocuments').textContent = '0';
+                    console.error('❌ Error loading top links:', error);
+                    document.getElementById('topLinksList').innerHTML = '<div class="top-link-item"><span class="top-link-name">Error loading data</span><span class="top-link-count">0 clicks</span></div>';
                 }
                 
             } catch (error) {
                 console.error('❌ Error loading dashboard stats:', error);
                 // Show fallback state
                 document.getElementById('totalOfficers').textContent = '0';
-                document.getElementById('pendingDocuments').textContent = '0';
+                document.getElementById('topLinksList').innerHTML = '<div class="top-link-item"><span class="top-link-name">Error loading data</span><span class="top-link-count">0 clicks</span></div>';
                 document.getElementById('siteVisitors').textContent = '0';
             }
         }

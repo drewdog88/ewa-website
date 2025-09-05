@@ -143,22 +143,23 @@ async function testComprehensiveAPI() {
         const officersResponse = await fetch(`${baseUrl}/officers`);
         const officersResult = await officersResponse.json();
         
-        const documentsResponse = await fetch(`${baseUrl}/1099`);
-        const documentsResult = await documentsResponse.json();
-        
         const analyticsResponse = await fetch(`${baseUrl}/analytics/overview`);
         const analyticsResult = await analyticsResponse.json();
         
         // Test that frontend can extract the data it needs
         const totalOfficers = officersResult.data ? officersResult.data.length : 0;
-        const pendingDocuments = documentsResult.submissions ? 
-            documentsResult.submissions.filter(doc => doc.status === 'pending').length : 0;
         const siteVisitors = analyticsResult.data ? analyticsResult.data.visitorsThisMonth : 0;
+        const topLinks = analyticsResult.data && analyticsResult.data.topLinks ? 
+            analyticsResult.data.topLinks.slice(0, 5) : [];
         
         console.log(`✅ Dashboard data extraction successful:`);
         console.log(`   Total Officers: ${totalOfficers}`);
-        console.log(`   Pending Documents: ${pendingDocuments}`);
         console.log(`   Site Visitors: ${siteVisitors}`);
+        console.log(`   Top 5 Links: ${topLinks.length} links available`);
+        
+        if (topLinks.length > 0) {
+            console.log(`   Top link: "${topLinks[0].link_text}" (${topLinks[0].click_count} clicks)`);
+        }
         
     } catch (error) {
         console.log('❌ Frontend dashboard data loading test failed:', error.message);
