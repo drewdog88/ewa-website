@@ -41,7 +41,8 @@ const {
   getBoosterClubs,
   getBoosterClubByName,
   updateBoosterClubDescription,
-  updateBoosterClubWebsite
+  updateBoosterClubWebsite,
+  addBoosterClub
 } = require('../database/neon-functions');
 
 // Import analytics functions
@@ -1480,6 +1481,48 @@ app.put('/booster-clubs/:name/website', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update booster club website URL'
+    });
+  }
+});
+
+// Create new booster club
+app.post('/api/booster-clubs', async (req, res) => {
+  try {
+    await ensureDatabaseInitialized();
+    
+    const { name } = req.body;
+    
+    // Validate required field
+    if (!name) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Club name is required' 
+      });
+    }
+    
+    // Sanitize input
+    const sanitizedName = sanitizeInput(name);
+    
+    // Add the new club
+    const newClub = await addBoosterClub(sanitizedName);
+    
+    if (newClub) {
+      res.json({ 
+        success: true, 
+        message: 'Booster club created successfully',
+        club: newClub
+      });
+    } else {
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to create booster club' 
+      });
+    }
+  } catch (error) {
+    console.error('Error creating booster club:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Internal server error' 
     });
   }
 });
