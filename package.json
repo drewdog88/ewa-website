@@ -50,7 +50,7 @@
     "test:backup": "npm run test:backup:both"
   },
   "engines": {
-    "node": ">=20.16.0 <21.0.0"
+    "node": "22.x"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
