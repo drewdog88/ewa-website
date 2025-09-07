@@ -905,12 +905,10 @@ async function addBoosterClub(clubName) {
     const result = await sql`
       INSERT INTO booster_clubs (
         name, 
-        sort_order,
-        is_active
+        sort_order
       ) VALUES (
         ${clubName},
-        ${nextSortOrder},
-        true
+        ${nextSortOrder}
       ) RETURNING id, name, is_active, sort_order, created_at, updated_at
     `;
     
