@@ -596,6 +596,7 @@
             <li><a href="#profile" class="nav-link" data-section="profile">Security Settings</a></li>
             <li class="admin-only"><a href="#security-dashboard" class="nav-link" data-section="security-dashboard">Security Dashboard</a></li>
                                            <li class="admin-only"><a href="#content" class="nav-link" data-section="content">Content Management</a></li>
+                                           <li class="admin-only"><a href="#add-booster-club" class="nav-link" data-section="add-booster-club">Add New Club</a></li>
                                <li class="admin-only"><a href="#users" class="nav-link" data-section="users">User Management</a></li>
                                <li class="admin-only"><a href="backup-management.html" class="nav-link" target="_blank">Backup Management</a></li>
                 <li class="admin-only"><a href="#payment-management" class="nav-link" data-section="payment-management">Payment Management</a></li>
@@ -1120,6 +1121,32 @@
                         <textarea id="clubDescription" placeholder="Enter the club's description..."></textarea>
                     </div>
                     <button class="action-btn" onclick="updateClubDescription()">Update Description</button>
+                </div>
+            </div>
+            
+            <!-- Add New Booster Club Section -->
+            <div id="add-booster-club" class="content-section">
+                <div class="section-header">
+                    <h2>Add New Booster Club</h2>
+                    <p>Create a new booster club with just a name. All other settings can be configured later using existing admin tools.</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Club Name</h3>
+                    <div class="form-group">
+                        <label for="newClubName">Club Name *</label>
+                        <input type="text" id="newClubName" placeholder="Enter club name" required>
+                    </div>
+                    <div class="form-info">
+                        <h4>After Creation:</h4>
+                        <ul>
+                            <li>Description: Use "Content Management" section</li>
+                            <li>Website URL: Use "Content Management" section</li>
+                            <li>Payment Settings: Use "Payment Management" section</li>
+                            <li>Officers: Use "Officer Management" section</li>
+                        </ul>
+                    </div>
+                    <button class="action-btn" onclick="createNewBoosterClub()">Create Booster Club</button>
                 </div>
             </div>
             
@@ -3610,6 +3637,43 @@
                 console.error('Error:', error);
                 alert('Error adding officer. Please try again.');
             });
+        }
+        
+        // Create new booster club
+        async function createNewBoosterClub() {
+            const name = document.getElementById('newClubName').value.trim();
+            
+            if (!name) {
+                alert('Please enter a club name');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/booster-clubs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Booster club created successfully! You can now configure description, website, and payment settings using the existing admin tools.');
+                    // Clear form
+                    document.getElementById('newClubName').value = '';
+                    // Refresh club lists
+                    loadBoosterClubs();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error creating booster club:', error);
+                alert('Failed to create booster club. Please try again.');
+            }
         }
         
         // Edit officer

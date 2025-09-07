@@ -877,6 +877,58 @@ async function updateBoosterClubWebsite(clubName, websiteUrl) {
   }
 }
 
+async function addBoosterClub(clubName) {
+  const sql = getSql();
+  if (!sql) return null;
+    
+  try {
+    // Validate required field
+    if (!clubName) {
+      throw new Error('Club name is required');
+    }
+    
+    // Check for duplicate names
+    const existing = await sql`
+      SELECT id FROM booster_clubs WHERE name = ${clubName}
+    `;
+    if (existing.length > 0) {
+      throw new Error(`Booster club '${clubName}' already exists`);
+    }
+    
+    // Get next sort order
+    const maxSort = await sql`
+      SELECT COALESCE(MAX(sort_order), 0) as max_sort FROM booster_clubs
+    `;
+    const nextSortOrder = maxSort[0].max_sort + 1;
+    
+    // Insert new club with minimal required data
+    const result = await sql`
+      INSERT INTO booster_clubs (
+        name, 
+        sort_order
+      ) VALUES (
+        ${clubName},
+        ${nextSortOrder}
+      ) RETURNING id, name, is_active, sort_order, created_at, updated_at
+    `;
+    
+    if (result.length === 0) {
+      throw new Error('Failed to create booster club');
+    }
+    
+    return result[0];
+  } catch (error) {
+    console.error('❌ Database error adding booster club:', {
+      error: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      clubName: clubName
+    });
+    throw error;
+  }
+}
+
 module.exports = {
   getSql,
   getOfficers,
@@ -914,6 +966,7 @@ module.exports = {
   getBoosterClubByName,
   updateBoosterClubDescription,
   updateBoosterClubWebsite,
+  addBoosterClub,
   initializeDatabase,
   migrateDataFromJson
 }; 

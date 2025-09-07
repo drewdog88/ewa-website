@@ -112,7 +112,8 @@ const {
   getBoosterClubs,
   getBoosterClubByName,
   updateBoosterClubDescription,
-  updateBoosterClubWebsite
+  updateBoosterClubWebsite,
+  addBoosterClub
 } = require('./database/neon-functions');
 
 // Import Vercel Blob for file storage
@@ -2693,6 +2694,53 @@ app.get('/api/booster-clubs', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to get booster clubs'
+    });
+  }
+});
+
+// Create new booster club
+app.post('/api/booster-clubs', async (req, res) => {
+  try {
+    console.log('🔍 POST /api/booster-clubs endpoint called');
+    console.log('📋 Request body:', req.body);
+    
+    const { name } = req.body;
+    
+    // Validate required field
+    if (!name) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Club name is required' 
+      });
+    }
+    
+    // Sanitize input
+    const sanitizedName = sanitizeInput(name);
+    
+    console.log('📋 Calling addBoosterClub with name:', sanitizedName);
+    
+    // Add the new club
+    const newClub = await addBoosterClub(sanitizedName);
+    
+    if (newClub) {
+      console.log('✅ Booster club created successfully:', newClub);
+      res.json({ 
+        success: true, 
+        message: 'Booster club created successfully',
+        club: newClub
+      });
+    } else {
+      console.log('❌ Failed to create booster club');
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to create booster club' 
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error creating booster club:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Internal server error' 
     });
   }
 });
