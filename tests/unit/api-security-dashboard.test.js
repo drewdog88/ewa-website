@@ -261,24 +261,18 @@ describe('Security Dashboard API Unit Tests', () => {
       expect(response.body.data).toHaveProperty('testsPassed', true);
     });
 
-    test('should return 200 with coverage data from local fallback', async () => {
-      const mockCoverageData = {
-        coverage: 82.1,
-        timestamp: '2024-01-01T00:00:00Z',
-        testsPassed: true
-      };
-
+    test('should return 404 when no coverage data available from Blob', async () => {
+      // Reset and setup mocks for this specific test
+      get.mockReset();
+      
       get.mockRejectedValue(new Error('Blob not found'));
-      fs.existsSync.mockReturnValue(true);
-      fs.readFileSync.mockReturnValue(JSON.stringify(mockCoverageData));
 
       const response = await request(securityApp)
         .get('/api/security/coverage');
 
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body.data).toHaveProperty('message', 'Coverage data from local file');
-      expect(response.body.data).toHaveProperty('overallCoverage', 82.1);
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body.message).toBe('Test coverage data not available. Run tests with coverage first to generate data.');
     });
 
     test('should return 404 when no coverage data available', async () => {
@@ -290,7 +284,7 @@ describe('Security Dashboard API Unit Tests', () => {
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('success', false);
-      expect(response.body.message).toBe('No coverage report found. Run tests with coverage first.');
+      expect(response.body.message).toBe('Test coverage data not available. Run tests with coverage first to generate data.');
     });
   });
 
