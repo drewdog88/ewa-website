@@ -250,8 +250,8 @@ function validateEnvironment() {
   console.log('  DATABASE_URL starts with:', DATABASE_URL ? DATABASE_URL.substring(0, 20) + '...' : 'NOT SET');
 }
 
-// Vercel Function Handler - Updated for current Vercel standards
-export default async function handler(req, res) {
+// Vercel Function Handler - Using CommonJS for better compatibility
+module.exports = async function handler(req, res) {
   console.log('🚀 Vercel Cron Job triggered for backup');
   console.log('User Agent:', req.headers['user-agent']);
   console.log('Request Method:', req.method);
