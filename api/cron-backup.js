@@ -12,6 +12,7 @@ const path = require('path');
 // Environment variables
 const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 const DATABASE_URL = process.env.DATABASE_URL;
+const CRON_SECRET = process.env.CRON_SECRET;
 
 // Database connection pool
 const dbPool = new Pool({
@@ -36,7 +37,7 @@ async function createBackup() {
     console.log(`📁 Creating backup: ${backupFileName}`);
     
     // Create backup directory if it doesn't exist
-    const backupDir = path.join(__dirname, '..', 'backups');
+    const backupDir = path.join('/tmp', 'backups');
     if (!fs.existsSync(backupDir)) {
       fs.mkdirSync(backupDir, { recursive: true });
     }
@@ -249,13 +250,53 @@ function validateEnvironment() {
   console.log('  DATABASE_URL starts with:', DATABASE_URL ? DATABASE_URL.substring(0, 20) + '...' : 'NOT SET');
 }
 
-// Vercel Function Handler
-module.exports = async (req, res) => {
+// Vercel Function Handler - Updated for current Vercel standards
+export default async function handler(req, res) {
   console.log('🚀 Vercel Cron Job triggered for backup');
   console.log('User Agent:', req.headers['user-agent']);
   console.log('Request Method:', req.method);
   console.log('Request URL:', req.url);
   console.log('Timestamp:', new Date().toISOString());
+  
+  // Only allow GET requests (Vercel cron jobs use GET)
+  if (req.method !== 'GET') {
+    console.log('⚠️ Method not allowed:', req.method);
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed. Cron jobs must use GET requests.',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  // Validate CRON_SECRET if provided (recommended security practice)
+  if (CRON_SECRET) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader !== `Bearer ${CRON_SECRET}`) {
+      console.log('❌ Invalid or missing CRON_SECRET');
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized - Invalid CRON_SECRET',
+        timestamp: new Date().toISOString()
+      });
+    }
+    console.log('✅ CRON_SECRET validation passed');
+  } else {
+    console.log('⚠️ CRON_SECRET not configured - using user agent validation only');
+  }
+  
+  // Verify this is a Vercel cron request
+  const userAgent = req.headers['user-agent'];
+  if (!userAgent || !userAgent.includes('vercel-cron')) {
+    console.log('⚠️ Request not from Vercel cron, ignoring');
+    console.log('  Expected: vercel-cron user agent');
+    console.log('  Received:', userAgent);
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied - only Vercel cron jobs allowed',
+      receivedUserAgent: userAgent,
+      timestamp: new Date().toISOString()
+    });
+  }
   
   // Validate environment first
   try {
@@ -266,20 +307,6 @@ module.exports = async (req, res) => {
       success: false,
       message: 'Environment validation failed',
       error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-  
-  // Verify this is a Vercel cron request (more flexible)
-  const userAgent = req.headers['user-agent'];
-  if (!userAgent || !userAgent.includes('vercel-cron')) {
-    console.log('⚠️ Request not from Vercel cron, ignoring');
-    console.log('  Expected: vercel-cron user agent');
-    console.log('  Received:', userAgent);
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied - only Vercel cron jobs allowed',
-      receivedUserAgent: userAgent,
       timestamp: new Date().toISOString()
     });
   }
@@ -312,7 +339,8 @@ module.exports = async (req, res) => {
       environment: {
         nodeEnv: process.env.NODE_ENV,
         blobTokenConfigured: !!BLOB_TOKEN,
-        databaseUrlConfigured: !!DATABASE_URL
+        databaseUrlConfigured: !!DATABASE_URL,
+        cronSecretConfigured: !!CRON_SECRET
       }
     });
     
@@ -351,4 +379,4 @@ module.exports = async (req, res) => {
       }
     }
   }
-};
+}

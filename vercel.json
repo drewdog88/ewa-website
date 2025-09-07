@@ -60,6 +60,10 @@
       "dest": "/api/test-env.js"
     },
     {
+      "src": "/api/cron-backup",
+      "dest": "/api/cron-backup.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/server.js"
     },
