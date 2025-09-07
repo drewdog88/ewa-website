@@ -21,7 +21,11 @@ const blobAssets = {
   
   // Document assets
   documents: {
-    // Add document assets here as needed
+    // Booster club and EWA documents
+    boosterTreasurersChecklist: `${BLOB_BASE_URL}/assets/documents/booster-treasurers-monthly-checklist.pdf`,
+    ewaInsuranceQuestionnaire: `${BLOB_BASE_URL}/assets/documents/ewa-insurance-questionnaire.docx`,
+    wolfpackBasicsOctober2025: `${BLOB_BASE_URL}/assets/documents/wolfpack-basics-october-2025.pdf`,
+    // Add more document assets here as needed
     // termsOfService: `${BLOB_BASE_URL}/assets/documents/terms.pdf`,
     // privacyPolicy: `${BLOB_BASE_URL}/assets/documents/privacy.pdf`,
   },
