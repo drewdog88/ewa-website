@@ -61,7 +61,7 @@ Before any database operation, confirm:
 - [ ] Test query confirms correct database
 - [ ] Working on development branch (not main)
 - [ ] Backup created if modifying existing data
-- [ ] Changes tested locally first
+- [ ] ALWAYS changes tested locally first
 
 ## 🚨 Emergency Procedures
 

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EWA Admin Dashboard - New</title>
+    <meta name="description" content="Eastlake Wolfpack Association - New Admin Dashboard">
+    <link rel="icon" type="image/jpeg" href="../assets/ewa-wolf.jpg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #dee2e6;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            background: #007bff;
+            color: white;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-section-title {
+            padding: 0 20px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #495057;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+            border-left-color: #007bff;
+        }
+
+        .nav-item.active {
+            background-color: #e7f3ff;
+            color: #007bff;
+            border-left-color: #007bff;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 20px;
+        }
+
+        .content-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .content-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .content-header p {
+            color: #6c757d;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #007bff;
+        }
+
+        .metric-card h3 {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .metric-card .change {
+            font-size: 0.9rem;
+            color: #28a745;
+        }
+
+        .metric-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .metric-card.danger {
+            border-left-color: #dc3545;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .search-button {
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .search-button:hover {
+            background: #0056b3;
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .search-result {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+
+        .search-result h4 {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .search-result p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .search-result .category {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #495057;
+            margin-top: 5px;
+        }
+
+        /* Activity Section */
+        .activity-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .activity-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .activity-item p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            color: #adb5bd;
+            font-size: 0.8rem;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error States */
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-green { background-color: #28a745; }
+        .status-yellow { background-color: #ffc107; }
+        .status-red { background-color: #dc3545; }
+
+        /* Navigation Toggle for Mobile */
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Navigation Toggle -->
+    <button class="nav-toggle" onclick="toggleSidebar()">☰</button>
+
+    <div class="admin-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>EWA Admin</h1>
+                <p>New Dashboard</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <a href="#" class="nav-item active" onclick="showDashboard()">
+                        📊 Dashboard
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Admin & Security</div>
+                    <a href="#" class="nav-item" onclick="showSection('analytics')">
+                        📈 Analytics & Reports
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('users')">
+                        👥 User Management
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('backup')">
+                        💾 Backup Management
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('security')">
+                        🔒 Security Settings
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Booster Club Management</div>
+                    <a href="#" class="nav-item" onclick="showSection('officers')">
+                        👔 Officers Management
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('links')">
+                        🔗 Club Website Links
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('volunteers')">
+                        🤝 Volunteer Management
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Payment Management</div>
+                    <a href="#" class="nav-item" onclick="showSection('payments')">
+                        💳 Payment Settings
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('1099')">
+                        📋 1099 Processing
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Content Management</div>
+                    <a href="#" class="nav-item" onclick="showSection('news')">
+                        📰 News & Updates
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('documents')">
+                        📄 Documents
+                    </a>
+                    <a href="#" class="nav-item" onclick="showSection('insurance')">
+                        🛡️ Insurance Forms
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Legacy</div>
+                    <a href="../admin/dashboard.html" class="nav-item" target="_blank">
+                        🔄 Old Dashboard
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Dashboard Overview -->
+            <div id="dashboard-content">
+                <div class="content-header">
+                    <h2>Dashboard Overview</h2>
+                    <p>Welcome to the new EWA Admin Dashboard. Here's what's happening with your system.</p>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="dashboard-grid">
+                    <div class="metric-card">
+                        <h3>Total Booster Clubs</h3>
+                        <div class="value" id="total-clubs">-</div>
+                        <div class="change">Active clubs</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Site Visitors (This Month)</h3>
+                        <div class="value" id="monthly-visitors">-</div>
+                        <div class="change">Unique visitors</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Most Clicked Links</h3>
+                        <div class="value" id="top-links">-</div>
+                        <div class="change">Top 5 links</div>
+                    </div>
+                    
+                    <div class="metric-card" id="backup-status">
+                        <h3>Last Backup Status</h3>
+                        <div class="value" id="backup-indicator">-</div>
+                        <div class="change" id="backup-date">Checking...</div>
+                    </div>
+                </div>
+
+                <!-- Global Search -->
+                <div class="search-section">
+                    <h3>Global Search</h3>
+                    <p>Search across all admin sections, officers, clubs, and content.</p>
+                    
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="search-input" placeholder="Search for officers, clubs, content...">
+                        <button class="search-button" onclick="handleSearch()">Search</button>
+                    </div>
+                    
+                    <div id="search-results" class="search-results"></div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="activity-section">
+                    <h3>Recent Admin Activity</h3>
+                    <div id="recent-activity">
+                        <div class="loading">Loading recent activity...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Section Content (initially hidden) -->
+            <div id="other-content" style="display: none;">
+                <div class="content-header">
+                    <h2 id="section-title">Section</h2>
+                    <p id="section-description">Section description</p>
+                </div>
+                <div id="section-content">
+                    <p>This section is under development.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentSection = 'dashboard';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardMetrics();
+            loadRecentActivity();
+        });
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Navigation functions
+        function showDashboard() {
+            currentSection = 'dashboard';
+            document.getElementById('dashboard-content').style.display = 'block';
+            document.getElementById('other-content').style.display = 'none';
+            updateActiveNav();
+            loadDashboardMetrics();
+            loadRecentActivity();
+        }
+
+        function showSection(section) {
+            currentSection = section;
+            document.getElementById('dashboard-content').style.display = 'none';
+            document.getElementById('other-content').style.display = 'block';
+            
+            // Update section title and description
+            const titles = {
+                'analytics': 'Analytics & Reports',
+                'users': 'User Management',
+                'backup': 'Backup Management',
+                'security': 'Security Settings',
+                'officers': 'Officers Management',
+                'links': 'Club Website Links',
+                'volunteers': 'Volunteer Management',
+                'payments': 'Payment Settings',
+                '1099': '1099 Processing',
+                'news': 'News & Updates',
+                'documents': 'Documents',
+                'insurance': 'Insurance Forms'
+            };
+            
+            const descriptions = {
+                'analytics': 'View detailed analytics and generate reports',
+                'users': 'Manage user accounts and permissions',
+                'backup': 'Manage database backups and restoration',
+                'security': 'Configure security settings and monitor threats',
+                'officers': 'Manage booster club officers and contacts',
+                'links': 'Manage club website links and QR codes',
+                'volunteers': 'Coordinate volunteer activities and signups',
+                'payments': 'Configure payment settings and monitor transactions',
+                '1099': 'Process and manage 1099 tax forms',
+                'news': 'Create and manage news articles and announcements',
+                'documents': 'Upload and manage important documents',
+                'insurance': 'Process insurance forms and requests'
+            };
+            
+            document.getElementById('section-title').textContent = titles[section] || 'Section';
+            document.getElementById('section-description').textContent = descriptions[section] || 'Section description';
+            document.getElementById('section-content').innerHTML = '<p>This section is under development.</p>';
+            
+            updateActiveNav();
+        }
+
+        function updateActiveNav() {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to current section
+            if (currentSection === 'dashboard') {
+                document.querySelector('.nav-item[onclick="showDashboard()"]').classList.add('active');
+            } else {
+                const navItem = document.querySelector(`.nav-item[onclick="showSection('${currentSection}')"]`);
+                if (navItem) navItem.classList.add('active');
+            }
+        }
+
+        // Dashboard metrics loading
+        async function loadDashboardMetrics() {
+            try {
+                const response = await fetch('/api/admin-dashboard/metrics?admin=true');
+                if (!response.ok) throw new Error('Failed to load metrics');
+                
+                const data = await response.json();
+                
+                // Update metrics
+                document.getElementById('total-clubs').textContent = data.totalClubs || 0;
+                document.getElementById('monthly-visitors').textContent = data.monthlyVisitors || 0;
+                document.getElementById('top-links').textContent = data.topLinksCount || 0;
+                
+                // Update backup status
+                const backupCard = document.getElementById('backup-status');
+                const backupIndicator = document.getElementById('backup-indicator');
+                const backupDate = document.getElementById('backup-date');
+                
+                if (data.lastBackupStatus === 'success') {
+                    backupIndicator.innerHTML = '<span class="status-indicator status-green"></span>Success';
+                    backupDate.textContent = `Last backup: ${data.lastBackupDate || 'Unknown'}`;
+                    backupCard.className = 'metric-card';
+                } else {
+                    backupIndicator.innerHTML = '<span class="status-indicator status-red"></span>Failed';
+                    backupDate.textContent = 'Backup failed or not found';
+                    backupCard.className = 'metric-card danger';
+                }
+                
+            } catch (error) {
+                console.error('Error loading metrics:', error);
+                document.getElementById('total-clubs').textContent = 'Error';
+                document.getElementById('monthly-visitors').textContent = 'Error';
+                document.getElementById('top-links').textContent = 'Error';
+            }
+        }
+
+        // Recent activity loading
+        async function loadRecentActivity() {
+            try {
+                const response = await fetch('/api/admin-dashboard/activity?admin=true');
+                if (!response.ok) throw new Error('Failed to load activity');
+                
+                const data = await response.json();
+                const activityContainer = document.getElementById('recent-activity');
+                
+                if (data.activities && data.activities.length > 0) {
+                    activityContainer.innerHTML = data.activities.map(activity => `
+                        <div class="activity-item">
+                            <h4>${activity.title}</h4>
+                            <p>${activity.description}</p>
+                            <div class="activity-time">${activity.time}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    activityContainer.innerHTML = '<p>No recent activity found.</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error loading activity:', error);
+                document.getElementById('recent-activity').innerHTML = '<div class="error">Failed to load recent activity</div>';
+            }
+        }
+
+        // Global search functionality
+        async function handleSearch() {
+            const searchTerm = document.getElementById('search-input').value.trim();
+            if (!searchTerm) return;
+            
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '<div class="loading">Searching...</div>';
+            
+            try {
+                const response = await fetch(`/api/admin-dashboard/search?q=${encodeURIComponent(searchTerm)}&admin=true`);
+                if (!response.ok) throw new Error('Search failed');
+                
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    resultsContainer.innerHTML = data.results.map(result => `
+                        <div class="search-result">
+                            <h4>${result.title}</h4>
+                            <p>${result.description}</p>
+                            <span class="category">${result.category}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsContainer.innerHTML = '<p>No results found for your search.</p>';
+                }
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = '<div class="error">Search failed. Please try again.</div>';
+            }
+        }
+
+        // Handle Enter key in search
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Auto-refresh dashboard every 5 minutes
+        setInterval(() => {
+            if (currentSection === 'dashboard') {
+                loadDashboardMetrics();
+                loadRecentActivity();
+            }
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

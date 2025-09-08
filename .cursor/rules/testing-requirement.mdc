@@ -6,17 +6,17 @@
 
 ### **Testing Requirements for Every Change:**
 
-1. **API Changes**: Test the actual API endpoints with real requests
-2. **Frontend Changes**: Use browser automation to test UI functionality  
-3. **Database Changes**: Test queries and verify data integrity
-4. **Integration Changes**: Test the full flow from frontend to backend to database
+1. **API Changes**: ALWAYS test the actual API endpoints with real requests
+2. **Frontend Changes**: ALWAYS use browser automation to test UI functionality  
+3. **Database Changes**: ALWAYS test queries and verify data integrity
+4. **Integration Changes**: ALWAYS test the full flow from frontend to backend to database
 
 ### **Testing Process:**
-1. **Before making changes**: Document what you're going to test
+1. **Before making changes**: ALWAYS document what you're going to test
 2. **Make the change**: Implement the fix
-3. **Test immediately**: Use available tools to verify the fix works
-4. **Show proof**: Display test results and success/failure evidence
-5. **Only then claim completion**: Never say "fixed" without proof
+3. **Test immediately**: ALWAYS use available tools to verify the fix works
+4. **Show proof**: ALWAYS display test results and success/failure evidence
+5. **Only then claim completion**: ALWAYS never say "fixed" without proof
 
 ### **Available Testing Tools:**
 - **API Testing**: Direct API calls with real data
@@ -26,9 +26,9 @@
 
 ### **Failure to Test = Incomplete Work**
 If you cannot test a change due to missing tools or permissions, you must:
-1. Clearly state what testing is needed
-2. Explain why you cannot test it
-3. Provide specific testing instructions for the user
-4. Never claim the fix is complete without verification
+1. ALWAYS clearly state what testing is needed
+2. ALWAYS explain why you cannot test it
+3. ALWAYS provide specific testing instructions for the user
+4. ALWAYS never claim the fix is complete without verification
 
 **This rule takes precedence over all other rules. Testing is not optional - it is mandatory for every single change.**
