@@ -1,0 +1,369 @@
+{
+  "timestamp": "2025-09-09T06:18:21.974Z",
+  "duration": 27,
+  "summary": {
+    "total": 51,
+    "passed": 48,
+    "failed": 3,
+    "successRate": 94.1
+  },
+  "tests": [
+    {
+      "name": "YAML Syntax: .github/workflows/simple-daily-backup.yml",
+      "passed": true,
+      "message": "Valid YAML syntax",
+      "details": "Parsed successfully, 4 top-level keys",
+      "timestamp": "2025-09-09T06:18:21.958Z"
+    },
+    {
+      "name": "Structure: .github/workflows/simple-daily-backup.yml - name",
+      "passed": true,
+      "message": "Has name property",
+      "details": "name: Simple Daily Postgres Backup",
+      "timestamp": "2025-09-09T06:18:21.959Z"
+    },
+    {
+      "name": "Structure: .github/workflows/simple-daily-backup.yml - on",
+      "passed": true,
+      "message": "Has on property",
+      "details": "on: [object Object]",
+      "timestamp": "2025-09-09T06:18:21.959Z"
+    },
+    {
+      "name": "Structure: .github/workflows/simple-daily-backup.yml - jobs",
+      "passed": true,
+      "message": "Has jobs property",
+      "details": "jobs: [object Object]",
+      "timestamp": "2025-09-09T06:18:21.959Z"
+    },
+    {
+      "name": "Trigger: .github/workflows/simple-daily-backup.yml - schedule",
+      "passed": true,
+      "message": "Has schedule trigger",
+      "details": "Automated execution configured",
+      "timestamp": "2025-09-09T06:18:21.960Z"
+    },
+    {
+      "name": "Trigger: .github/workflows/simple-daily-backup.yml - workflow_dispatch",
+      "passed": false,
+      "message": "Missing manual trigger",
+      "details": "Should allow manual execution",
+      "timestamp": "2025-09-09T06:18:21.960Z"
+    },
+    {
+      "name": "Jobs: .github/workflows/simple-daily-backup.yml - count",
+      "passed": true,
+      "message": "Has 1 job(s)",
+      "details": "Jobs: backup",
+      "timestamp": "2025-09-09T06:18:21.960Z"
+    },
+    {
+      "name": "Job: .github/workflows/simple-daily-backup.yml - backup runs-on",
+      "passed": true,
+      "message": "Uses ubuntu-latest",
+      "details": "Runner: ubuntu-latest",
+      "timestamp": "2025-09-09T06:18:21.961Z"
+    },
+    {
+      "name": "Job: .github/workflows/simple-daily-backup.yml - backup steps",
+      "passed": true,
+      "message": "Has 8 step(s)",
+      "details": "Steps configured",
+      "timestamp": "2025-09-09T06:18:21.961Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-daily-backup.yml - backup checkout",
+      "passed": true,
+      "message": "Has checkout step",
+      "details": "Code checkout configured",
+      "timestamp": "2025-09-09T06:18:21.961Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-daily-backup.yml - backup postgresql",
+      "passed": true,
+      "message": "Has PostgreSQL installation",
+      "details": "PostgreSQL client will be installed",
+      "timestamp": "2025-09-09T06:18:21.961Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-daily-backup.yml - backup vercel-cli",
+      "passed": true,
+      "message": "Has Vercel CLI installation",
+      "details": "Vercel CLI will be installed",
+      "timestamp": "2025-09-09T06:18:21.962Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-daily-backup.yml - backup pg_dump",
+      "passed": true,
+      "message": "Has pg_dump execution",
+      "details": "Database backup configured",
+      "timestamp": "2025-09-09T06:18:21.962Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-daily-backup.yml - backup blob-upload",
+      "passed": true,
+      "message": "Has blob upload",
+      "details": "Vercel Blob upload configured",
+      "timestamp": "2025-09-09T06:18:21.962Z"
+    },
+    {
+      "name": "Environment: .github/workflows/simple-daily-backup.yml - DATABASE_URL",
+      "passed": true,
+      "message": "DATABASE_URL is configured",
+      "details": "Found in workflow configuration",
+      "timestamp": "2025-09-09T06:18:21.962Z"
+    },
+    {
+      "name": "Environment: .github/workflows/simple-daily-backup.yml - BLOB_READ_WRITE_TOKEN",
+      "passed": true,
+      "message": "BLOB_READ_WRITE_TOKEN is configured",
+      "details": "Found in workflow configuration",
+      "timestamp": "2025-09-09T06:18:21.963Z"
+    },
+    {
+      "name": "Secrets: .github/workflows/simple-daily-backup.yml - usage",
+      "passed": true,
+      "message": "Uses GitHub secrets",
+      "details": "Secrets properly referenced",
+      "timestamp": "2025-09-09T06:18:21.963Z"
+    },
+    {
+      "name": "YAML Syntax: .github/workflows/simple-weekly-backup.yml",
+      "passed": true,
+      "message": "Valid YAML syntax",
+      "details": "Parsed successfully, 4 top-level keys",
+      "timestamp": "2025-09-09T06:18:21.965Z"
+    },
+    {
+      "name": "Structure: .github/workflows/simple-weekly-backup.yml - name",
+      "passed": true,
+      "message": "Has name property",
+      "details": "name: Simple Weekly Postgres Backup",
+      "timestamp": "2025-09-09T06:18:21.965Z"
+    },
+    {
+      "name": "Structure: .github/workflows/simple-weekly-backup.yml - on",
+      "passed": true,
+      "message": "Has on property",
+      "details": "on: [object Object]",
+      "timestamp": "2025-09-09T06:18:21.965Z"
+    },
+    {
+      "name": "Structure: .github/workflows/simple-weekly-backup.yml - jobs",
+      "passed": true,
+      "message": "Has jobs property",
+      "details": "jobs: [object Object]",
+      "timestamp": "2025-09-09T06:18:21.965Z"
+    },
+    {
+      "name": "Trigger: .github/workflows/simple-weekly-backup.yml - schedule",
+      "passed": true,
+      "message": "Has schedule trigger",
+      "details": "Automated execution configured",
+      "timestamp": "2025-09-09T06:18:21.966Z"
+    },
+    {
+      "name": "Trigger: .github/workflows/simple-weekly-backup.yml - workflow_dispatch",
+      "passed": false,
+      "message": "Missing manual trigger",
+      "details": "Should allow manual execution",
+      "timestamp": "2025-09-09T06:18:21.966Z"
+    },
+    {
+      "name": "Jobs: .github/workflows/simple-weekly-backup.yml - count",
+      "passed": true,
+      "message": "Has 1 job(s)",
+      "details": "Jobs: backup",
+      "timestamp": "2025-09-09T06:18:21.966Z"
+    },
+    {
+      "name": "Job: .github/workflows/simple-weekly-backup.yml - backup runs-on",
+      "passed": true,
+      "message": "Uses ubuntu-latest",
+      "details": "Runner: ubuntu-latest",
+      "timestamp": "2025-09-09T06:18:21.966Z"
+    },
+    {
+      "name": "Job: .github/workflows/simple-weekly-backup.yml - backup steps",
+      "passed": true,
+      "message": "Has 8 step(s)",
+      "details": "Steps configured",
+      "timestamp": "2025-09-09T06:18:21.966Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-weekly-backup.yml - backup checkout",
+      "passed": true,
+      "message": "Has checkout step",
+      "details": "Code checkout configured",
+      "timestamp": "2025-09-09T06:18:21.967Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-weekly-backup.yml - backup postgresql",
+      "passed": true,
+      "message": "Has PostgreSQL installation",
+      "details": "PostgreSQL client will be installed",
+      "timestamp": "2025-09-09T06:18:21.967Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-weekly-backup.yml - backup vercel-cli",
+      "passed": true,
+      "message": "Has Vercel CLI installation",
+      "details": "Vercel CLI will be installed",
+      "timestamp": "2025-09-09T06:18:21.967Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-weekly-backup.yml - backup pg_dump",
+      "passed": true,
+      "message": "Has pg_dump execution",
+      "details": "Database backup configured",
+      "timestamp": "2025-09-09T06:18:21.967Z"
+    },
+    {
+      "name": "Steps: .github/workflows/simple-weekly-backup.yml - backup blob-upload",
+      "passed": true,
+      "message": "Has blob upload",
+      "details": "Vercel Blob upload configured",
+      "timestamp": "2025-09-09T06:18:21.967Z"
+    },
+    {
+      "name": "Environment: .github/workflows/simple-weekly-backup.yml - DATABASE_URL",
+      "passed": true,
+      "message": "DATABASE_URL is configured",
+      "details": "Found in workflow configuration",
+      "timestamp": "2025-09-09T06:18:21.968Z"
+    },
+    {
+      "name": "Environment: .github/workflows/simple-weekly-backup.yml - BLOB_READ_WRITE_TOKEN",
+      "passed": true,
+      "message": "BLOB_READ_WRITE_TOKEN is configured",
+      "details": "Found in workflow configuration",
+      "timestamp": "2025-09-09T06:18:21.968Z"
+    },
+    {
+      "name": "Secrets: .github/workflows/simple-weekly-backup.yml - usage",
+      "passed": true,
+      "message": "Uses GitHub secrets",
+      "details": "Secrets properly referenced",
+      "timestamp": "2025-09-09T06:18:21.968Z"
+    },
+    {
+      "name": "YAML Syntax: .github/workflows/comprehensive-weekly-backup.yml",
+      "passed": true,
+      "message": "Valid YAML syntax",
+      "details": "Parsed successfully, 4 top-level keys",
+      "timestamp": "2025-09-09T06:18:21.970Z"
+    },
+    {
+      "name": "Structure: .github/workflows/comprehensive-weekly-backup.yml - name",
+      "passed": true,
+      "message": "Has name property",
+      "details": "name: Comprehensive Weekly Full System Backup",
+      "timestamp": "2025-09-09T06:18:21.970Z"
+    },
+    {
+      "name": "Structure: .github/workflows/comprehensive-weekly-backup.yml - on",
+      "passed": true,
+      "message": "Has on property",
+      "details": "on: [object Object]",
+      "timestamp": "2025-09-09T06:18:21.970Z"
+    },
+    {
+      "name": "Structure: .github/workflows/comprehensive-weekly-backup.yml - jobs",
+      "passed": true,
+      "message": "Has jobs property",
+      "details": "jobs: [object Object]",
+      "timestamp": "2025-09-09T06:18:21.970Z"
+    },
+    {
+      "name": "Trigger: .github/workflows/comprehensive-weekly-backup.yml - schedule",
+      "passed": true,
+      "message": "Has schedule trigger",
+      "details": "Automated execution configured",
+      "timestamp": "2025-09-09T06:18:21.971Z"
+    },
+    {
+      "name": "Trigger: .github/workflows/comprehensive-weekly-backup.yml - workflow_dispatch",
+      "passed": false,
+      "message": "Missing manual trigger",
+      "details": "Should allow manual execution",
+      "timestamp": "2025-09-09T06:18:21.971Z"
+    },
+    {
+      "name": "Jobs: .github/workflows/comprehensive-weekly-backup.yml - count",
+      "passed": true,
+      "message": "Has 1 job(s)",
+      "details": "Jobs: full-backup",
+      "timestamp": "2025-09-09T06:18:21.971Z"
+    },
+    {
+      "name": "Job: .github/workflows/comprehensive-weekly-backup.yml - full-backup runs-on",
+      "passed": true,
+      "message": "Uses ubuntu-latest",
+      "details": "Runner: ubuntu-latest",
+      "timestamp": "2025-09-09T06:18:21.971Z"
+    },
+    {
+      "name": "Job: .github/workflows/comprehensive-weekly-backup.yml - full-backup steps",
+      "passed": true,
+      "message": "Has 13 step(s)",
+      "details": "Steps configured",
+      "timestamp": "2025-09-09T06:18:21.971Z"
+    },
+    {
+      "name": "Steps: .github/workflows/comprehensive-weekly-backup.yml - full-backup checkout",
+      "passed": true,
+      "message": "Has checkout step",
+      "details": "Code checkout configured",
+      "timestamp": "2025-09-09T06:18:21.972Z"
+    },
+    {
+      "name": "Steps: .github/workflows/comprehensive-weekly-backup.yml - full-backup postgresql",
+      "passed": true,
+      "message": "Has PostgreSQL installation",
+      "details": "PostgreSQL client will be installed",
+      "timestamp": "2025-09-09T06:18:21.972Z"
+    },
+    {
+      "name": "Steps: .github/workflows/comprehensive-weekly-backup.yml - full-backup vercel-cli",
+      "passed": true,
+      "message": "Has Vercel CLI installation",
+      "details": "Vercel CLI will be installed",
+      "timestamp": "2025-09-09T06:18:21.972Z"
+    },
+    {
+      "name": "Steps: .github/workflows/comprehensive-weekly-backup.yml - full-backup pg_dump",
+      "passed": true,
+      "message": "Has pg_dump execution",
+      "details": "Database backup configured",
+      "timestamp": "2025-09-09T06:18:21.972Z"
+    },
+    {
+      "name": "Steps: .github/workflows/comprehensive-weekly-backup.yml - full-backup blob-upload",
+      "passed": true,
+      "message": "Has blob upload",
+      "details": "Vercel Blob upload configured",
+      "timestamp": "2025-09-09T06:18:21.973Z"
+    },
+    {
+      "name": "Environment: .github/workflows/comprehensive-weekly-backup.yml - DATABASE_URL",
+      "passed": true,
+      "message": "DATABASE_URL is configured",
+      "details": "Found in workflow configuration",
+      "timestamp": "2025-09-09T06:18:21.973Z"
+    },
+    {
+      "name": "Environment: .github/workflows/comprehensive-weekly-backup.yml - BLOB_READ_WRITE_TOKEN",
+      "passed": true,
+      "message": "BLOB_READ_WRITE_TOKEN is configured",
+      "details": "Found in workflow configuration",
+      "timestamp": "2025-09-09T06:18:21.973Z"
+    },
+    {
+      "name": "Secrets: .github/workflows/comprehensive-weekly-backup.yml - usage",
+      "passed": true,
+      "message": "Uses GitHub secrets",
+      "details": "Secrets properly referenced",
+      "timestamp": "2025-09-09T06:18:21.973Z"
+    }
+  ]
+}

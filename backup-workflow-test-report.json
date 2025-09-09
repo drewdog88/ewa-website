@@ -1,0 +1,136 @@
+{
+  "timestamp": "2025-09-09T06:16:06.903Z",
+  "duration": 55,
+  "summary": {
+    "total": 17,
+    "passed": 10,
+    "failed": 7,
+    "successRate": 58.8
+  },
+  "environment": {
+    "nodeEnv": "development",
+    "databaseUrlConfigured": false,
+    "blobTokenConfigured": false
+  },
+  "tests": [
+    {
+      "name": "Environment: DATABASE_URL",
+      "passed": false,
+      "message": "Environment variable is missing",
+      "details": "Required for backup workflows",
+      "timestamp": "2025-09-09T06:16:06.852Z"
+    },
+    {
+      "name": "Environment: BLOB_READ_WRITE_TOKEN",
+      "passed": false,
+      "message": "Environment variable is missing",
+      "details": "Required for backup workflows",
+      "timestamp": "2025-09-09T06:16:06.853Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-daily-backup.yml exists",
+      "passed": true,
+      "message": "Workflow file found",
+      "details": "Size: 3306 characters",
+      "timestamp": "2025-09-09T06:16:06.855Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-daily-backup.yml YAML structure",
+      "passed": true,
+      "message": "Valid YAML structure",
+      "details": "Contains required sections",
+      "timestamp": "2025-09-09T06:16:06.856Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-daily-backup.yml secrets configuration",
+      "passed": true,
+      "message": "Required secrets configured",
+      "details": "DATABASE_URL and BLOB_READ_WRITE_TOKEN found",
+      "timestamp": "2025-09-09T06:16:06.856Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-daily-backup.yml pg_dump usage",
+      "passed": true,
+      "message": "Uses pg_dump for backup",
+      "details": "pg_dump command found",
+      "timestamp": "2025-09-09T06:16:06.856Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-daily-backup.yml Vercel CLI usage",
+      "passed": true,
+      "message": "Uses Vercel CLI for blob upload",
+      "details": "vercel blob put command found",
+      "timestamp": "2025-09-09T06:16:06.857Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-weekly-backup.yml exists",
+      "passed": true,
+      "message": "Workflow file found",
+      "details": "Size: 3764 characters",
+      "timestamp": "2025-09-09T06:16:06.858Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-weekly-backup.yml YAML structure",
+      "passed": true,
+      "message": "Valid YAML structure",
+      "details": "Contains required sections",
+      "timestamp": "2025-09-09T06:16:06.858Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-weekly-backup.yml secrets configuration",
+      "passed": true,
+      "message": "Required secrets configured",
+      "details": "DATABASE_URL and BLOB_READ_WRITE_TOKEN found",
+      "timestamp": "2025-09-09T06:16:06.858Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-weekly-backup.yml pg_dump usage",
+      "passed": true,
+      "message": "Uses pg_dump for backup",
+      "details": "pg_dump command found",
+      "timestamp": "2025-09-09T06:16:06.859Z"
+    },
+    {
+      "name": "Workflow: .github/workflows/simple-weekly-backup.yml Vercel CLI usage",
+      "passed": true,
+      "message": "Uses Vercel CLI for blob upload",
+      "details": "vercel blob put command found",
+      "timestamp": "2025-09-09T06:16:06.859Z"
+    },
+    {
+      "name": "PostgreSQL: pg_dump availability",
+      "passed": false,
+      "message": "pg_dump not available",
+      "details": "Command failed: which pg_dump\n'which' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n",
+      "timestamp": "2025-09-09T06:16:06.882Z"
+    },
+    {
+      "name": "Vercel CLI: availability",
+      "passed": false,
+      "message": "Vercel CLI not available",
+      "details": "Command failed: which vercel\n'which' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n",
+      "timestamp": "2025-09-09T06:16:06.900Z"
+    },
+    {
+      "name": "Database: connection test",
+      "passed": false,
+      "message": "Cannot test - DATABASE_URL not set",
+      "details": "Need DATABASE_URL environment variable",
+      "timestamp": "2025-09-09T06:16:06.901Z"
+    },
+    {
+      "name": "Backup: simulation test",
+      "passed": false,
+      "message": "Cannot test - DATABASE_URL not set",
+      "details": "Need DATABASE_URL environment variable",
+      "timestamp": "2025-09-09T06:16:06.901Z"
+    },
+    {
+      "name": "Blob: token test",
+      "passed": false,
+      "message": "Cannot test - BLOB_READ_WRITE_TOKEN not set",
+      "details": "Need BLOB_READ_WRITE_TOKEN environment variable",
+      "timestamp": "2025-09-09T06:16:06.902Z"
+    }
+  ]
+}

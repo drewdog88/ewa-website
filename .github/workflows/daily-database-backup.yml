@@ -2,61 +2,59 @@ name: Daily Database Backup
 
 on:
   schedule:
-    # Run daily at 10:00 AM UTC (2:00 AM PST)
-    - cron: '0 10 * * *'
-  workflow_dispatch: # Allow manual triggering
+    - cron: '0 2 * * *' # Runs daily at 2 AM UTC (6 PM PST previous day)
+  workflow_dispatch: # Allows manual triggering from GitHub UI
+
+env:
+  # Define environment variables for your database and Vercel Blob
+  DATABASE_URL: ${{ secrets.DATABASE_URL }} # PostgreSQL connection string
+  BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }} # Vercel Blob token
 
 jobs:
-  daily-database-backup:
+  backup:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run daily database backup
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
-          NODE_ENV: production
+
+      - name: Install PostgreSQL client (version 17)
         run: |
-          echo "🔄 Starting daily database backup..."
-          node scripts/backup-daily-database.js
-          
-      - name: Upload backup logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: daily-backup-logs-${{ github.run_number }}
-          path: |
-            backup-logs/
-            backup-system-test-report.json
-          retention-days: 7
-          
-      - name: Notify on failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const issue = await github.rest.issues.create({
-              owner,
-              repo,
-              title: '🚨 Daily Database Backup Failed',
-              body: `Daily database backup failed on ${new Date().toISOString()}.
-              
-              **Workflow Run:** ${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}
-              
-              Please check the logs and investigate the issue.`,
-              labels: ['backup-failure', 'urgent']
-            });
-            console.log(`Created issue #${issue.data.number} for backup failure`);
+          sudo apt-get update
+          sudo apt-get install -y wget ca-certificates
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Install Vercel CLI
+        run: |
+          npm install -g vercel@latest
+
+      - name: Run pg_dump and gzip
+        run: |
+          GZIP_NAME="ewa-db-daily-$(date +%Y-%m-%d_%H-%M-%S).sql.gz"
+          # Simple pg_dump for daily backup
+          /usr/lib/postgresql/17/bin/pg_dump \
+            --verbose \
+            --no-owner \
+            --no-privileges \
+            "${{ env.DATABASE_URL }}" | gzip > "${GZIP_NAME}"
+          echo "GZIP_NAME=${GZIP_NAME}" >> $GITHUB_ENV
+          echo "📊 Created daily backup: ${GZIP_NAME}"
+          ls -lh "${GZIP_NAME}"
+
+      - name: Upload to Vercel Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: |
+          echo "📤 Uploading to Vercel Blob using Vercel CLI..."
+          vercel blob put "${{ env.GZIP_NAME }}" --token="$BLOB_READ_WRITE_TOKEN"
+          echo "✅ Uploaded backup to Vercel Blob: ${{ env.GZIP_NAME }}"
+
+      - name: Backup Summary
+        run: |
+          echo "🎉 Daily database backup completed successfully!"
+          echo "📁 Backup file: ${{ env.GZIP_NAME }}"
+          echo "📅 Date: $(date)"
+          echo "💾 Storage: Vercel Blob"
+          echo "🔒 Safety: All backups preserved (no automatic cleanup)"
