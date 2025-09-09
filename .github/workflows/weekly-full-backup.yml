@@ -72,11 +72,11 @@ jobs:
         run: |
           echo "📁 Attempting to download existing documents..."
           # List all blobs to find documents
-          BLOB_LIST=$(vercel blob list --token="$BLOB_READ_WRITE_TOKEN" --json)
-          echo "Available blobs: $BLOB_LIST"
+          echo "Available blobs:"
+          vercel blob list --token="$BLOB_READ_WRITE_TOKEN"
           
           # Try to download any existing documents (this is a simplified approach)
-          # In a real scenario, you'd parse the JSON and download specific files
+          # In a real scenario, you'd parse the output and download specific files
           echo "✅ Document download attempt completed (simplified for testing)"
 
       - name: Download existing backups from Vercel Blob
@@ -85,8 +85,8 @@ jobs:
         run: |
           echo "📁 Attempting to download existing backups..."
           # List all blobs to find existing backups
-          BLOB_LIST=$(vercel blob list --token="$BLOB_READ_WRITE_TOKEN" --json)
-          echo "Available backup blobs: $BLOB_LIST"
+          echo "Available backup blobs:"
+          vercel blob list --token="$BLOB_READ_WRITE_TOKEN"
           
           # Try to download any existing backup files
           echo "✅ Existing backup download attempt completed (simplified for testing)"
