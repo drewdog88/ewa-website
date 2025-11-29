@@ -484,11 +484,35 @@ async function addNews(newsItem) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
     
-    const result = await sql`
-            INSERT INTO news (title, content, slug, status, created_by)
-            VALUES (${newsItem.title}, ${newsItem.content}, ${slug}, ${newsItem.status || 'draft'}, ${newsItem.createdBy})
-            RETURNING *
-        `;
+    // Handle published_at date
+    let publishedAt = null;
+    if (newsItem.publishedAt) {
+      // Convert date string to ISO format if needed
+      const date = new Date(newsItem.publishedAt);
+      if (!isNaN(date.getTime())) {
+        publishedAt = date.toISOString();
+      }
+    } else if (newsItem.status === 'published') {
+      // If status is published but no date provided, use current timestamp
+      publishedAt = new Date().toISOString();
+    }
+    
+    // Build query conditionally based on whether published_at is set
+    let result;
+    if (publishedAt) {
+      result = await sql`
+        INSERT INTO news (title, content, slug, status, created_by, published_at)
+        VALUES (${newsItem.title}, ${newsItem.content}, ${slug}, ${newsItem.status || 'draft'}, ${newsItem.createdBy}, ${publishedAt}::timestamptz)
+        RETURNING *
+      `;
+    } else {
+      result = await sql`
+        INSERT INTO news (title, content, slug, status, created_by)
+        VALUES (${newsItem.title}, ${newsItem.content}, ${slug}, ${newsItem.status || 'draft'}, ${newsItem.createdBy})
+        RETURNING *
+      `;
+    }
+    
     return result[0];
   } catch (error) {
     console.error('Error adding news:', error);
@@ -599,7 +623,8 @@ async function deleteNews(newsId) {
       throw new Error(`Invalid news ID format: ${newsId}`);
     }
     
-    const result = await sql`DELETE FROM news WHERE id = ${newsId}::uuid RETURNING *`;
+    // Use parameterized query without explicit cast - Neon handles UUID conversion automatically
+    const result = await sql`DELETE FROM news WHERE id = ${newsId} RETURNING *`;
     
     if (result.length === 0) {
       return false; // News not found
@@ -608,6 +633,8 @@ async function deleteNews(newsId) {
     return true;
   } catch (error) {
     console.error('❌ Error deleting news:', error);
+    console.error('❌ News ID attempted:', newsId);
+    console.error('❌ Error details:', error.message, error.stack);
     // Re-throw with more context
     throw new Error(`Failed to delete news article: ${error.message}`);
   }

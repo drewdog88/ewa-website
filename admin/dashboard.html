@@ -1813,8 +1813,22 @@
             
             newsData.forEach(news => {
                 const row = document.createElement('tr');
+                // Handle date display - use published_at if available and status is published, otherwise use created_at
+                let displayDate = 'N/A';
+                if (news.published_at) {
+                    const date = new Date(news.published_at);
+                    if (!isNaN(date.getTime())) {
+                        displayDate = date.toLocaleDateString();
+                    }
+                } else if (news.created_at) {
+                    const date = new Date(news.created_at);
+                    if (!isNaN(date.getTime())) {
+                        displayDate = date.toLocaleDateString();
+                    }
+                }
+                
                 row.innerHTML = `
-                    <td>${new Date(news.created_at).toLocaleDateString()}</td>
+                    <td>${displayDate}</td>
                     <td>${news.title}</td>
                     <td>${news.content.substring(0, 100)}${news.content.length > 100 ? '...' : ''}</td>
                     <td>
@@ -1838,17 +1852,24 @@
             }
             
             try {
+                const requestBody = {
+                    title: title,
+                    content: content,
+                    status: 'published',
+                    createdBy: userSession.currentUser?.username || 'admin'
+                };
+                
+                // Add date if provided
+                if (date) {
+                    requestBody.publishedAt = date;
+                }
+                
                 const response = await fetch('/api/news', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        title: title,
-                        content: content,
-                        status: 'published',
-                        createdBy: userSession.currentUser?.username || 'admin'
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 const result = await response.json();
