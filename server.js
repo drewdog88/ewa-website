@@ -2368,7 +2368,7 @@ app.get('/api/news/published', async (req, res) => {
 // Add news article
 app.post('/api/news', async (req, res) => {
   try {
-    const { title, content, status = 'draft' } = req.body;
+    const { title, content, status = 'draft', publishedAt } = req.body;
     
     // Validate required fields
     if (!title || !content) {
@@ -2383,7 +2383,8 @@ app.post('/api/news', async (req, res) => {
       title: title.trim(),
       content: content.trim(),
       status: status,
-      createdBy: req.body.createdBy || 'admin'
+      createdBy: req.body.createdBy || 'admin',
+      publishedAt: publishedAt || (status === 'published' ? new Date().toISOString() : null)
     });
     
     if (newsItem) {

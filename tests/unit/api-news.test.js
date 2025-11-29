@@ -78,7 +78,7 @@ app.get('/api/news/published', async (req, res) => {
 
 app.post('/api/news', async (req, res) => {
   try {
-    const { title, content, status = 'draft' } = req.body;
+    const { title, content, status = 'draft', publishedAt } = req.body;
     
     if (!title || !content) {
       return res.status(400).json({
@@ -91,7 +91,8 @@ app.post('/api/news', async (req, res) => {
       title: title.trim(),
       content: content.trim(),
       status: status,
-      createdBy: req.body.createdBy || 'admin'
+      createdBy: req.body.createdBy || 'admin',
+      publishedAt: publishedAt || (status === 'published' ? new Date().toISOString() : null)
     });
     
     if (newsItem) {
@@ -269,12 +270,49 @@ describe('News API Endpoints', () => {
 
       expect(response.body.success).toBe(true);
       expect(response.body.news).toEqual(newNews);
-      expect(mockNeonFunctions.addNews).toHaveBeenCalledWith({
-        title: 'New Article',
-        content: 'New content',
-        status: 'draft',
-        createdBy: 'admin'
-      });
+      expect(mockNeonFunctions.addNews).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'New Article',
+          content: 'New content',
+          status: 'draft',
+          createdBy: 'admin'
+        })
+      );
+    });
+
+    test('should create a published news article with date', async () => {
+      const publishedDate = '2025-01-15';
+      const newNews = {
+        id: 'new-uuid-1234-5678-90ab-cdef',
+        title: 'Published Article',
+        content: 'Published content',
+        status: 'published',
+        published_at: new Date(publishedDate).toISOString(),
+        created_by: 'admin',
+        created_at: new Date().toISOString()
+      };
+
+      mockNeonFunctions.addNews.mockResolvedValue(newNews);
+
+      const response = await request(app)
+        .post('/api/news')
+        .send({
+          title: 'Published Article',
+          content: 'Published content',
+          status: 'published',
+          publishedAt: publishedDate
+        })
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.news).toEqual(newNews);
+      // Check that publishedAt was passed (either the provided date or auto-generated)
+      const callArgs = mockNeonFunctions.addNews.mock.calls[0][0];
+      expect(callArgs.title).toBe('Published Article');
+      expect(callArgs.content).toBe('Published content');
+      expect(callArgs.status).toBe('published');
+      expect(callArgs.createdBy).toBe('admin');
+      expect(callArgs.publishedAt).toBe(publishedDate);
     });
 
     test('should reject missing title', async () => {
