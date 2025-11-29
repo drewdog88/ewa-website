@@ -499,9 +499,15 @@ async function addNews(newsItem) {
 async function updateNews(newsId, updates) {
   const sql = getSql();
   if (!sql) return null;
-    
+  
   try {
     console.log('🔍 updateNews called with:', { newsId, updates });
+    
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(newsId)) {
+      throw new Error(`Invalid news ID format: ${newsId}`);
+    }
     
     // Only allow updating specific fields
     const allowedFields = ['title', 'content', 'status'];
@@ -519,16 +525,28 @@ async function updateNews(newsId, updates) {
     
     console.log('🔍 Update fields:', updateFields);
     
-    // Use simple template literal approach like the working test script
-    const result = await sql`
-      UPDATE news 
-      SET title = ${updateFields.title || 'title'},
-          content = ${updateFields.content || 'content'},
-          status = ${updateFields.status || 'status'},
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = ${newsId}
-      RETURNING *
-    `;
+    // Build dynamic update query using sql.unsafe for conditional fields
+    let updateQuery = 'UPDATE news SET updated_at = CURRENT_TIMESTAMP';
+    const params = [];
+    let paramIndex = 1;
+    
+    if (updateFields.title !== undefined) {
+      updateQuery += `, title = $${paramIndex++}`;
+      params.push(updateFields.title.trim());
+    }
+    if (updateFields.content !== undefined) {
+      updateQuery += `, content = $${paramIndex++}`;
+      params.push(updateFields.content.trim());
+    }
+    if (updateFields.status !== undefined) {
+      updateQuery += `, status = $${paramIndex++}`;
+      params.push(updateFields.status);
+    }
+    
+    updateQuery += ` WHERE id = $${paramIndex}::uuid RETURNING *`;
+    params.push(newsId);
+    
+    const result = await sql.unsafe(updateQuery, params);
     
     console.log('🔍 Query result:', result);
     
@@ -570,14 +588,28 @@ async function publishNews(newsId) {
 
 async function deleteNews(newsId) {
   const sql = getSql();
-  if (!sql) return false;
-    
+  if (!sql) {
+    throw new Error('Database connection not available');
+  }
+  
   try {
-    const result = await sql`DELETE FROM news WHERE id = ${newsId} RETURNING *`;
-    return result.length > 0;
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(newsId)) {
+      throw new Error(`Invalid news ID format: ${newsId}`);
+    }
+    
+    const result = await sql`DELETE FROM news WHERE id = ${newsId}::uuid RETURNING *`;
+    
+    if (result.length === 0) {
+      return false; // News not found
+    }
+    
+    return true;
   } catch (error) {
-    console.error('Error deleting news:', error);
-    throw error;
+    console.error('❌ Error deleting news:', error);
+    // Re-throw with more context
+    throw new Error(`Failed to delete news article: ${error.message}`);
   }
 }
 

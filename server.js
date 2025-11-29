@@ -2411,6 +2411,16 @@ app.post('/api/news', async (req, res) => {
 app.put('/api/news/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid news article ID format'
+      });
+    }
+    
     const { title, content, status } = req.body;
     
     const updates = {};
@@ -2443,7 +2453,7 @@ app.put('/api/news/:id', async (req, res) => {
     console.error('Error updating news article:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: error.message || 'Internal server error'
     });
   }
 });
@@ -2481,6 +2491,15 @@ app.delete('/api/news/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid news article ID format'
+      });
+    }
+    
     const deleted = await deleteNews(id);
     
     if (!deleted) {
@@ -2498,7 +2517,7 @@ app.delete('/api/news/:id', async (req, res) => {
     console.error('Error deleting news article:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: error.message || 'Internal server error'
     });
   }
 });
