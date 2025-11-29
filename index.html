@@ -376,20 +376,11 @@
                         <a href="https://arbiterlive.com/School/Calendar/6445" target="_blank">Eastlake Athletics Schedule</a>
                     </div>
                     <div class="link-card">
-                        <h3>LWSD Athletics</h3>
-                        <a href="https://www.lwsd.org/athletics" target="_blank">Lake Washington School District Athletics</a>
+                        <h3>Booster Resources</h3>
+                        <a href="links.html">Resources Section</a>
                     </div>
-                    <div class="link-card">
-                        <h3>Photo Gallery</h3>
-                        <a href="gallery.html">View Team Photos & Events</a>
-                    </div>
-                    <div class="link-card">
-                        <h3>Admin Portal</h3>
-                        <a href="admin/login.html">Secure Login for Booster Clubs</a>
-                    </div>
-                    <div class="link-card">
-                        <h3>Volunteer Opportunities</h3>
-                        <a href="volunteers.html">Express Interest in Volunteering</a>
+                    <div id="latest-news-container">
+                        <!-- Latest news items will be loaded here -->
                     </div>
                 </div>
             </section>
@@ -421,6 +412,54 @@
 
     <script src="assets/user-session.js"></script>
     <script>
+        async function loadLatestNews() {
+            try {
+                const response = await fetch('/api/news/published');
+                const result = await response.json();
+                
+                const newsContainer = document.getElementById('latest-news-container');
+                
+                if (result.success && result.news && result.news.length > 0) {
+                    // Get the latest 2 news items
+                    const latestNews = result.news.slice(0, 2);
+                    
+                    latestNews.forEach(article => {
+                        const linkCard = document.createElement('div');
+                        linkCard.className = 'link-card';
+                        
+                        const date = new Date(article.published_at || article.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                        
+                        linkCard.innerHTML = `
+                            <h3>${escapeHtml(article.title)}</h3>
+                            <a href="news.html#${article.id}">Read More - ${date}</a>
+                        `;
+                        
+                        newsContainer.appendChild(linkCard);
+                    });
+                } else {
+                    // If no news, don't display anything (container stays empty)
+                    newsContainer.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading latest news:', error);
+                // Hide container on error
+                const newsContainer = document.getElementById('latest-news-container');
+                if (newsContainer) {
+                    newsContainer.style.display = 'none';
+                }
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
         async function loadBoosterClubs() {
             try {
                 const response = await fetch('/api/booster-clubs');
@@ -488,7 +527,10 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', loadBoosterClubs);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLatestNews();
+            loadBoosterClubs();
+        });
     </script>
 </body>
 </html>
