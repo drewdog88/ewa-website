@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weight room fundraiser - Eastlake Wolfpack Association</title>
+    <title>Fundraiser for Weight &amp; Conditioning room at Eastlake High School</title>
 
     <meta name="description" content="Support the Eastlake High School weight and conditioning room with Wolfpack-themed artwork and spirit improvements. Donations are tax-deductible through the Eastlake Wolfpack Association.">
     <meta name="keywords" content="Eastlake High School, Wolfpack, weight room, fundraiser, donation, EWA, Kirkland, Sammamish, WA">
@@ -12,7 +12,7 @@
     <meta name="googlebot" content="noai, noimageai, nosnippet">
     <meta name="bingbot" content="noai, noimageai, nosnippet">
 
-    <meta property="og:title" content="Weight room fundraiser - Eastlake Wolfpack Association">
+    <meta property="og:title" content="Fundraiser for Weight &amp; Conditioning room at Eastlake High School">
     <meta property="og:description" content="Help bring Eastlake Wolves spirit back to the weight and conditioning room through painting, logos, and Wolfpack-themed artwork.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://ewa-website.com/weight-room-fundraiser.html">
@@ -22,7 +22,7 @@
     <meta property="og:locale" content="en_US">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Weight room fundraiser - Eastlake Wolfpack Association">
+    <meta name="twitter:title" content="Fundraiser for Weight &amp; Conditioning room at Eastlake High School">
     <meta name="twitter:description" content="Support spirit improvements for the Eastlake High School weight and conditioning room.">
     <meta name="twitter:image" content="https://ewa-website.com/assets/ewa-wolf.jpg">
     <meta name="twitter:image:alt" content="Eastlake Wolfpack Association Logo">
@@ -200,7 +200,7 @@
             color: #2c3e50;
             font-size: 1.35rem;
             margin-bottom: 12px;
-            font-weight: normal;
+            font-weight: bold;
         }
 
         .panel p {
@@ -259,9 +259,71 @@
             color: white;
         }
 
+        /* Match payment.html Stripe "Pay Now" control */
+        .pay-now-btn {
+            background-color: #635bff;
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .pay-now-btn:hover {
+            background-color: #5446ff;
+            color: #fff;
+        }
+
         .muted {
             color: #6c757d;
             font-size: 0.95rem;
+        }
+
+        .give-zelle {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .give-zelle h3 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .give-zelle p {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .give-zelle code {
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            max-width: 100%;
+            word-break: break-word;
+        }
+
+        .zelle-qr {
+            margin: 12px 0 18px;
+            text-align: center;
+        }
+
+        .zelle-qr img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
         }
 
         .footer-banner {
@@ -342,8 +404,11 @@
                 flex-direction: column;
             }
 
-            .btn {
+            .btn,
+            .pay-now-btn {
                 width: 100%;
+                text-align: center;
+                box-sizing: border-box;
             }
         }
     </style>
@@ -368,35 +433,39 @@
     </header>
 
     <main id="main-content" class="main-content" role="main">
-        <h1>Weight &amp; conditioning room fundraiser</h1>
-        <p class="subtitle">Bring Eastlake Wolves spirit back to the weight and conditioning (Wright) room through painting, logos, and Wolfpack-themed artwork.</p>
+        <h1>Fundraiser for Weight &amp; Conditioning room at Eastlake High School</h1>
+        <p class="subtitle">Bring Eastlake Wolves spirit back to the weight room through painting, logos, and Wolfpack-themed artwork.</p>
 
         <article class="panel">
             <h2>Why we are fundraising</h2>
-            <p>Following much-needed <strong>LWSD</strong> and <strong>EHS</strong> repairs and reconditioning of our Wright Room floors, we are seeking funds to complete the next chapter: bold, durable visuals that celebrate our student-athletes and the Eastlake community.</p>
-            <p><strong>All funds raised</strong> through your generous donations will go directly to painting, logos, and Wolfpack-themed artwork for the weight and conditioning room.</p>
-            <p>The <strong>Eastlake Wolfpack Association</strong> fully supports this effort. The EWA is a nonprofit organization recognized by the IRS as 501(c)(3) with tax identification # 77-0616862; your donations are <strong>tax-deductible</strong> to the extent allowed by law.</p>
-            <p class="goal">Fundraising goal: $10,000</p>
+            <p>Following the much needed repairs of the Weight and conditioning room floors, which are being done over the summer of 2026, the LWSD has only approved those funds for the floor repair. Through your generous donations we want to bring back our true Wolfpack Spirit with new Logos, Decals, Murals and all of the inspirational visuals for our student athletes.</p>
+            <p><strong>All funds raised</strong> through your generosity will go directly to painting, logos, and Wolfpack-themed artwork for the weight and conditioning room.</p>
+            <p>The <strong>Eastlake Wolfpack Association</strong> fully supports this effort. The EWA supports over 23 booster clubs and is a nonprofit organization recognized by the IRS as 501(c)(3) with tax identification # 77-0616862; your donations are <strong>100% tax-deductible</strong>.</p>
+            <p>The Eastlake Wolfpack Association works in direct coordination with the Eastlake High School athletic director and the athletic department so this project aligns with school priorities, facility use, and student-athlete needs.</p>
+            <p class="goal">Fundraising goal: $10,000 by Jun 30, 2026</p>
         </article>
 
         <article class="panel">
             <h2>Donor recognition</h2>
-            <p>We are offering tiered donor commemoration in the form of an acknowledgement on the wall for any donation of <strong>$1,000 or more</strong>.</p>
+            <p>Gifts of <strong>$1,000 or more</strong> will be honored with a permanent acknowledgement on the wall, so our community can thank you for helping bring Wolfpack spirit to this space.</p>
         </article>
 
         <article class="panel">
             <h2>Ways to give</h2>
-            <p>Tell us you are interested and share donation details through our Google Form (link below). You can also donate by Zelle, credit card, or check.</p>
-            <div class="cta-row">
-                <!-- TODO: replace href with Google Form URL -->
-                <a class="btn btn-primary" href="#google-form-placeholder" target="_blank" rel="noopener noreferrer">Open Google Form</a>
-                <!-- TODO: replace href with credit card payment page URL when available -->
-                <a class="btn btn-secondary" href="#credit-card-placeholder" target="_blank" rel="noopener noreferrer">Donate by credit card</a>
+            <p>Ready to donate now? Use the <strong>Zelle</strong> QR code and instructions below. For <strong>credit card</strong> and other payment options, use <strong>Pay Now</strong>—the same flow as our <a href="payment.html?id=f2efccc3-4dbe-4eeb-b65e-ba7e7149c740&amp;club=Eastlake%20Wolfpack%20Association">Eastlake Wolfpack Association payment page</a>.</p>
+            <div class="give-zelle">
+                <h3>Zelle® payments</h3>
+                <div id="fundraiserZelleQR" class="zelle-qr" style="display:none;" aria-hidden="true"></div>
+                <p>Please make sure to include the student name, student number and a short description of the purpose. Indicate if this is a <strong>donation</strong>, <strong>service</strong> or <strong>product</strong>, include your email address so that we can send you a tax-receipt.</p>
+                <p>Example: <code>donation: 123456, Jane Doe, donor_email@gmail.com</code></p>
+                <p class="muted">For this fundraiser, add <strong>Weight room fund</strong> to your memo when you can.</p>
             </div>
-            <p class="muted" style="margin-top:16px;"><strong>Zelle:</strong> <!-- TODO: add public Zelle email or phone approved for publication --> Use the memo line to note &ldquo;Weight room fund&rdquo; and your name. Contact the Eastlake Wolfpack Association for the correct Zelle recipient if it is not yet listed on your materials.</p>
-            <p class="muted"><strong>Check:</strong> Make checks payable to <strong>Eastlake Wolfpack Association</strong>. Mail to Eastlake High School (school address):</p>
-            <p class="muted">Eastlake High School<br>
-            c/o Eastlake Wolfpack Association<br>
+            <div class="cta-row">
+                <a class="pay-now-btn" href="payment.html?id=f2efccc3-4dbe-4eeb-b65e-ba7e7149c740&amp;club=Eastlake%20Wolfpack%20Association">Pay Now</a>
+            </div>
+            <p class="muted"><strong>Check:</strong> Make checks payable to <strong>Eastlake Wolfpack Association</strong>. On the memo line, please indicate this is for the <strong>weight room fund</strong> (or similar wording so we can direct your gift).</p>
+            <p class="muted">Mail your check to:</p>
+            <p class="muted">Eastlake Wolfpack Association<br>
             400 228th Ave NE<br>
             Sammamish, WA 98074</p>
         </article>
@@ -413,5 +482,63 @@
         </nav>
     </footer>
     <script src="assets/user-session.js"></script>
+    <script>
+        (function () {
+            /* Fallback if /api/booster-clubs/:name is unavailable; DB is source of truth for Zelle URL + QR */
+            var EWA_CLUB_ID_FALLBACK = 'f2efccc3-4dbe-4eeb-b65e-ba7e7149c740';
+            var EWA_CLUB_NAME = 'Eastlake Wolfpack Association';
+
+            async function resolveEwaClubId() {
+                try {
+                    var res = await fetch('/api/booster-clubs/' + encodeURIComponent(EWA_CLUB_NAME));
+                    var json = await res.json();
+                    if (json && json.success && json.data && json.data.id) {
+                        return json.data.id;
+                    }
+                } catch (e) {
+                    console.warn('Could not resolve EWA club id by name', e);
+                }
+                return EWA_CLUB_ID_FALLBACK;
+            }
+
+            async function renderFundraiserZelleQR(clubId) {
+                var qrContainer = document.getElementById('fundraiserZelleQR');
+                if (!qrContainer || !clubId) return;
+
+                var currentImg = qrContainer.querySelector('img');
+                var currentBlobUrl = currentImg ? currentImg.src : null;
+
+                try {
+                    qrContainer.style.display = 'block';
+                    qrContainer.setAttribute('aria-hidden', 'false');
+                    qrContainer.innerHTML = '<p class="muted">Loading QR code…</p>';
+
+                    var response = await fetch('/api/qr-code?clubId=' + encodeURIComponent(clubId) + '&t=' + Date.now() + '&v=' + Math.random());
+
+                    if (response.ok) {
+                        var blob = await response.blob();
+                        var imageUrl = URL.createObjectURL(blob);
+                        qrContainer.innerHTML = '<img src="' + imageUrl + '" alt="Zelle QR code for Eastlake Wolfpack Association" loading="lazy" width="300" height="300">';
+                    } else if (response.status === 404 || response.status === 400) {
+                        qrContainer.innerHTML = '<p class="muted">Zelle QR is not available here right now. Please use the <a href="payment.html?id=' + encodeURIComponent(clubId) + '&amp;club=Eastlake%20Wolfpack%20Association">EWA payment page</a>.</p>';
+                    } else {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                } catch (e) {
+                    console.error('Error loading Zelle QR:', e);
+                    qrContainer.innerHTML = '<p class="muted">Could not load the Zelle QR code. Try the <a href="payment.html?id=' + encodeURIComponent(clubId) + '&amp;club=Eastlake%20Wolfpack%20Association">EWA payment page</a>.</p>';
+                } finally {
+                    if (currentBlobUrl && currentBlobUrl.indexOf('blob:') === 0) {
+                        URL.revokeObjectURL(currentBlobUrl);
+                    }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async function () {
+                var clubId = await resolveEwaClubId();
+                renderFundraiserZelleQR(clubId);
+            });
+        })();
+    </script>
 </body>
 </html>
