@@ -10,7 +10,7 @@ function obfuscateEmail(email) {
 
 // Phone obfuscation
 function obfuscatePhone(phone) {
-  const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+  const cleaned = phone.replace(/[\s\-()]/g, '');
   if (cleaned.length >= 10) {
     return cleaned.substring(0, 3) + '-***-' + cleaned.substring(cleaned.length - 4);
   }
