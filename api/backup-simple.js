@@ -604,7 +604,7 @@ function parseRealSQLBackup(sqlContent) {
     // More robust SQL parsing - handle multi-line statements
     const lines = sqlContent.split('\n');
     let currentStatement = '';
-    let insertStatements = [];
+    const insertStatements = [];
     let inInsertStatement = false;
     
     for (const line of lines) {

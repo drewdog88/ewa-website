@@ -1422,18 +1422,21 @@ app.post('/api/analytics/report', async (req, res) => {
       case 'usage':
         reportData = await getAnalyticsData(parseInt(dateRange));
         break;
-      case 'links':
+      case 'links': {
         const analyticsData = await getAnalyticsData(parseInt(dateRange));
         reportData = { topLinks: analyticsData.topLinks };
         break;
-      case 'officers':
+      }
+      case 'officers': {
         const officers = await getOfficers();
         reportData = { officers: officers.length };
         break;
-      case 'documents':
+      }
+      case 'documents': {
         const documents = await getDocuments();
         reportData = { documents: documents.length };
         break;
+      }
       default:
         return res.status(400).json({
           success: false,
