@@ -1,5 +1,4 @@
 const request = require('supertest');
-const { _createTestData, _mockUtils } = require('../helpers/test-setup');
 
 // Mock external dependencies
 jest.mock('@vercel/blob', () => ({

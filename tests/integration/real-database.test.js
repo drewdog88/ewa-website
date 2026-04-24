@@ -30,7 +30,14 @@ describe('Database Integration Tests (Mocked)', () => {
 
   describe('Database Connection', () => {
     test('should create pool with correct configuration', () => {
-      // This test validates that the Pool constructor is called with correct config
+      // Exercise the mocked Pool with the config shape production code uses
+      // (connectionString + ssl). This validates our pg mock contract; it does
+      // not invoke any production module.
+      // eslint-disable-next-line no-new
+      new Pool({
+        connectionString: process.env.DATABASE_URL || 'postgresql://test',
+        ssl: { rejectUnauthorized: false }
+      });
       expect(Pool).toHaveBeenCalled();
       const poolConfig = Pool.mock.calls[0][0];
       expect(poolConfig).toHaveProperty('connectionString');

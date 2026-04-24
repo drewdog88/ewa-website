@@ -1,12 +1,12 @@
 module.exports = {
-  // Test environment
+  // Test environment (defaults inherited by each project)
   testEnvironment: 'node',
-  
+
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js'],
-  
-  // Coverage configuration
-  collectCoverage: true,
+
+  // Coverage: off for normal `npm test` / `jest` (use `npm run test:coverage` or `npm run test:ci`)
+  collectCoverage: false,
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
@@ -17,8 +17,7 @@ module.exports = {
       lines: 80
     }
   },
-  
-  // Coverage paths
+
   collectCoverageFrom: [
     'api/**/*.js',
     'database/**/*.js',
@@ -29,44 +28,34 @@ module.exports = {
     '!**/*.test.js',
     '!**/*.spec.js'
   ],
-  
-  // Test patterns
-  testMatch: [
-    '<rootDir>/tests/**/*.test.js',
-    '<rootDir>/tests/**/*.spec.js'
-  ],
-  
-  // Module name mapping for mocks
+
+  // When `projects` is set, tests are only run via those projects — no root testMatch.
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
-  
-  // Transform configuration
+
   transform: {},
-  
-  // Test timeout
+
   testTimeout: 30000,
-  
-  // Verbose output
   verbose: true,
-  
-  // Clear mocks between tests
   clearMocks: true,
-  
-  // Restore mocks between tests
   restoreMocks: true,
-  
-  // Projects for different test types
+
   projects: [
     {
       displayName: 'unit',
       testMatch: ['<rootDir>/tests/unit/**/*.test.js'],
+      testPathIgnorePatterns: [
+        'tests/unit/utils-security-scanner\\.test\\.js',
+        'tests/unit/api-security-dashboard\\.test\\.js'
+      ],
       testEnvironment: 'node',
       setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js']
     },
     {
       displayName: 'integration',
       testMatch: ['<rootDir>/tests/integration/**/*.test.js'],
+      testPathIgnorePatterns: ['tests/integration/real-security-scan\\.test\\.js'],
       testEnvironment: 'node',
       setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js']
     },
@@ -75,17 +64,28 @@ module.exports = {
       testMatch: ['<rootDir>/tests/e2e/**/*.test.js'],
       testEnvironment: 'node',
       setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js']
+    },
+    {
+      displayName: 'security',
+      // Note: __tests__/security.test.js spins up server.listen() and encodes
+      // many policy expectations the app may not satisfy — run it manually:
+      //   npx jest __tests__/security.test.js
+      testMatch: [
+        '<rootDir>/tests/unit/utils-security-scanner.test.js',
+        '<rootDir>/tests/unit/api-security-dashboard.test.js',
+        '<rootDir>/tests/integration/real-security-scan.test.js'
+      ],
+      testEnvironment: 'node',
+      setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js']
     }
   ],
-  
-  // Global mocks
+
   globals: {
     'ts-jest': {
       useESM: true
     }
   },
-  
-  // Environment variables for tests
+
   testEnvironmentOptions: {
     NODE_ENV: 'test'
   }
