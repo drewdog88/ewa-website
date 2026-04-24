@@ -90,25 +90,6 @@ async function searchEverything(query) {
             LIMIT 5
         `;
         
-        // Search volunteers (if table exists)
-        let volunteers = [];
-        try {
-            volunteers = await sql`
-                SELECT 
-                    'volunteers' as category,
-                    CONCAT(name, ' - ', club) as title,
-                    CONCAT('Volunteer: ', name, ' (', club, ')') as description,
-                    'volunteers' as section
-                FROM volunteers 
-                WHERE name ILIKE ${searchTerm} 
-                OR club ILIKE ${searchTerm}
-                LIMIT 5
-            `;
-        } catch (error) {
-            // Volunteers table doesn't exist, return empty array
-            console.log('Volunteers table not found, skipping volunteer search');
-        }
-        
         // Search admin activity
         const activity = await sql`
             SELECT 
@@ -126,7 +107,6 @@ async function searchEverything(query) {
         return {
             officers: officers,
             clubs: clubs,
-            volunteers: volunteers,
             activity: activity
         };
     } catch (error) {

@@ -19,7 +19,6 @@ describe('Real API Behavior Validation', () => {
       // Mock the database connection to avoid real DB calls
       jest.mock('../../database/neon-functions', () => ({
         getOfficers: jest.fn().mockResolvedValue([]),
-        getVolunteers: jest.fn().mockResolvedValue([]),
         getUsers: jest.fn().mockResolvedValue([])
       }));
 
@@ -59,13 +58,6 @@ describe('Real API Behavior Validation', () => {
           res.json({
             success: true,
             officers: []
-          });
-        });
-
-        app.get('/api/volunteers', (req, res) => {
-          res.json({
-            success: true,
-            volunteers: []
           });
         });
 
@@ -138,14 +130,12 @@ describe('Real API Behavior Validation', () => {
 
   describe('API Response Structure', () => {
     test('should return consistent error response structure', async () => {
-      // Test a non-existent endpoint - our app returns 200 for unknown routes
+      // Unknown /api/* routes may be handled by the SPA or a catch-all; assert a stable response.
       const response = await request(app)
         .get('/api/non-existent-endpoint')
         .expect(200);
 
-      // Our app returns a default response for unknown routes
       expect(response.body).toBeDefined();
-      // Note: Our app doesn't have a 404 handler, so we test what it actually returns
     });
 
     test('should return consistent success response structure', async () => {

@@ -43,9 +43,6 @@ class DatabaseBackup {
       // Backup users
       backup.tables.users = await sql`SELECT * FROM users ORDER BY created_at` || [];
 
-      // Backup volunteers
-      backup.tables.volunteers = await sql`SELECT * FROM volunteers ORDER BY created_at` || [];
-
       // Backup insurance forms
       backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at` || [];
 
@@ -59,7 +56,6 @@ class DatabaseBackup {
       console.log('📊 Backup contains:');
       console.log(`   - Officers: ${backup.tables.officers.length}`);
       console.log(`   - Users: ${backup.tables.users.length}`);
-      console.log(`   - Volunteers: ${backup.tables.volunteers.length}`);
       console.log(`   - Insurance Forms: ${backup.tables.insurance_forms.length}`);
       console.log(`   - Documents: ${backup.tables.documents.length}`);
 
@@ -100,7 +96,6 @@ class DatabaseBackup {
         // Clear existing data (except users to preserve admin access)
         await sql`DELETE FROM documents`;
         await sql`DELETE FROM insurance_forms`;
-        await sql`DELETE FROM volunteers`;
         await sql`DELETE FROM officers`;
 
         // Restore officers
@@ -112,17 +107,6 @@ class DatabaseBackup {
                         `;
           }
           console.log(`✅ Restored ${backup.tables.officers.length} officers`);
-        }
-
-        // Restore volunteers
-        if (backup.tables.volunteers) {
-          for (const volunteer of backup.tables.volunteers) {
-            await sql`
-                            INSERT INTO volunteers (id, name, email, phone, club, club_name, interests, availability, created_at, updated_at) 
-                            VALUES (${volunteer.id}, ${volunteer.name}, ${volunteer.email}, ${volunteer.phone}, ${volunteer.club}, ${volunteer.club_name}, ${volunteer.interests}, ${volunteer.availability}, ${volunteer.created_at}, ${volunteer.updated_at})
-                        `;
-          }
-          console.log(`✅ Restored ${backup.tables.volunteers.length} volunteers`);
         }
 
         // Restore insurance forms

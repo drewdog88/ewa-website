@@ -71,17 +71,17 @@ async function testWebsiteFunctionality() {
     }
   });
     
-  // Test 5: Volunteers API
+  // Test 5: Booster clubs API
   tests.push(async () => {
-    console.log('\n🤝 Test 5: Volunteers API');
-    const response = await fetch(`${BASE_URL}/api/volunteers`);
+    console.log('\n🏫 Test 5: Booster Clubs API');
+    const response = await fetch(`${BASE_URL}/api/booster-clubs`);
     const data = await response.json();
         
-    if (response.ok && data.success) {
-      console.log(`   ✅ Volunteers API: ${data.volunteers.length} volunteers found`);
+    if (response.ok && data.success && Array.isArray(data.data)) {
+      console.log(`   ✅ Booster Clubs API: ${data.data.length} clubs found`);
       return true;
     } else {
-      console.log('   ❌ Volunteers API failed');
+      console.log('   ❌ Booster Clubs API failed');
       return false;
     }
   });
@@ -93,7 +93,6 @@ async function testWebsiteFunctionality() {
     const pages = [
       { name: 'Home Page', path: '/' },
       { name: 'Team Page', path: '/team.html' },
-      { name: 'Volunteers Page', path: '/volunteers.html' },
       { name: 'Payment Page', path: '/payment.html' },
       { name: 'News Page', path: '/news.html' },
       { name: 'Gallery Page', path: '/gallery.html' },

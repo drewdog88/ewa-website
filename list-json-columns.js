@@ -8,7 +8,6 @@ function listJsonColumns() {
     'booster_clubs.json',
     'users.json', 
     'officers.json',
-    'volunteers.json',
     'insurance_forms.json',
     'news.json',
     'links.json',

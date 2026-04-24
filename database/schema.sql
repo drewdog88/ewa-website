@@ -1,5 +1,5 @@
 -- EWA Website Database Schema for Neon PostgreSQL
--- This schema supports officers, users, volunteers, insurance forms, and documents
+-- This schema supports officers, users, insurance forms, and documents
 
 -- Enable UUID extension for better ID management
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -28,20 +28,6 @@ CREATE TABLE IF NOT EXISTS users (
     is_first_login BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP WITH TIME ZONE,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Volunteers table
-CREATE TABLE IF NOT EXISTS volunteers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255),
-    phone VARCHAR(50),
-    club VARCHAR(100) NOT NULL,
-    club_name VARCHAR(255) NOT NULL,
-    interests TEXT[],
-    availability TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -100,7 +86,6 @@ CREATE TABLE IF NOT EXISTS documents (
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_officers_club ON officers(club);
-CREATE INDEX IF NOT EXISTS idx_volunteers_club ON volunteers(club);
 CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by);
 CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club);
 CREATE INDEX IF NOT EXISTS idx_news_status ON news(status);
@@ -122,7 +107,6 @@ $$ language 'plpgsql';
 -- Add updated_at triggers to all tables
 CREATE TRIGGER update_officers_updated_at BEFORE UPDATE ON officers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_volunteers_updated_at BEFORE UPDATE ON volunteers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_insurance_forms_updated_at BEFORE UPDATE ON insurance_forms FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Insert default admin user

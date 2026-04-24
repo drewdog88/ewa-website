@@ -85,8 +85,6 @@ const {
   addOfficer,
   getUsers,
   updateUser,
-  getVolunteers,
-  addVolunteer,
   getInsurance,
   addInsurance,
   updateInsuranceStatus,
@@ -190,7 +188,6 @@ async function initializeDatabase() {
 // In-memory storage for development fallback
 const initialData = loadInitialData();
 const memoryStorage = {
-  volunteers: [],
   users: {
     'admin': {
       'username': 'admin',
@@ -321,36 +318,6 @@ app.use(compression({
   }
 }));
 
-// Helper functions for volunteer management
-async function updateVolunteer(id, updates) {
-  // This function is used by the API but not directly available in neon-functions
-  // We'll implement it using the database connection
-  try {
-    const sql = require('./database/neon-functions').getSql();
-    if (!sql) return false;
-    
-    console.log('🔍 updateVolunteer called with:', { id, updates });
-    
-    // Use proper template literal syntax
-    console.log('🔍 SQL Query: UPDATE volunteers SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
-    console.log('🔍 Parameters:', [updates.status, id]);
-    
-    const result = await sql`
-            UPDATE volunteers 
-            SET status = ${updates.status},
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = ${id}
-            RETURNING *
-        `;
-    console.log('🔍 Query result:', result);
-    
-    return result.length > 0;
-  } catch (error) {
-    console.error('Error updating volunteer:', error);
-    return false;
-  }
-}
-
 // Additional helper functions for user management
 async function addUser(username, userData) {
   try {
@@ -430,149 +397,6 @@ async function deleteOfficer(id) {
 
 
 // API Routes
-
-// Submit volunteer interest
-app.post('/api/volunteers', async (req, res) => {
-  try {
-    console.log('Received volunteer submission request:', req.body);
-        
-    const { boosterClub, volunteerName, childName, email, phone } = req.body;
-        
-    // Sanitize inputs
-    const sanitizedBoosterClub = sanitizeInput(boosterClub);
-    const sanitizedVolunteerName = sanitizeInput(volunteerName);
-    const sanitizedChildName = sanitizeInput(childName);
-    const sanitizedEmail = sanitizeInput(email);
-    const sanitizedPhone = sanitizeInput(phone);
-        
-    // Validate required fields
-    if (!sanitizedBoosterClub || !sanitizedVolunteerName || !sanitizedEmail) {
-      const missingFields = [];
-      if (!sanitizedBoosterClub) missingFields.push('boosterClub');
-      if (!sanitizedVolunteerName) missingFields.push('volunteerName');
-      if (!sanitizedEmail) missingFields.push('email');
-            
-      return res.status(400).json({ 
-        success: false, 
-        message: `Missing required fields: ${missingFields.join(', ')}` 
-      });
-    }
-        
-    // Validate email format
-    if (!validateEmail(sanitizedEmail)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid email format'
-      });
-    }
-        
-    // Validate phone format if provided
-    if (sanitizedPhone && !validatePhone(sanitizedPhone)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid phone number format'
-      });
-    }
-
-    const newVolunteer = {
-      id: Date.now().toString(),
-      boosterClub: sanitizedBoosterClub,
-      volunteerName: sanitizedVolunteerName,
-      childName: sanitizedChildName || '',
-      email: sanitizedEmail,
-      phone: sanitizedPhone || '',
-      status: 'pending',
-      submittedAt: new Date().toISOString()
-    };
-
-    console.log('Adding new volunteer:', newVolunteer);
-        
-    const result = await addVolunteer(newVolunteer);
-    if (result) {
-      console.log('Volunteer saved successfully');
-      res.json({ 
-        success: true, 
-        message: 'Volunteer interest submitted successfully',
-        volunteer: newVolunteer
-      });
-    } else {
-      console.error('Failed to save volunteer data - database not available');
-      res.status(503).json({ 
-        success: false, 
-        message: 'Volunteer system temporarily unavailable. Please try again later or contact support.' 
-      });
-    }
-  } catch (error) {
-    ErrorHandler.sendError(res, 'submit_volunteer', error, 500, req);
-  }
-});
-
-// Get all volunteers (for admin)
-app.get('/api/volunteers', async (req, res) => {
-  try {
-    const volunteers = await getVolunteers();
-    res.json({ success: true, volunteers });
-  } catch (error) {
-    ErrorHandler.sendError(res, 'get_volunteers', error, 500, req);
-  }
-});
-
-// Get volunteers by club (for booster club officers)
-app.get('/api/volunteers/:club', async (req, res) => {
-  try {
-    const { club } = req.params;
-    const volunteers = await getVolunteers();
-    const clubVolunteers = volunteers.filter(v => v.boosterClub === club);
-    res.json({ success: true, volunteers: clubVolunteers });
-  } catch (error) {
-    console.error('Error getting club volunteers:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Update volunteer status
-app.put('/api/volunteers/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status, notes } = req.body;
-        
-    if (!status) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Status is required' 
-      });
-    }
-
-    const updates = { status, updatedAt: new Date().toISOString() };
-    if (notes) {
-      updates.notes = notes;
-    }
-
-    if (await updateVolunteer(id, updates)) {
-      const volunteers = await getVolunteers();
-      const volunteer = volunteers.find(v => v.id === id);
-      res.json({ 
-        success: true, 
-        message: 'Volunteer status updated successfully',
-        volunteer
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: 'Volunteer not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error updating volunteer status:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
 
 // User authentication
 app.post('/api/login', async (req, res) => {
@@ -1911,7 +1735,6 @@ app.get('/api/dashboard/stats', async (req, res) => {
         
     // Get real counts from database
     const officers = await getOfficers();
-    const volunteers = await getVolunteers();
     const insurance = await getInsurance();
     const documents = await getDocuments();
     const pendingInsurance = insurance.filter(f => f.status === 'pending').length;
@@ -1919,7 +1742,6 @@ app.get('/api/dashboard/stats', async (req, res) => {
     // Calculate statistics
     const stats = {
       totalOfficers: officers.length,
-      totalVolunteers: volunteers.length,
       pendingInsuranceSubmissions: pendingInsurance,
       totalDocuments: documents.length,
       totalInsuranceForms: insurance.length,

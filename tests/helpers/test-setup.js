@@ -26,8 +26,6 @@ const mockUtils = {
     addOfficer: jest.fn(),
     updateOfficer: jest.fn(),
     deleteOfficer: jest.fn(),
-    getVolunteers: jest.fn(),
-    addVolunteer: jest.fn(),
     getUsers: jest.fn(),
     updateUser: jest.fn(),
     getInsurance: jest.fn(),
@@ -87,15 +85,6 @@ const createTestData = {
     position: 'Test Position',
     email: `officer${i + 1}@test.com`,
     phone: '555-123-4567',
-    booster_club: 'Test Club',
-    created_at: new Date().toISOString()
-  })),
-
-  volunteers: (count = 1) => Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    name: `Test Volunteer ${i + 1}`,
-    email: `volunteer${i + 1}@test.com`,
-    phone: '555-987-6543',
     booster_club: 'Test Club',
     created_at: new Date().toISOString()
   })),

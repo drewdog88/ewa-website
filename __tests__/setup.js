@@ -19,10 +19,6 @@ jest.mock('../database/neon-functions', () => ({
     'admin': { username: 'admin', role: 'admin', password: 'ewa2025' }
   }),
   updateUser: jest.fn().mockResolvedValue({ success: true }),
-  getVolunteers: jest.fn().mockResolvedValue([
-    { id: '1', name: 'Test Volunteer', email: 'test@test.com', club: 'test-club' }
-  ]),
-  addVolunteer: jest.fn().mockResolvedValue({ success: true }),
   getInsurance: jest.fn().mockResolvedValue([]),
   addInsurance: jest.fn().mockResolvedValue({ success: true }),
   getDocuments: jest.fn().mockResolvedValue([]),

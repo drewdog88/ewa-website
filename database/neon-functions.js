@@ -157,89 +157,6 @@ async function updateUser(username, updates) {
   }
 }
 
-// Volunteers functions
-async function getVolunteers() {
-  const sql = getSql();
-  if (!sql) return [];
-    
-  try {
-    const volunteers = await sql`SELECT * FROM volunteers ORDER BY created_at`;
-    return volunteers;
-  } catch (error) {
-    console.error('Error getting volunteers:', error);
-    return [];
-  }
-}
-
-async function addVolunteer(volunteer) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    const result = await sql`
-            INSERT INTO volunteers (name, email, phone, club, club_name, interests, availability)
-            VALUES (${volunteer.volunteerName}, ${volunteer.email}, ${volunteer.phone}, ${volunteer.boosterClub}, ${volunteer.boosterClub}, ${volunteer.childName || ''}, ${volunteer.message || ''})
-            RETURNING *
-        `;
-    return result[0];
-  } catch (error) {
-    console.error('Error adding volunteer:', error);
-    throw error;
-  }
-}
-
-async function updateVolunteer(volunteerId, updates) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    // Only allow updating specific fields for security
-    const allowedFields = ['status', 'notes', 'assigned_club_id'];
-    const updateFields = {};
-    
-    for (const field of allowedFields) {
-      if (updates[field] !== undefined) {
-        updateFields[field] = updates[field];
-      }
-    }
-    
-    if (Object.keys(updateFields).length === 0) {
-      throw new Error('No valid fields to update');
-    }
-    
-    // Build dynamic update query based on provided fields
-    let updateQuery = 'UPDATE volunteers SET updated_at = CURRENT_TIMESTAMP';
-    const params = [volunteerId];
-    let paramIndex = 2;
-    
-    if (updateFields.status !== undefined) {
-      updateQuery += `, status = $${paramIndex++}`;
-      params.push(updateFields.status);
-    }
-    if (updateFields.notes !== undefined) {
-      updateQuery += `, notes = $${paramIndex++}`;
-      params.push(updateFields.notes);
-    }
-    if (updateFields.assigned_club_id !== undefined) {
-      updateQuery += `, assigned_club_id = $${paramIndex++}`;
-      params.push(updateFields.assigned_club_id);
-    }
-    
-    updateQuery += ` WHERE id = $1 RETURNING *`;
-    
-    const result = await sql.unsafe(updateQuery, params);
-    
-    if (result.length === 0) {
-      return null; // Volunteer not found
-    }
-    
-    return result[0];
-  } catch (error) {
-    console.error('Error updating volunteer:', error);
-    throw error;
-  }
-}
-
 // Insurance forms functions
 async function getInsurance() {
   const sql = getSql();
@@ -916,9 +833,6 @@ module.exports = {
   addOfficer,
   getUsers,
   updateUser,
-  getVolunteers,
-  addVolunteer,
-  updateVolunteer,
   getInsurance,
   addInsurance,
   updateInsuranceStatus,

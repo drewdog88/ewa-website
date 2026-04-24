@@ -32,17 +32,6 @@ const mockOfficers = [
   }
 ];
 
-const mockVolunteers = [
-  {
-    id: 1,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '555-5678',
-    booster_club: 'Orchestra',
-    created_at: '2024-01-01T00:00:00Z'
-  }
-];
-
 describe('Main API Router Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -57,8 +46,6 @@ describe('Main API Router Tests', () => {
     // Mock database functions
     mockNeonFunctions.getOfficers.mockResolvedValue(mockOfficers);
     mockNeonFunctions.addOfficer.mockResolvedValue({ id: 2, ...mockOfficers[0] });
-    mockNeonFunctions.getVolunteers.mockResolvedValue(mockVolunteers);
-    mockNeonFunctions.addVolunteer.mockResolvedValue({ id: 2, ...mockVolunteers[0] });
     mockNeonFunctions.getUsers.mockResolvedValue([]);
     mockNeonFunctions.updateUser.mockResolvedValue({ rowCount: 1 });
     mockNeonFunctions.getInsurance.mockResolvedValue([]);
@@ -89,11 +76,6 @@ describe('Main API Router Tests', () => {
       expect(mockNeonFunctions.addOfficer).toHaveBeenCalledWith(newOfficer);
     });
 
-    test('should mock getVolunteers function', async () => {
-      const result = await mockNeonFunctions.getVolunteers();
-      expect(result).toEqual(mockVolunteers);
-      expect(mockNeonFunctions.getVolunteers).toHaveBeenCalled();
-    });
   });
 
   describe('File System Operations', () => {
@@ -148,13 +130,6 @@ describe('Main API Router Tests', () => {
       expect(validOfficer).toHaveProperty('booster_club');
     });
 
-    test('should validate volunteer data structure', () => {
-      const validVolunteer = mockVolunteers[0];
-      expect(validVolunteer).toHaveProperty('id');
-      expect(validVolunteer).toHaveProperty('name');
-      expect(validVolunteer).toHaveProperty('email');
-      expect(validVolunteer).toHaveProperty('booster_club');
-    });
   });
 
   describe('Environment Configuration', () => {
