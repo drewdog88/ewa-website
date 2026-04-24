@@ -311,93 +311,6 @@ async function deleteInsuranceSubmission(id) {
   }
 }
 
-// 1099 forms functions
-async function getForm1099() {
-  const sql = getSql();
-  if (!sql) return [];
-    
-  try {
-    const forms = await sql`SELECT * FROM form_1099 ORDER BY created_at`;
-    return forms;
-  } catch (error) {
-    console.error('Error getting 1099 forms:', error);
-    return [];
-  }
-}
-
-async function addForm1099(form) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    const result = await sql`
-            INSERT INTO form_1099 (recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, w9_filename, w9_blob_url, w9_file_size, w9_mime_type, booster_club)
-            VALUES (${form.recipientName}, ${form.recipientTin}, ${form.amount}, ${form.description}, ${form.submittedBy}, ${form.taxYear}, ${form.status}, ${form.w9Filename || null}, ${form.w9BlobUrl || null}, ${form.w9FileSize || null}, ${form.w9MimeType || null}, ${form.boosterClub || null})
-            RETURNING *
-        `;
-    return result[0];
-  } catch (error) {
-    console.error('Error adding 1099 form:', error);
-    throw error;
-  }
-}
-
-async function updateForm1099Status(formId, status) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    const result = await sql`
-            UPDATE form_1099 
-            SET status = ${status}, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ${formId}
-            RETURNING *
-        `;
-    return result[0];
-  } catch (error) {
-    console.error('Error updating 1099 form status:', error);
-    throw error;
-  }
-}
-
-async function updateForm1099(formId, updates) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    const result = await sql`
-            UPDATE form_1099 
-            SET 
-                recipient_name = ${updates.recipientName},
-                recipient_tin = ${updates.recipientTin},
-                amount = ${updates.amount},
-                description = ${updates.description || ''},
-                tax_year = ${updates.taxYear},
-                booster_club = ${updates.boosterClub || null},
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = ${formId}
-            RETURNING *
-        `;
-    return result[0];
-  } catch (error) {
-    console.error('Error updating 1099 form:', error);
-    throw error;
-  }
-}
-
-async function deleteForm1099(formId) {
-  const sql = getSql();
-  if (!sql) return false;
-    
-  try {
-    const result = await sql`DELETE FROM form_1099 WHERE id = ${formId} RETURNING *`;
-    return result.length > 0;
-  } catch (error) {
-    console.error('Error deleting 1099 form:', error);
-    throw error;
-  }
-}
-
 // Documents functions
 async function getDocuments(boosterClub = null) {
   const sql = getSql();
@@ -992,7 +905,12 @@ async function addBoosterClub(clubName) {
   }
 }
 
+function __resetSqlForTests() {
+  sql = null;
+}
+
 module.exports = {
+  __resetSqlForTests,
   getSql,
   getOfficers,
   addOfficer,
@@ -1005,11 +923,6 @@ module.exports = {
   addInsurance,
   updateInsuranceStatus,
   deleteInsuranceSubmission,
-  getForm1099,
-  addForm1099,
-  updateForm1099Status,
-  updateForm1099,
-  deleteForm1099,
   getDocuments,
   addDocument,
   deleteDocument,

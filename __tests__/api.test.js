@@ -110,27 +110,6 @@ describe('EWA API Endpoints', () => {
     });
   });
 
-  describe('1099 Forms API', () => {
-    test('GET /api/1099 should return 1099 forms list', async () => {
-      const response = await request(server).get('/api/1099');
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-    });
-
-    test('POST /api/1099 should validate required fields', async () => {
-      const response = await request(server)
-        .post('/api/1099')
-        .send({
-          recipient_name: '',
-          amount: 100,
-          tax_year: 2024
-        });
-      
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('success', false);
-    });
-  });
-
   describe('Security Headers', () => {
     test('Should include security headers', async () => {
       const response = await request(server).get('/api/health');

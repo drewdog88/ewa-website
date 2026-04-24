@@ -49,9 +49,6 @@ class DatabaseBackup {
       // Backup insurance forms
       backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at` || [];
 
-      // Backup 1099 forms
-      backup.tables.form_1099 = await sql`SELECT * FROM form_1099 ORDER BY created_at` || [];
-
       // Backup documents
       backup.tables.documents = await sql`SELECT * FROM documents ORDER BY created_at` || [];
 
@@ -64,7 +61,6 @@ class DatabaseBackup {
       console.log(`   - Users: ${backup.tables.users.length}`);
       console.log(`   - Volunteers: ${backup.tables.volunteers.length}`);
       console.log(`   - Insurance Forms: ${backup.tables.insurance_forms.length}`);
-      console.log(`   - 1099 Forms: ${backup.tables.form_1099.length}`);
       console.log(`   - Documents: ${backup.tables.documents.length}`);
 
       return backupPath;
@@ -103,7 +99,6 @@ class DatabaseBackup {
       try {
         // Clear existing data (except users to preserve admin access)
         await sql`DELETE FROM documents`;
-        await sql`DELETE FROM form_1099`;
         await sql`DELETE FROM insurance_forms`;
         await sql`DELETE FROM volunteers`;
         await sql`DELETE FROM officers`;
@@ -139,17 +134,6 @@ class DatabaseBackup {
                         `;
           }
           console.log(`✅ Restored ${backup.tables.insurance_forms.length} insurance forms`);
-        }
-
-        // Restore 1099 forms
-        if (backup.tables.form_1099) {
-          for (const form of backup.tables.form_1099) {
-            await sql`
-                            INSERT INTO form_1099 (id, recipient_name, recipient_tin, amount, description, submitted_by, tax_year, status, created_at, updated_at) 
-                            VALUES (${form.id}, ${form.recipient_name}, ${form.recipient_tin}, ${form.amount}, ${form.description}, ${form.submitted_by}, ${form.tax_year}, ${form.status}, ${form.created_at}, ${form.updated_at})
-                        `;
-          }
-          console.log(`✅ Restored ${backup.tables.form_1099.length} 1099 forms`);
         }
 
         // Restore documents

@@ -7,8 +7,7 @@ jest.mock('pg', () => ({
 
 // Mock neon-functions
 jest.mock('../../database/neon-functions', () => ({
-  getUsers: jest.fn(),
-  getForm1099: jest.fn()
+  getUsers: jest.fn()
 }));
 
 // Import the mocked functions
@@ -79,15 +78,6 @@ describe('Database Integration Tests (Mocked)', () => {
       const users = await neonFunctions.getUsers();
       expect(users).toEqual(mockUsers);
       expect(neonFunctions.getUsers).toHaveBeenCalledTimes(1);
-    });
-
-    test('should call getForm1099 function', async () => {
-      const mockForms = [{ id: 1, recipientName: 'Test Recipient' }];
-      neonFunctions.getForm1099.mockResolvedValue(mockForms);
-
-      const forms = await neonFunctions.getForm1099();
-      expect(forms).toEqual(mockForms);
-      expect(neonFunctions.getForm1099).toHaveBeenCalledTimes(1);
     });
 
     test('should handle function errors gracefully', async () => {

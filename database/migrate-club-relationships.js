@@ -59,19 +59,6 @@ async function migrateClubRelationships() {
       console.log(`   - ${row.club}: ${row.count} users`);
     });
         
-    // Check 1099 forms with unmatched clubs
-    const unmatched1099 = await sql`
-            SELECT DISTINCT booster_club, COUNT(*) as count
-            FROM form_1099 
-            WHERE booster_club IS NOT NULL 
-            AND club_id IS NULL
-            GROUP BY booster_club
-        `;
-    console.log(`📋 Found ${unmatched1099.length} unmatched 1099 clubs:`);
-    unmatched1099.forEach(row => {
-      console.log(`   - ${row.booster_club}: ${row.count} forms`);
-    });
-        
     // Step 2: Get all booster clubs for mapping
     console.log('\n🔗 Step 2: Getting booster club mappings...');
     const boosterClubs = await sql`SELECT id, name FROM booster_clubs ORDER BY name`;
@@ -145,30 +132,8 @@ async function migrateClubRelationships() {
       }
     }
         
-    // Step 5: Migrate 1099 forms
-    console.log('\n📋 Step 5: Migrating 1099 forms...');
-    let forms1099Updated = 0;
-        
-    for (const unmatched of unmatched1099) {
-      const clubName = unmatched.booster_club;
-      const clubId = clubMapping[clubName];
-            
-      if (clubId) {
-        const result = await sql`
-                    UPDATE form_1099 
-                    SET club_id = ${clubId}
-                    WHERE booster_club = ${clubName} 
-                    AND club_id IS NULL
-                `;
-        console.log(`   ✅ Updated ${unmatched.count} 1099 forms for "${clubName}"`);
-        forms1099Updated += unmatched.count;
-      } else {
-        console.log(`   ⚠️ No match found for 1099 club: "${clubName}"`);
-      }
-    }
-        
-    // Step 6: Verify migration results
-    console.log('\n🔍 Step 6: Verifying migration results...');
+    // Step 5: Verify migration results
+    console.log('\n🔍 Step 5: Verifying migration results...');
         
     // Check remaining unmatched records (only those that couldn't be mapped at all)
     const remainingOfficers = await sql`
@@ -189,16 +154,8 @@ async function migrateClubRelationships() {
         `;
     console.log(`📊 Remaining unmatched users: ${remainingUsers[0].count}`);
         
-    const remaining1099 = await sql`
-            SELECT COUNT(*) as count 
-            FROM form_1099 
-            WHERE booster_club IS NOT NULL 
-            AND club_id IS NULL
-        `;
-    console.log(`📊 Remaining unmatched 1099 forms: ${remaining1099[0].count}`);
-        
     // Test join queries
-    console.log('\n🧪 Step 7: Testing join queries...');
+    console.log('\n🧪 Step 6: Testing join queries...');
         
     const officersWithClubs = await sql`
             SELECT o.name, o.position, bc.name as club_name 
@@ -223,32 +180,18 @@ async function migrateClubRelationships() {
       console.log(`   - ${user.username} (${user.role}) -> ${user.club_name || 'No club'}`);
     });
         
-    const forms1099WithClubs = await sql`
-            SELECT f.recipient_name, f.amount, bc.name as club_name 
-            FROM form_1099 f 
-            LEFT JOIN booster_clubs bc ON f.club_id = bc.id 
-            ORDER BY f.created_at DESC
-            LIMIT 5
-        `;
-    console.log(`✅ 1099 forms with clubs join: ${forms1099WithClubs.length} results`);
-    forms1099WithClubs.forEach(form => {
-      console.log(`   - ${form.recipient_name} ($${form.amount}) -> ${form.club_name || 'No club'}`);
-    });
-        
     // Summary
     console.log('\n📊 Migration Summary:');
     console.log(`   ✅ Officers updated: ${officersUpdated}`);
     console.log(`   ✅ Users updated: ${usersUpdated}`);
-    console.log(`   ✅ 1099 forms updated: ${forms1099Updated}`);
-    console.log(`   📊 Total records migrated: ${officersUpdated + usersUpdated + forms1099Updated}`);
+    console.log(`   📊 Total records migrated: ${officersUpdated + usersUpdated}`);
         
-    if (remainingOfficers[0].count === 0 && remainingUsers[0].count === 0 && remaining1099[0].count === 0) {
+    if (remainingOfficers[0].count === 0 && remainingUsers[0].count === 0) {
       console.log('\n🎉 All club relationships migrated successfully!');
       console.log('📝 The database is now fully normalized with proper foreign key relationships.');
       console.log('📊 Migration Results:');
       console.log(`   - Officers: ${officersUpdated} records updated (EWA admin officers set to no club)`);
       console.log(`   - Users: ${usersUpdated} records updated (admin user set to no club, orchestra user linked)`);
-      console.log(`   - 1099 Forms: ${forms1099Updated} records updated`);
       console.log('\n✅ Phase 2 migration completed successfully!');
     } else {
       console.log('\n⚠️ Some records could not be migrated due to unmatched club names.');

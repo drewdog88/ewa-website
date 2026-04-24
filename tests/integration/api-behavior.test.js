@@ -20,7 +20,6 @@ describe('Real API Behavior Validation', () => {
       jest.mock('../../database/neon-functions', () => ({
         getOfficers: jest.fn().mockResolvedValue([]),
         getVolunteers: jest.fn().mockResolvedValue([]),
-        getForm1099: jest.fn().mockResolvedValue([]),
         getUsers: jest.fn().mockResolvedValue([])
       }));
 

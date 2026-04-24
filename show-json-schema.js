@@ -9,7 +9,6 @@ function showJsonSchema() {
     'users.json', 
     'officers.json',
     'volunteers.json',
-    'form_1099.json',
     'insurance_forms.json',
     'news.json',
     'links.json',

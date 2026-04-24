@@ -167,7 +167,6 @@ router.post('/test-coverage', requireAdmin, async (req, res) => {
       { file: 'tests/unit/api-insurance.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/integration/insurance-integration.test.js', category: 'Integration Tests', status: 'pending' },
       { file: 'tests/e2e/insurance-e2e.test.js', category: 'E2E Tests', status: 'pending' },
-      { file: 'tests/unit/database-neon-functions.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/unit/api-security-dashboard.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/unit/utils-logger.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/unit/api-security.test.js', category: 'Unit Tests', status: 'pending' },
@@ -179,7 +178,6 @@ router.post('/test-coverage', requireAdmin, async (req, res) => {
       { file: 'tests/integration/database-connection.test.js', category: 'Integration Tests', status: 'pending' },
       { file: 'tests/unit/api-index.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/unit/api-login.test.js', category: 'Unit Tests', status: 'pending' },
-      { file: 'tests/unit/api-1099-simple.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/integration/real-database.test.js', category: 'Integration Tests', status: 'pending' },
       { file: 'tests/unit/api-officers.test.js', category: 'Unit Tests', status: 'pending' },
       { file: 'tests/unit/api-health.test.js', category: 'Unit Tests', status: 'pending' }

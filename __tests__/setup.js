@@ -25,13 +25,6 @@ jest.mock('../database/neon-functions', () => ({
   addVolunteer: jest.fn().mockResolvedValue({ success: true }),
   getInsurance: jest.fn().mockResolvedValue([]),
   addInsurance: jest.fn().mockResolvedValue({ success: true }),
-  getForm1099: jest.fn().mockResolvedValue([
-    { id: '1', recipient_name: 'Test Recipient', amount: 100, tax_year: 2024 }
-  ]),
-  addForm1099: jest.fn().mockResolvedValue({ success: true }),
-  updateForm1099Status: jest.fn().mockResolvedValue({ success: true }),
-  updateForm1099: jest.fn().mockResolvedValue({ success: true }),
-  deleteForm1099: jest.fn().mockResolvedValue({ success: true }),
   getDocuments: jest.fn().mockResolvedValue([]),
   addDocument: jest.fn().mockResolvedValue({ success: true }),
   deleteDocument: jest.fn().mockResolvedValue({ success: true })

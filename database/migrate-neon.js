@@ -70,24 +70,6 @@ async function migrateToNeon() {
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
         
-    // Create 1099 forms table
-    await sql`CREATE TABLE IF NOT EXISTS form_1099 (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            recipient_name VARCHAR(255) NOT NULL,
-            recipient_tin VARCHAR(20),
-            amount DECIMAL(10,2) NOT NULL,
-            description TEXT,
-            submitted_by VARCHAR(100) REFERENCES users(username),
-            tax_year INTEGER NOT NULL,
-            status VARCHAR(50) DEFAULT 'pending',
-            w9_filename VARCHAR(255),
-            w9_blob_url VARCHAR(500),
-            w9_file_size INTEGER,
-            w9_mime_type VARCHAR(100),
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        )`;
-        
     // Create documents table
     await sql`CREATE TABLE IF NOT EXISTS documents (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -105,7 +87,6 @@ async function migrateToNeon() {
     await sql`CREATE INDEX IF NOT EXISTS idx_officers_club ON officers(club)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_volunteers_club ON volunteers(club)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_1099_submitted_by ON form_1099(submitted_by)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club)`;
         
     console.log('✅ Database schema created successfully');
@@ -165,7 +146,6 @@ async function migrateToNeon() {
     backup.tables.users = await sql`SELECT * FROM users ORDER BY created_at`;
     backup.tables.volunteers = await sql`SELECT * FROM volunteers ORDER BY created_at`;
     backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at`;
-    backup.tables.form_1099 = await sql`SELECT * FROM form_1099 ORDER BY created_at`;
     backup.tables.documents = await sql`SELECT * FROM documents ORDER BY created_at`;
         
     // Create backups directory if it doesn't exist
@@ -185,7 +165,6 @@ async function migrateToNeon() {
     console.log(`   - Users: ${backup.tables.users.length}`);
     console.log(`   - Volunteers: ${backup.tables.volunteers.length}`);
     console.log(`   - Insurance Forms: ${backup.tables.insurance_forms.length}`);
-    console.log(`   - 1099 Forms: ${backup.tables.form_1099.length}`);
     console.log(`   - Documents: ${backup.tables.documents.length}`);
         
     console.log('✅ Migration completed successfully!');

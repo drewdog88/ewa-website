@@ -17,7 +17,6 @@ const backupData = {
     backup_status: { count: 1, sample: [] },
     booster_clubs: { count: 22, sample: [] },
     documents: { count: 0, sample: [] },
-    form_1099: { count: 12, sample: [] },
     insurance_forms: { count: 2, sample: [] },
     links: { count: 8, sample: [] },
     news: { count: 2, sample: [] },
