@@ -1,0 +1,74 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly on Mondays at 13:00 UTC
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  npm-audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run npm audit (high+ severity, production only)
+        run: npm run security:ci
+
+      - name: Run npm audit (all severities, full tree)
+        run: npm audit --audit-level=low
+        continue-on-error: true
+
+  snyk:
+    name: Snyk test
+    runs-on: ubuntu-latest
+    # Only run when the SNYK_TOKEN secret is available. Jobs in forks without
+    # the secret will be skipped automatically.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "SNYK_TOKEN not configured; skipping Snyk scan."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          snyk auth "$SNYK_TOKEN"
+        id: snyk-auth
+
+      - name: Run Snyk test
+        if: steps.snyk-auth.outputs.skip != 'true'
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --severity-threshold=high
