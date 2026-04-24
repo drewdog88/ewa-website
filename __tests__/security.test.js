@@ -97,8 +97,8 @@ describe('Security Tests', () => {
   describe('File Upload Security', () => {
     test('Should validate file types', async () => {
       const response = await request(server)
-        .post('/api/1099/upload-w9')
-        .attach('w9', Buffer.from('fake executable'), 'malware.exe');
+        .post('/api/admin/payment-settings/club/1/qr-code')
+        .attach('qrCode', Buffer.from('fake executable'), 'malware.exe');
       
       expect(response.status).toBe(400);
     });
@@ -106,8 +106,8 @@ describe('Security Tests', () => {
     test('Should limit file sizes', async () => {
       const largeFile = Buffer.alloc(10 * 1024 * 1024); // 10MB
       const response = await request(server)
-        .post('/api/1099/upload-w9')
-        .attach('w9', largeFile, 'large.pdf');
+        .post('/api/admin/payment-settings/club/1/qr-code')
+        .attach('qrCode', largeFile, 'large.png');
       
       expect(response.status).toBe(400);
     });

@@ -100,7 +100,7 @@ async function migrateProduction() {
         
     // Step 2: Verify and add club_id columns
     console.log('\n🔗 Step 2: Verifying foreign key columns...');
-    const tables = ['officers', 'volunteers', 'users', 'form_1099', 'documents', 'insurance_forms'];
+    const tables = ['officers', 'volunteers', 'users', 'documents', 'insurance_forms'];
         
     for (const table of tables) {
       const hasClubId = await sql`
@@ -126,7 +126,6 @@ async function migrateProduction() {
       { name: 'idx_officers_club_id', table: 'officers', column: 'club_id' },
       { name: 'idx_volunteers_club_id', table: 'volunteers', column: 'club_id' },
       { name: 'idx_users_club_id', table: 'users', column: 'club_id' },
-      { name: 'idx_1099_club_id', table: 'form_1099', column: 'club_id' },
       { name: 'idx_documents_club_id', table: 'documents', column: 'club_id' },
       { name: 'idx_insurance_club_id', table: 'insurance_forms', column: 'club_id' }
     ];
@@ -157,9 +156,6 @@ async function migrateProduction() {
         
     const userCount = await sql`SELECT COUNT(*) as count FROM users`;
     console.log(`✅ Production has ${userCount[0].count} users`);
-        
-    const form1099Count = await sql`SELECT COUNT(*) as count FROM form_1099`;
-    console.log(`✅ Production has ${form1099Count[0].count} 1099 forms`);
         
     // Step 5: Test production queries
     console.log('\n🧪 Step 5: Testing production queries...');

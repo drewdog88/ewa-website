@@ -17,7 +17,7 @@ async function verifyMigrationComplete() {
         
     // Test 2: Verify foreign key columns exist
     console.log('\n🔗 Test 2: Foreign Key Columns');
-    const tables = ['officers', 'volunteers', 'users', 'form_1099', 'documents', 'insurance_forms'];
+    const tables = ['officers', 'volunteers', 'users', 'documents', 'insurance_forms'];
     for (const table of tables) {
       const hasClubId = await sql`
                 SELECT COUNT(*) as count 
@@ -35,7 +35,6 @@ async function verifyMigrationComplete() {
       'idx_officers_club_id',
       'idx_volunteers_club_id',
       'idx_users_club_id',
-      'idx_1099_club_id',
       'idx_documents_club_id',
       'idx_insurance_club_id'
     ];
@@ -75,18 +74,6 @@ async function verifyMigrationComplete() {
       console.log(`      - ${user.username} (${user.role}) -> ${user.club_name || 'No club (admin)'}`);
     });
         
-    // Check 1099 forms with clubs
-    const forms1099WithClubs = await sql`
-            SELECT f.recipient_name, f.amount, bc.name as club_name 
-            FROM form_1099 f 
-            LEFT JOIN booster_clubs bc ON f.club_id = bc.id 
-            ORDER BY f.created_at DESC
-        `;
-    console.log(`   ✅ 1099 forms with clubs: ${forms1099WithClubs.length} records`);
-    forms1099WithClubs.forEach(form => {
-      console.log(`      - ${form.recipient_name} ($${form.amount}) -> ${form.club_name || 'No club'}`);
-    });
-        
     // Test 5: Verify no orphaned records
     console.log('\n💾 Test 5: Data Integrity');
         
@@ -107,14 +94,6 @@ async function verifyMigrationComplete() {
             AND club NOT IN ('ewa', 'orchestra', '')
         `;
     console.log(`   ✅ Orphaned users: ${orphanedUsers[0].count} (should be 0)`);
-        
-    const orphaned1099 = await sql`
-            SELECT COUNT(*) as count 
-            FROM form_1099 
-            WHERE booster_club IS NOT NULL 
-            AND club_id IS NULL
-        `;
-    console.log(`   ✅ Orphaned 1099 forms: ${orphaned1099[0].count} (should be 0)`);
         
     // Test 6: Performance test
     console.log('\n⚡ Test 6: Performance');
@@ -137,9 +116,6 @@ async function verifyMigrationComplete() {
         
     const allUsers = await sql`SELECT * FROM users ORDER BY username`;
     console.log(`   ✅ All users query: ${allUsers.length} results`);
-        
-    const all1099Forms = await sql`SELECT * FROM form_1099 ORDER BY created_at DESC`;
-    console.log(`   ✅ All 1099 forms query: ${all1099Forms.length} results`);
         
     // Final summary
     console.log('\n📊 Migration Verification Summary:');

@@ -1,5 +1,5 @@
 -- EWA Website Database Schema for Neon PostgreSQL
--- This schema supports officers, users, volunteers, insurance forms, and 1099 forms
+-- This schema supports officers, users, volunteers, insurance forms, and documents
 
 -- Enable UUID extension for better ID management
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -58,20 +58,6 @@ CREATE TABLE IF NOT EXISTS insurance_forms (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 1099 forms table
-CREATE TABLE IF NOT EXISTS form_1099 (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    recipient_name VARCHAR(255) NOT NULL,
-    recipient_tin VARCHAR(20),
-    amount DECIMAL(10,2) NOT NULL,
-    description TEXT,
-    submitted_by VARCHAR(100) REFERENCES users(username),
-    tax_year INTEGER NOT NULL,
-    status VARCHAR(50) DEFAULT 'pending',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 -- News table for announcements and updates
 CREATE TABLE IF NOT EXISTS news (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -116,7 +102,6 @@ CREATE TABLE IF NOT EXISTS documents (
 CREATE INDEX IF NOT EXISTS idx_officers_club ON officers(club);
 CREATE INDEX IF NOT EXISTS idx_volunteers_club ON volunteers(club);
 CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by);
-CREATE INDEX IF NOT EXISTS idx_1099_submitted_by ON form_1099(submitted_by);
 CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club);
 CREATE INDEX IF NOT EXISTS idx_news_status ON news(status);
 CREATE INDEX IF NOT EXISTS idx_news_published_at ON news(published_at);
@@ -139,7 +124,6 @@ CREATE TRIGGER update_officers_updated_at BEFORE UPDATE ON officers FOR EACH ROW
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_volunteers_updated_at BEFORE UPDATE ON volunteers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_insurance_forms_updated_at BEFORE UPDATE ON insurance_forms FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_form_1099_updated_at BEFORE UPDATE ON form_1099 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Insert default admin user
 INSERT INTO users (username, password, role, club, club_name, is_first_login) 

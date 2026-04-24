@@ -56,17 +56,17 @@ async function testWebsiteFunctionality() {
     }
   });
     
-  // Test 4: 1099 Forms API
+  // Test 4: Documents API
   tests.push(async () => {
-    console.log('\n📋 Test 4: 1099 Forms API');
-    const response = await fetch(`${BASE_URL}/api/1099`);
+    console.log('\n📋 Test 4: Documents API');
+    const response = await fetch(`${BASE_URL}/api/documents`);
     const data = await response.json();
         
-    if (response.ok && data.success) {
-      console.log(`   ✅ 1099 Forms API: ${data.submissions.length} forms found`);
+    if (response.ok && data.success && Array.isArray(data.documents)) {
+      console.log(`   ✅ Documents API: ${data.documents.length} documents found`);
       return true;
     } else {
-      console.log('   ❌ 1099 Forms API failed');
+      console.log('   ❌ Documents API failed');
       return false;
     }
   });

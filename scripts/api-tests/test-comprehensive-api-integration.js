@@ -47,31 +47,31 @@ async function testComprehensiveAPI() {
         allTestsPassed = false;
     }
     
-    // Test 2: 1099 API Response Structure
-    console.log('\n2️⃣ Testing 1099 API Response Structure...');
+    // Test 2: Documents API Response Structure
+    console.log('\n2️⃣ Testing Documents API Response Structure...');
     try {
-        const response = await fetch(`${baseUrl}/1099`);
+        const response = await fetch(`${baseUrl}/documents`);
         const result = await response.json();
         
         if (!result.success) {
-            console.log('❌ 1099 API success field is false');
+            console.log('❌ Documents API success field is false');
             allTestsPassed = false;
         }
         
-        if (!result.submissions) {
-            console.log('❌ 1099 API missing "submissions" field - has:', Object.keys(result));
+        if (!result.documents) {
+            console.log('❌ Documents API missing "documents" field - has:', Object.keys(result));
             allTestsPassed = false;
         }
         
-        if (!Array.isArray(result.submissions)) {
-            console.log('❌ 1099 API "submissions" field is not an array');
+        if (!Array.isArray(result.documents)) {
+            console.log('❌ Documents API "documents" field is not an array');
             allTestsPassed = false;
         }
         
-        console.log(`✅ 1099 API returned ${result.submissions.length} submissions`);
+        console.log(`✅ Documents API returned ${result.documents.length} documents`);
         
     } catch (error) {
-        console.log('❌ 1099 API test failed:', error.message);
+        console.log('❌ Documents API test failed:', error.message);
         allTestsPassed = false;
     }
     

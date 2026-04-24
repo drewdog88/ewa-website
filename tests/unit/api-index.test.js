@@ -43,22 +43,6 @@ const mockVolunteers = [
   }
 ];
 
-const mock1099Forms = [
-  {
-    id: 1,
-    recipient_name: 'John Doe',
-    recipient_tin: '123-45-6789',
-    amount: 1000.00,
-    description: 'Payment for services',
-    booster_club: 'Orchestra',
-    tax_year: 2024,
-    w9_filename: 'w9-john-doe.pdf',
-    status: 'pending',
-    submitted_by: 'admin',
-    created_at: '2024-01-01T00:00:00Z'
-  }
-];
-
 describe('Main API Router Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -73,14 +57,8 @@ describe('Main API Router Tests', () => {
     // Mock database functions
     mockNeonFunctions.getOfficers.mockResolvedValue(mockOfficers);
     mockNeonFunctions.addOfficer.mockResolvedValue({ id: 2, ...mockOfficers[0] });
-    mockNeonFunctions.updateOfficer.mockResolvedValue({ rowCount: 1 });
-    mockNeonFunctions.deleteOfficer.mockResolvedValue({ rowCount: 1 });
     mockNeonFunctions.getVolunteers.mockResolvedValue(mockVolunteers);
     mockNeonFunctions.addVolunteer.mockResolvedValue({ id: 2, ...mockVolunteers[0] });
-    mockNeonFunctions.getForm1099.mockResolvedValue(mock1099Forms);
-    mockNeonFunctions.addForm1099.mockResolvedValue({ id: 2 });
-    mockNeonFunctions.updateForm1099.mockResolvedValue({ rowCount: 1 });
-    mockNeonFunctions.deleteForm1099.mockResolvedValue({ rowCount: 1 });
     mockNeonFunctions.getUsers.mockResolvedValue([]);
     mockNeonFunctions.updateUser.mockResolvedValue({ rowCount: 1 });
     mockNeonFunctions.getInsurance.mockResolvedValue([]);
@@ -115,12 +93,6 @@ describe('Main API Router Tests', () => {
       const result = await mockNeonFunctions.getVolunteers();
       expect(result).toEqual(mockVolunteers);
       expect(mockNeonFunctions.getVolunteers).toHaveBeenCalled();
-    });
-
-    test('should mock getForm1099 function', async () => {
-      const result = await mockNeonFunctions.getForm1099();
-      expect(result).toEqual(mock1099Forms);
-      expect(mockNeonFunctions.getForm1099).toHaveBeenCalled();
     });
   });
 
@@ -182,67 +154,6 @@ describe('Main API Router Tests', () => {
       expect(validVolunteer).toHaveProperty('name');
       expect(validVolunteer).toHaveProperty('email');
       expect(validVolunteer).toHaveProperty('booster_club');
-    });
-
-    test('should validate 1099 form data structure', () => {
-      const validForm = mock1099Forms[0];
-      expect(validForm).toHaveProperty('id');
-      expect(validForm).toHaveProperty('recipient_name');
-      expect(validForm).toHaveProperty('recipient_tin');
-      expect(validForm).toHaveProperty('amount');
-      expect(validForm).toHaveProperty('booster_club');
-      expect(validForm).toHaveProperty('tax_year');
-    });
-  });
-
-  describe('CSV Generation', () => {
-    test('should generate CSV headers correctly', () => {
-      const expectedHeaders = [
-        'Date Submitted',
-        'Recipient Name',
-        'Tax ID',
-        'Amount',
-        'Description',
-        'Calendar Year',
-        'Booster Club',
-        'W9 Status',
-        'Status',
-        'Submitted By'
-      ];
-
-      // This tests the CSV generation logic structure
-      const csvHeaders = expectedHeaders.join(',');
-      expect(csvHeaders).toContain('Date Submitted');
-      expect(csvHeaders).toContain('Recipient Name');
-      expect(csvHeaders).toContain('Tax ID');
-    });
-
-    test('should format CSV data correctly', () => {
-      const testData = [
-        {
-          recipient_name: 'John Doe',
-          recipient_tin: '123-45-6789',
-          amount: 1000.00,
-          booster_club: 'Orchestra',
-          tax_year: 2024,
-          created_at: '2024-01-01T00:00:00Z'
-        }
-      ];
-
-      // Test CSV row formatting
-      const row = [
-        new Date(testData[0].created_at).toLocaleDateString(),
-        testData[0].recipient_name,
-        testData[0].recipient_tin,
-        testData[0].amount,
-        testData[0].booster_club,
-        testData[0].tax_year
-      ];
-
-      expect(row[0]).toBe('1/1/2024'); // Date formatted
-      expect(row[1]).toBe('John Doe');
-      expect(row[2]).toBe('123-45-6789');
-      expect(row[3]).toBe(1000.00);
     });
   });
 

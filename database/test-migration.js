@@ -39,7 +39,7 @@ async function testMigration() {
         
     // Test 2: Verify all tables have club_id columns
     console.log('\n🔗 Test 2: Foreign Key Columns');
-    const tables = ['officers', 'volunteers', 'users', 'form_1099', 'documents', 'insurance_forms'];
+    const tables = ['officers', 'volunteers', 'users', 'documents', 'insurance_forms'];
         
     for (const table of tables) {
       const hasClubId = await sql`
@@ -58,7 +58,6 @@ async function testMigration() {
       'idx_officers_club_id',
       'idx_volunteers_club_id',
       'idx_users_club_id',
-      'idx_1099_club_id',
       'idx_documents_club_id',
       'idx_insurance_club_id'
     ];
@@ -83,10 +82,6 @@ async function testMigration() {
     const userCount = await sql`SELECT COUNT(*) as count FROM users`;
     console.log(`   ✅ Users: ${userCount[0].count} records`);
         
-    // Check 1099 forms data
-    const form1099Count = await sql`SELECT COUNT(*) as count FROM form_1099`;
-    console.log(`   ✅ 1099 Forms: ${form1099Count[0].count} records`);
-        
     // Test 5: Test basic queries still work
     console.log('\n🔍 Test 5: Basic Query Functionality');
         
@@ -97,10 +92,6 @@ async function testMigration() {
     // Test users query
     const users = await sql`SELECT * FROM users LIMIT 3`;
     console.log(`   ✅ Users query: ${users.length} results`);
-        
-    // Test 1099 forms query
-    const forms = await sql`SELECT * FROM form_1099 LIMIT 3`;
-    console.log(`   ✅ 1099 forms query: ${forms.length} results`);
         
     // Test 6: Test foreign key relationships
     console.log('\n🔗 Test 6: Foreign Key Relationships');
@@ -134,14 +125,6 @@ async function testMigration() {
         `;
     console.log(`   ✅ Unmatched user clubs: ${unmatchedUsers.length}`);
         
-    const unmatched1099 = await sql`
-            SELECT DISTINCT booster_club 
-            FROM form_1099 
-            WHERE booster_club IS NOT NULL 
-            AND club_id IS NULL
-        `;
-    console.log(`   ✅ Unmatched 1099 clubs: ${unmatched1099.length}`);
-        
     // Test 8: Performance check
     console.log('\n⚡ Test 8: Performance Check');
         
@@ -159,9 +142,6 @@ async function testMigration() {
         
     const allUsers = await sql`SELECT * FROM users ORDER BY username`;
     console.log(`   ✅ All users query: ${allUsers.length} results`);
-        
-    const all1099Forms = await sql`SELECT * FROM form_1099 ORDER BY created_at DESC`;
-    console.log(`   ✅ All 1099 forms query: ${all1099Forms.length} results`);
         
     console.log('\n🎉 All tests completed successfully!');
     console.log('📝 Migration verification summary:');

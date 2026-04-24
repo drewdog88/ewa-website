@@ -28,10 +28,6 @@ const mockUtils = {
     deleteOfficer: jest.fn(),
     getVolunteers: jest.fn(),
     addVolunteer: jest.fn(),
-    getForm1099: jest.fn(),
-    addForm1099: jest.fn(),
-    updateForm1099: jest.fn(),
-    deleteForm1099: jest.fn(),
     getUsers: jest.fn(),
     updateUser: jest.fn(),
     getInsurance: jest.fn(),
@@ -101,20 +97,6 @@ const createTestData = {
     email: `volunteer${i + 1}@test.com`,
     phone: '555-987-6543',
     booster_club: 'Test Club',
-    created_at: new Date().toISOString()
-  })),
-
-  form1099: (count = 1) => Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    recipient_name: `Test Recipient ${i + 1}`,
-    recipient_tin: `123-45-${String(6789 + i).padStart(4, '0')}`,
-    amount: 1000.00 + (i * 100),
-    description: `Test payment ${i + 1}`,
-    booster_club: 'Test Club',
-    tax_year: 2024,
-    w9_filename: `w9-test-${i + 1}.pdf`,
-    status: 'pending',
-    submitted_by: 'test-admin',
     created_at: new Date().toISOString()
   })),
 

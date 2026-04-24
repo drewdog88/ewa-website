@@ -20,9 +20,6 @@ const {
   addInsurance,
   updateInsuranceStatus,
   deleteInsuranceSubmission,
-  getForm1099,
-  addForm1099,
-  updateForm1099Status, updateForm1099, deleteForm1099,
   getDocuments,
   addDocument,
   deleteDocument,
@@ -85,41 +82,6 @@ function loadInitialData() {
     console.error('Error loading initial data:', error);
   }
   return { officers: [] };
-}
-
-// Function to generate CSV from 1099 submissions
-function generateCSV(submissions) {
-  const headers = [
-    'Date Submitted',
-    'Recipient Name',
-    'Tax ID',
-    'Amount',
-    'Description',
-    'Calendar Year',
-    'Booster Club',
-    'W9 Status',
-    'Status',
-    'Submitted By'
-  ];
-    
-  const rows = submissions.map(sub => [
-    new Date(sub.created_at).toLocaleDateString(),
-    sub.recipient_name,
-    sub.recipient_tin,
-    sub.amount,
-    sub.description || '',
-    sub.tax_year,
-    sub.booster_club || '',
-    sub.w9_filename ? 'W9 Received' : 'W9 Not Received',
-    sub.status || 'pending',
-    sub.submitted_by
-  ]);
-    
-  const csvContent = [headers, ...rows]
-    .map(row => row.map(field => `"${field}"`).join(','))
-    .join('\n');
-    
-  return csvContent;
 }
 
 // Validation functions
@@ -187,8 +149,7 @@ const memoryStorage = {
     }
   },
   officers: initialData.officers,
-  insurance: [],
-  form1099: []
+  insurance: []
 };
 
 // Security middleware
@@ -421,7 +382,7 @@ app.get('/test', (req, res) => {
   res.json({ 
     message: 'API is working!',
     timestamp: new Date().toISOString(),
-    routes: ['/health', '/test', '/1099', '/officers', '/login']
+    routes: ['/health', '/test', '/officers', '/login']
   });
 });
 
@@ -472,369 +433,6 @@ app.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// 1099 Form Management
-
-// Submit 1099 information
-app.post('/1099', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { 
-      recipientName, 
-      recipientTin, 
-      amount, 
-      description, 
-      submittedBy, 
-      taxYear,
-      boosterClub,
-      w9Filename,
-      w9BlobUrl,
-      w9FileSize,
-      w9MimeType
-    } = req.body;
-        
-    if (!recipientName || !recipientTin || !amount || !submittedBy || !taxYear || !boosterClub) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields: recipientName, recipientTin, amount, submittedBy, taxYear, boosterClub' 
-      });
-    }
-
-    // Validate W9 file is provided
-    if (!w9Filename || !w9BlobUrl) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'W9 form is required for 1099 submissions' 
-      });
-    }
-
-    const form1099Data = {
-      recipientName,
-      recipientTin,
-      amount: parseFloat(amount),
-      description: description || '',
-      submittedBy,
-      taxYear: parseInt(taxYear),
-      boosterClub,
-      status: 'pending',
-      w9Filename,
-      w9BlobUrl,
-      w9FileSize: w9FileSize ? parseInt(w9FileSize) : null,
-      w9MimeType
-    };
-
-    const result = await addForm1099(form1099Data);
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: '1099 information submitted successfully',
-        submission: result
-      });
-    } else {
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to save 1099 data' 
-      });
-    }
-  } catch (error) {
-    console.error('Error submitting 1099 form:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get all 1099 submissions (admin only)
-app.get('/1099', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const form1099Submissions = await getForm1099();
-    res.json({ success: true, submissions: form1099Submissions });
-  } catch (error) {
-    console.error('Error getting all 1099 submissions:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get 1099 submissions for a club
-app.get('/1099/:club', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { club } = req.params;
-    const form1099Submissions = await getForm1099();
-    const clubSubmissions = form1099Submissions.filter(sub => sub.booster_club === club);
-    res.json({ success: true, submissions: clubSubmissions });
-  } catch (error) {
-    console.error('Error getting 1099 submissions:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Update 1099 form status
-app.put('/1099/:id/status', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { id } = req.params;
-    const { status } = req.body;
-        
-    if (!status || !['pending', 'acknowledged', 'submitted_to_irs'].includes(status)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid status. Must be one of: pending, acknowledged, submitted_to_irs' 
-      });
-    }
-
-    const result = await updateForm1099Status(id, status);
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Status updated successfully',
-        submission: result
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: '1099 form not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error updating 1099 form status:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Export 1099 data as CSV
-app.post('/1099/export', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { submissionIds, format = 'csv' } = req.body;
-        
-    if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please select at least one submission to export' 
-      });
-    }
-
-    const allSubmissions = await getForm1099();
-    const selectedSubmissions = allSubmissions.filter(sub => submissionIds.includes(sub.id));
-        
-    if (format === 'csv') {
-      const csvData = generateCSV(selectedSubmissions);
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="1099-submissions-${new Date().toISOString().split('T')[0]}.csv"`);
-      res.send(csvData);
-    } else {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Unsupported format. Use "csv"' 
-      });
-    }
-  } catch (error) {
-    console.error('Error exporting 1099 data:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Download W9 files as zip
-app.post('/1099/download-w9', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { submissionIds } = req.body;
-        
-    if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please select at least one submission to download W9 files' 
-      });
-    }
-
-    const allSubmissions = await getForm1099();
-    const selectedSubmissions = allSubmissions.filter(sub => 
-      submissionIds.includes(sub.id) && sub.w9_filename && sub.w9_blob_url
-    );
-        
-    if (selectedSubmissions.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'No W9 files found for selected submissions' 
-      });
-    }
-
-    // For now, return the list of files to download
-    // In a full implementation, you would create a zip file here
-    const downloadInfo = selectedSubmissions.map(sub => ({
-      id: sub.id,
-      recipientName: sub.recipient_name,
-      w9Filename: sub.w9_filename,
-      w9BlobUrl: sub.w9_blob_url,
-      w9FileSize: sub.w9_file_size
-    }));
-
-    const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '-');
-    const zipFilename = `w9-files-${dateStr}.zip`;
-
-    res.json({ 
-      success: true, 
-      message: 'W9 files ready for download',
-      zipFilename,
-      files: downloadInfo
-    });
-  } catch (error) {
-    console.error('Error preparing W9 download:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Upload W9 form for 1099 submission
-app.post('/1099/upload-w9', async (req, res) => {
-  try {
-    // Check if blob storage is available
-    if (!blob) {
-      return res.status(500).json({
-        success: false,
-        message: 'File storage not available'
-      });
-    }
-
-    // Handle file upload using multer or similar
-    // For now, we'll expect the file data in the request body
-    const { file, filename, mimeType } = req.body;
-        
-    if (!file || !filename) {
-      return res.status(400).json({
-        success: false,
-        message: 'File data is required'
-      });
-    }
-
-    // Validate file type (PDF, image, etc.)
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'];
-    if (!allowedTypes.includes(mimeType)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid file type. Only PDF and image files are allowed.'
-      });
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const uniqueFilename = `w9-${timestamp}-${filename}`;
-
-    // Upload to Vercel Blob
-    const { url } = await blob.put(uniqueFilename, Buffer.from(file, 'base64'), {
-      access: 'public',
-      addRandomSuffix: false
-    });
-
-    res.json({
-      success: true,
-      message: 'W9 file uploaded successfully',
-      filename: uniqueFilename,
-      blobUrl: url,
-      fileSize: Buffer.from(file, 'base64').length,
-      mimeType
-    });
-
-  } catch (error) {
-    console.error('Error uploading W9 file:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to upload W9 file'
-    });
-  }
-});
-
-// Update 1099 form data
-app.put('/1099/:id', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { id } = req.params;
-    const { 
-      recipientName, recipientTin, amount, description, 
-      taxYear, boosterClub 
-    } = req.body;
-        
-    if (!recipientName || !recipientTin || !amount || !taxYear) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields: recipientName, recipientTin, amount, taxYear' 
-      });
-    }
-
-    const updates = {
-      recipientName,
-      recipientTin,
-      amount: parseFloat(amount),
-      description: description || '',
-      taxYear: parseInt(taxYear),
-      boosterClub: boosterClub || null
-    };
-
-    const result = await updateForm1099(id, updates);
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: '1099 form updated successfully',
-        submission: result
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: '1099 form not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error updating 1099 form:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Delete 1099 form
-app.delete('/1099/:id', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { id } = req.params;
-        
-    const success = await deleteForm1099(id);
-    if (success) {
-      res.json({ 
-        success: true, 
-        message: '1099 form deleted successfully'
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: '1099 form not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error deleting 1099 form:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Internal server error' 
@@ -1992,7 +1590,7 @@ app.post('/api/analytics/report', async (req, res) => {
         reportData = { officers: officers.length };
         break;
       case 'documents':
-        const documents = await getForm1099();
+        const documents = await getDocuments();
         reportData = { documents: documents.length };
         break;
       default:

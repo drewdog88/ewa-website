@@ -30,10 +30,7 @@ describe('Database Schema Tests', () => {
     console.log('=' .repeat(60));
     
     for (const table of tables) {
-      const tableName = table.table_name;
-      const countResult = await sql.unsafe(`SELECT COUNT(*) as count FROM ${tableName}`);
-      const rowCount = countResult[0].count;
-      console.log(`📊 ${tableName}: ${rowCount} rows`);
+      console.log(`📊 ${table.table_name}`);
     }
   });
 
@@ -107,10 +104,9 @@ describe('Database Schema Tests', () => {
     
     const columnNames = columns.map(c => c.column_name);
     
-    // Check for required columns
-    expect(columnNames).toContain('id');
+    // Check for required columns (username is primary key; password stores credential)
     expect(columnNames).toContain('username');
-    expect(columnNames).toContain('password_hash');
+    expect(columnNames).toContain('password');
     expect(columnNames).toContain('role');
     
     console.log('\n📋 Users Schema:');

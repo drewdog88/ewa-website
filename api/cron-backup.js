@@ -51,7 +51,6 @@ async function createBackup() {
       'booster_clubs', 
       'officers',
       'volunteers',
-      'form_1099',
       'insurance_forms',
       'documents',
       'links',

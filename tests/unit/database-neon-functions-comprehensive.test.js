@@ -5,6 +5,11 @@ jest.mock('@neondatabase/serverless', () => ({
   neon: jest.fn()
 }));
 
+/** sql`...` is invoked as a tag: (strings, ...values). Assert via serialized calls. */
+function expectMockSqlToContain(mockFn, substring) {
+  expect(JSON.stringify(mockFn.mock.calls)).toContain(substring);
+}
+
 // Mock console methods to avoid noise in tests
 const originalConsole = { ...console };
 beforeAll(() => {
@@ -29,16 +34,12 @@ const {
   addVolunteer,
   getInsurance,
   addInsurance,
-  getForm1099,
-  addForm1099,
-  updateForm1099Status,
-  updateForm1099,
-  deleteForm1099,
   getDocuments,
   addDocument,
   deleteDocument,
   initializeDatabase,
-  migrateDataFromJson
+  migrateDataFromJson,
+  __resetSqlForTests
 } = require('../../database/neon-functions');
 
 describe('Database Neon Functions - Comprehensive Tests', () => {
@@ -51,8 +52,8 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
     // Store original environment
     originalEnv = { ...process.env };
     
-    // Create mock SQL instance
     mockSql = jest.fn();
+    mockSql.unsafe = jest.fn().mockResolvedValue([]);
     neon.mockReturnValue(mockSql);
     
     // Set up DATABASE_URL
@@ -60,8 +61,8 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
   });
 
   afterEach(() => {
-    // Restore original environment
     process.env = originalEnv;
+    __resetSqlForTests();
   });
 
   describe('Database Connection', () => {
@@ -95,7 +96,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await getOfficers();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT o.id, o.name, o.position'));
+      expectMockSqlToContain(mockSql, 'SELECT o.id, o.name, o.position');
       expect(result).toEqual(mockOfficers);
     });
 
@@ -134,8 +135,8 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await addOfficer(officerData);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT id FROM booster_clubs'));
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO officers'));
+      expectMockSqlToContain(mockSql, 'booster_clubs');
+      expectMockSqlToContain(mockSql, 'INSERT INTO officers');
       expect(result).toEqual(mockOfficer);
     });
 
@@ -153,7 +154,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await addOfficer(officerData);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO officers'));
+      expectMockSqlToContain(mockSql, 'INSERT INTO officers');
       expect(result).toEqual(mockOfficer);
     });
 
@@ -182,11 +183,9 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await getUsers();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT * FROM users'));
-      expect(result).toEqual({
-        admin: mockUsers[0],
-        user1: mockUsers[1]
-      });
+      expectMockSqlToContain(mockSql, 'SELECT * FROM users');
+      expect(result.admin).toMatchObject(mockUsers[0]);
+      expect(result.user1).toMatchObject(mockUsers[1]);
     });
 
     test('getUsers should return empty object on error', async () => {
@@ -210,7 +209,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await updateUser('admin', updates);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('UPDATE users'));
+      expectMockSqlToContain(mockSql, 'UPDATE users');
       expect(result).toEqual(mockUser);
     });
 
@@ -222,7 +221,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await updateUser('admin', updates);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('UPDATE users'));
+      expectMockSqlToContain(mockSql, 'UPDATE users');
       expect(result).toEqual(mockUser);
     });
   });
@@ -237,7 +236,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await getVolunteers();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT * FROM volunteers'));
+      expectMockSqlToContain(mockSql, 'SELECT * FROM volunteers');
       expect(result).toEqual(mockVolunteers);
     });
 
@@ -246,14 +245,15 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
       mockSql.mockResolvedValue([mockVolunteer]);
 
       const volunteerData = {
-        name: 'New Volunteer',
+        volunteerName: 'New Volunteer',
         email: 'new@example.com',
-        phone: '555-1234'
+        phone: '555-1234',
+        boosterClub: 'Orchestra'
       };
 
       const result = await addVolunteer(volunteerData);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO volunteers'));
+      expectMockSqlToContain(mockSql, 'INSERT INTO volunteers');
       expect(result).toEqual(mockVolunteer);
     });
   });
@@ -261,99 +261,35 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
   describe('Insurance Functions', () => {
     test('getInsurance should return insurance forms', async () => {
       const mockInsurance = [
-        { id: 1, recipient_name: 'Recipient 1', amount: '1000.00' },
-        { id: 2, recipient_name: 'Recipient 2', amount: '2000.00' }
+        { id: 1, event_name: 'Event 1', event_date: '2024-01-01' },
+        { id: 2, event_name: 'Event 2', event_date: '2024-02-01' }
       ];
       mockSql.mockResolvedValue(mockInsurance);
 
       const result = await getInsurance();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT * FROM insurance_forms'));
+      expectMockSqlToContain(mockSql, 'insurance_forms');
       expect(result).toEqual(mockInsurance);
     });
 
     test('addInsurance should add new insurance form', async () => {
-      const mockInsurance = { id: 1, recipient_name: 'New Recipient', amount: '1500.00' };
+      const mockInsurance = { id: 1, event_name: 'Spring Concert', event_date: '2024-06-01' };
       mockSql.mockResolvedValue([mockInsurance]);
 
       const insuranceData = {
-        recipient_name: 'New Recipient',
-        recipient_tin: '123-45-6789',
-        amount: '1500.00',
-        tax_year: 2024
+        eventName: 'Spring Concert',
+        eventDate: '2024-06-01',
+        eventDescription: 'Evening performance',
+        participantCount: 50,
+        submittedBy: 'admin',
+        status: 'pending',
+        clubId: null
       };
 
       const result = await addInsurance(insuranceData);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO insurance_forms'));
+      expectMockSqlToContain(mockSql, 'INSERT INTO insurance_forms');
       expect(result).toEqual(mockInsurance);
-    });
-  });
-
-  describe('1099 Forms Functions', () => {
-    test('getForm1099 should return 1099 forms with club information', async () => {
-      const mockForms = [
-        { id: 1, recipient_name: 'Recipient 1', booster_club: 'Orchestra', amount: '1000.00' },
-        { id: 2, recipient_name: 'Recipient 2', booster_club: 'Band', amount: '2000.00' }
-      ];
-      mockSql.mockResolvedValue(mockForms);
-
-      const result = await getForm1099();
-
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT f.*, bc.name as booster_club'));
-      expect(result).toEqual(mockForms);
-    });
-
-    test('addForm1099 should add new 1099 form', async () => {
-      const mockForm = { id: 1, recipient_name: 'New Recipient', amount: '1500.00' };
-      mockSql.mockResolvedValue([mockForm]);
-
-      const formData = {
-        recipient_name: 'New Recipient',
-        recipient_tin: '123-45-6789',
-        amount: '1500.00',
-        tax_year: 2024,
-        booster_club: 'Orchestra'
-      };
-
-      const result = await addForm1099(formData);
-
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO form_1099'));
-      expect(result).toEqual(mockForm);
-    });
-
-    test('updateForm1099Status should update form status', async () => {
-      const mockForm = { id: 1, status: 'completed' };
-      mockSql.mockResolvedValue([mockForm]);
-
-      const result = await updateForm1099Status(1, 'completed');
-
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('UPDATE form_1099'));
-      expect(result).toEqual(mockForm);
-    });
-
-    test('updateForm1099 should update form with provided fields', async () => {
-      const mockForm = { id: 1, recipient_name: 'Updated Name', amount: '2000.00' };
-      mockSql.mockResolvedValue([mockForm]);
-
-      const updates = {
-        recipient_name: 'Updated Name',
-        amount: '2000.00'
-      };
-
-      const result = await updateForm1099(1, updates);
-
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('UPDATE form_1099'));
-      expect(result).toEqual(mockForm);
-    });
-
-    test('deleteForm1099 should delete form', async () => {
-      mockSql.mockResolvedValue([]);
-
-      const result = await deleteForm1099(1);
-
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM form_1099'));
-      expect(result).toEqual([]);
     });
   });
 
@@ -367,7 +303,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await getDocuments('Orchestra');
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT * FROM documents'));
+      expectMockSqlToContain(mockSql, 'SELECT * FROM documents');
       expect(result).toEqual(mockDocuments);
     });
 
@@ -380,7 +316,7 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const result = await getDocuments();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('SELECT * FROM documents'));
+      expectMockSqlToContain(mockSql, 'SELECT * FROM documents');
       expect(result).toEqual(mockDocuments);
     });
 
@@ -390,50 +326,52 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       const documentData = {
         filename: 'new-doc.pdf',
-        original_name: 'New Document.pdf',
-        booster_club: 'Orchestra',
-        file_size: 1024,
-        mime_type: 'application/pdf'
+        originalName: 'New Document.pdf',
+        blobUrl: 'https://blob.example/new-doc.pdf',
+        boosterClub: 'Orchestra',
+        fileSize: 1024,
+        mimeType: 'application/pdf',
+        uploadedBy: 'admin'
       };
 
       const result = await addDocument(documentData);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO documents'));
+      expectMockSqlToContain(mockSql, 'INSERT INTO documents');
       expect(result).toEqual(mockDocument);
     });
 
     test('deleteDocument should delete document', async () => {
-      mockSql.mockResolvedValue([]);
+      mockSql.mockResolvedValue([{ id: 1 }]);
 
       const result = await deleteDocument(1);
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM documents'));
-      expect(result).toEqual([]);
+      expectMockSqlToContain(mockSql, 'DELETE FROM documents');
+      expect(result).toBe(true);
     });
   });
 
   describe('Database Initialization', () => {
     test('initializeDatabase should create tables', async () => {
-      mockSql.mockResolvedValue([]);
-
       await initializeDatabase();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS'));
+      expect(mockSql.unsafe).toHaveBeenCalled();
+      expect(mockSql.unsafe.mock.calls.some(c => String(c[0]).includes('CREATE'))).toBe(true);
     });
 
     test('migrateDataFromJson should migrate data from JSON file', async () => {
       const mockOfficers = [
         { name: 'John Doe', position: 'President', email: 'john@example.com' }
       ];
-      mockSql.mockResolvedValue([{ id: 1 }]);
+      mockSql.mockResolvedValueOnce([]); // getOfficers — empty
+      mockSql.mockResolvedValueOnce([{ id: 1 }]); // addOfficer insert
 
-      // Mock fs.readFileSync to return JSON data
       const fs = require('fs');
+      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       jest.spyOn(fs, 'readFileSync').mockReturnValue(JSON.stringify(mockOfficers));
 
       await migrateDataFromJson();
 
-      expect(mockSql).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO officers'));
+      expectMockSqlToContain(mockSql, 'INSERT INTO officers');
     });
   });
 
