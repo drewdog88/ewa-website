@@ -223,7 +223,10 @@
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-top: 16px;
+            margin: 16px 0 18px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
         .btn {
@@ -259,7 +262,7 @@
             color: white;
         }
 
-        /* Match payment.html Stripe "Pay Now" control */
+        /* Stripe checkout CTA (direct link; EWA payment page is separate) */
         .pay-now-btn {
             background-color: #635bff;
             color: #fff;
@@ -402,11 +405,17 @@
 
             .cta-row {
                 flex-direction: column;
+                align-items: center;
             }
 
-            .btn,
-            .pay-now-btn {
+            .btn {
                 width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+
+            .pay-now-btn {
+                width: min(100%, 300px);
                 text-align: center;
                 box-sizing: border-box;
             }
@@ -452,7 +461,7 @@
 
         <article class="panel">
             <h2>Ways to give</h2>
-            <p>Ready to donate now? Use the <strong>Zelle</strong> QR code and instructions below. For <strong>credit card</strong> and other payment options, use <strong>Pay Now</strong>—the same flow as our <a href="payment.html?id=f2efccc3-4dbe-4eeb-b65e-ba7e7149c740&amp;club=Eastlake%20Wolfpack%20Association">Eastlake Wolfpack Association payment page</a>.</p>
+            <p>Ready to donate now? Use the <strong>Zelle</strong> QR code and instructions below. For <strong>credit card</strong>, use <strong>Pay Now</strong> (opens secure Stripe checkout in a new tab). For Zelle, receipts, and every option in one place, use our <a href="payment.html?id=f2efccc3-4dbe-4eeb-b65e-ba7e7149c740&amp;club=Eastlake%20Wolfpack%20Association">Eastlake Wolfpack Association payment page</a>.</p>
             <div class="give-zelle">
                 <h3>Zelle® payments</h3>
                 <div id="fundraiserZelleQR" class="zelle-qr" style="display:none;" aria-hidden="true"></div>
@@ -461,7 +470,7 @@
                 <p class="muted">For this fundraiser, add <strong>Weight room fund</strong> to your memo when you can.</p>
             </div>
             <div class="cta-row">
-                <a class="pay-now-btn" href="payment.html?id=f2efccc3-4dbe-4eeb-b65e-ba7e7149c740&amp;club=Eastlake%20Wolfpack%20Association">Pay Now</a>
+                <a class="pay-now-btn" href="https://buy.stripe.com/3cI8wOcrP6TP3kF9n96oo00" target="_blank" rel="noopener noreferrer" aria-label="Pay by credit card with Stripe for the weight room fund">Pay Now</a>
             </div>
             <p class="muted"><strong>Check:</strong> Make checks payable to <strong>Eastlake Wolfpack Association</strong>. On the memo line, please indicate this is for the <strong>weight room fund</strong> (or similar wording so we can direct your gift).</p>
             <p class="muted">Mail your check to:</p>
