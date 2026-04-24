@@ -244,7 +244,7 @@ const sanitizationConfig = {
   // Text sanitization
   text: {
     maxLength: 1000,
-    allowedCharacters: /[a-zA-Z0-9\s\-_.,!?@#$%&*()+=:;'"<>\/\\]/g
+    allowedCharacters: /[a-zA-Z0-9\s\-_.,!?@#$%&*()+=:;'"<>/\\]/g
   }
 };
 
@@ -338,7 +338,7 @@ const sanitizePaymentInstructions = (text) => {
   }
   
   // Remove any potentially dangerous characters
-  return cleanText.replace(/[^\w\s\-_.,!?@#$%&*()+=:;'"<>\/\\]/g, '');
+  return cleanText.replace(/[^\w\s\-_.,!?@#$%&*()+=:;'"<>/\\]/g, '');
 };
 
 // Generate secure filename for QR codes

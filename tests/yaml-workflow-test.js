@@ -71,7 +71,7 @@ class YAMLWorkflowTester {
     // Test required top-level keys
     const requiredKeys = ['name', 'on', 'jobs'];
     for (const key of requiredKeys) {
-      const hasKey = workflow.hasOwnProperty(key);
+      const hasKey = Object.hasOwn(workflow, key);
       await this.addTestResult(
         `Structure: ${filePath} - ${key}`,
         hasKey,

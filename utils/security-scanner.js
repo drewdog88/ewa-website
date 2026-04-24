@@ -2,6 +2,23 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+/** ESLint --format json returns file objects with `messages`; older tests used a flat message list. */
+function flattenEslintJson(eslintData) {
+  if (!Array.isArray(eslintData) || eslintData.length === 0) {
+    return [];
+  }
+  const first = eslintData[0];
+  if (first && Array.isArray(first.messages)) {
+    return eslintData.flatMap(file =>
+      (file.messages || []).map(msg => ({
+        ...msg,
+        filePath: msg.filePath || file.filePath
+      }))
+    );
+  }
+  return eslintData;
+}
+
 class SecurityScanner {
   constructor() {
     this.scanResults = {
@@ -78,12 +95,13 @@ class SecurityScanner {
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
       });
       const eslintData = JSON.parse(eslintResult);
-      
+      const issues = flattenEslintJson(eslintData);
+
       this.scanResults.codeIssues = {
-        totalIssues: eslintData.length,
-        issues: eslintData,
-        securityIssues: eslintData.filter(issue => 
-          issue.ruleId && issue.ruleId.includes('security')
+        totalIssues: issues.length,
+        issues,
+        securityIssues: issues.filter(issue =>
+          issue.ruleId && String(issue.ruleId).includes('security')
         )
       };
       
