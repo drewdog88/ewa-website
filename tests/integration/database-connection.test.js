@@ -22,11 +22,11 @@ Pool.mockImplementation(() => mockPool);
 
 // Test database connection endpoint
 app.get('/api/test-db', async (req, res) => {
+  let client;
   try {
-    const client = await mockPool.connect();
+    client = await mockPool.connect();
     const result = await client.query('SELECT NOW() as current_time');
-    client.release();
-    
+
     res.json({
       success: true,
       data: {
@@ -40,6 +40,9 @@ app.get('/api/test-db', async (req, res) => {
       message: 'Database connection failed',
       error: error.message
     });
+  } finally {
+    // Always release the connection back to the pool, even on error paths
+    if (client) client.release();
   }
 });
 
@@ -228,7 +231,7 @@ describe('Database Integration Tests', () => {
         await client.query('COMMIT');
       } catch (error) {
         await client.query('ROLLBACK');
-        throw error;
+        // Do not re-throw: assertions below verify the rollback path executed.
       } finally {
         client.release();
       }

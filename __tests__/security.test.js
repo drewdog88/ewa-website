@@ -1,3 +1,9 @@
+/**
+ * Manual / exploratory suite: starts a real HTTP server via server.listen().
+ * Not included in jest.config.js `security` project (would be flaky vs CI).
+ *
+ *   npx jest __tests__/security.test.js
+ */
 const request = require('supertest');
 const app = require('../server');
 

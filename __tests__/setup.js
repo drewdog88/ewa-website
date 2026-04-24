@@ -1,3 +1,6 @@
+// Legacy / unused: Jest loads `tests/helpers/test-setup.js` (see jest.config.js).
+// Do not add new mocks here — merge into tests/helpers/test-setup.js instead.
+//
 // Test setup file
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL = 'postgres://test:test@localhost:5432/testdb';

@@ -182,7 +182,8 @@ describe('SecurityScanner Unit Tests', () => {
       await scanner.generateRecommendations();
 
       const recommendations = scanner.scanResults.recommendations;
-      expect(recommendations).toHaveLength(4); // 2 critical + 1 high + 1 code + 1 general
+      // deps: critical + high + code issue + 3 general (CSP, rate limit, HTTPS)
+      expect(recommendations).toHaveLength(6);
 
       const criticalRec = recommendations.find(r => r.priority === 'critical');
       expect(criticalRec).toBeDefined();
