@@ -48,7 +48,7 @@ jobs:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
         run: |
           echo "📤 Uploading to Vercel Blob using Vercel CLI..."
-          vercel blob put "${{ env.GZIP_NAME }}" --token="$BLOB_READ_WRITE_TOKEN"
+          vercel blob put "${{ env.GZIP_NAME }}" --token="$BLOB_READ_WRITE_TOKEN" --access public
           echo "✅ Uploaded backup to Vercel Blob: ${{ env.GZIP_NAME }}"
 
       - name: Backup Summary

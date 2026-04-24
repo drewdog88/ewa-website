@@ -353,7 +353,7 @@ class BackupManager {
       const output = createWriteStream(backupFile);
       const archive = archiver('zip', { zlib: { level: 9 } });
 
-      return new Promise(async (resolve, reject) => {
+      return new Promise((resolve, reject) => {
         // Set timeout for archive creation (10 minutes)
         const archiveTimeout = setTimeout(() => {
           console.error('❌ Archive creation timeout after 10 minutes');
@@ -428,76 +428,73 @@ class BackupManager {
         archive.on('error', reject);
         archive.pipe(output);
 
-        try {
-          // Add database backup to archive
-          archive.append(dbBackup.content, { name: 'database/database-backup.sql' });
-          
-          // Add blob files to archive with error handling
-          let successfulBlobs = 0;
-          let failedBlobs = 0;
-          
-          for (const blob of blobBackup.blobs) {
-            try {
-              console.log(`📥 Downloading blob: ${blob.pathname} (${(blob.size / 1024).toFixed(2)} KB)`);
-              
-              const response = await fetch(blob.url, { 
-                timeout: 30000,  // 30 second timeout
-                headers: {
-                  'User-Agent': 'EWA-Backup-System/1.0'
+        void (async () => {
+          try {
+            // Add database backup to archive
+            archive.append(dbBackup.content, { name: 'database/database-backup.sql' });
+
+            // Add blob files to archive with error handling
+            let successfulBlobs = 0;
+            let failedBlobs = 0;
+
+            for (const blob of blobBackup.blobs) {
+              try {
+                console.log(`📥 Downloading blob: ${blob.pathname} (${(blob.size / 1024).toFixed(2)} KB)`);
+
+                const response = await fetch(blob.url, {
+                  timeout: 30000, // 30 second timeout
+                  headers: {
+                    'User-Agent': 'EWA-Backup-System/1.0'
+                  }
+                });
+
+                if (!response.ok) {
+                  throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-              });
-              
-              if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+                const buffer = await response.arrayBuffer();
+                archive.append(Buffer.from(buffer), { name: `blob/${blob.pathname}` });
+                successfulBlobs++;
+                console.log(`✅ Downloaded: ${blob.pathname}`);
+              } catch (error) {
+                console.error(`❌ Failed to download ${blob.pathname}:`, error.message);
+                failedBlobs++;
+
+                const errorInfo = {
+                  pathname: blob.pathname,
+                  size: blob.size,
+                  url: blob.url,
+                  error: error.message,
+                  timestamp: new Date().toISOString()
+                };
+
+                archive.append(JSON.stringify(errorInfo, null, 2), {
+                  name: `blob-errors/${blob.pathname}.error.json`
+                });
               }
-              
-              const buffer = await response.arrayBuffer();
-              archive.append(Buffer.from(buffer), { name: `blob/${blob.pathname}` });
-              successfulBlobs++;
-              console.log(`✅ Downloaded: ${blob.pathname}`);
-              
-            } catch (error) {
-              console.error(`❌ Failed to download ${blob.pathname}:`, error.message);
-              failedBlobs++;
-              
-              // Add error info to archive instead of failing completely
-              const errorInfo = {
-                pathname: blob.pathname,
-                size: blob.size,
-                url: blob.url,
-                error: error.message,
-                timestamp: new Date().toISOString()
-              };
-              
-              archive.append(JSON.stringify(errorInfo, null, 2), { 
-                name: `blob-errors/${blob.pathname}.error.json` 
-              });
             }
+
+            console.log(`📊 Blob download summary: ${successfulBlobs} successful, ${failedBlobs} failed`);
+
+            const metadata = {
+              timestamp: timestamp,
+              databaseSize: dbBackup.size,
+              blobCount: blobBackup.blobs.length,
+              blobSize: blobBackup.totalSize,
+              successfulBlobs: successfulBlobs,
+              failedBlobs: failedBlobs,
+              tables: dbBackup.tables,
+              backupVersion: '2.0',
+              environment: process.env.NODE_ENV || 'development'
+            };
+
+            archive.append(JSON.stringify(metadata, null, 2), { name: 'backup-metadata.json' });
+
+            await archive.finalize();
+          } catch (error) {
+            reject(error);
           }
-          
-          console.log(`📊 Blob download summary: ${successfulBlobs} successful, ${failedBlobs} failed`);
-          
-          // Add metadata
-          const metadata = {
-            timestamp: timestamp,
-            databaseSize: dbBackup.size,
-            blobCount: blobBackup.blobs.length,
-            blobSize: blobBackup.totalSize,
-            successfulBlobs: successfulBlobs,
-            failedBlobs: failedBlobs,
-            tables: dbBackup.tables,
-            backupVersion: '2.0',
-            environment: process.env.NODE_ENV || 'development'
-          };
-          
-          archive.append(JSON.stringify(metadata, null, 2), { name: 'backup-metadata.json' });
-          
-          // Finalize the archive
-          await archive.finalize();
-          
-        } catch (error) {
-          reject(error);
-        }
+        })();
       });
     } catch (error) {
       this.backupStatus.lastBackupStatus = 'failed';

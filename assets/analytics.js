@@ -160,12 +160,8 @@ class EWAAnalytics {
      * Get visitor IP (simplified - in production you'd get this server-side)
      */
     async getVisitorIP() {
-        try {
-            // For now, return a placeholder - real IP would be detected server-side
-            return 'client-side';
-        } catch (error) {
-            return 'unknown';
-        }
+        // Placeholder — real IP would be detected server-side
+        return 'client-side';
     }
 
     /**

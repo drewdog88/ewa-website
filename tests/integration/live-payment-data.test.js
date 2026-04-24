@@ -1,11 +1,11 @@
-require('dotenv').config({ path: '.env.local' });
 const { neon } = require('@neondatabase/serverless');
+const { resolveNeonDatabaseUrl, describeLiveNeon } = require('../helpers/neon-live-db-guard');
 
-describe('Payment System Tests', () => {
+describeLiveNeon('Payment System Tests', () => {
   let sql;
 
   beforeAll(async () => {
-    sql = neon(process.env.DATABASE_URL);
+    sql = neon(resolveNeonDatabaseUrl());
   });
 
   test('should have active booster clubs', async () => {
@@ -34,8 +34,7 @@ describe('Payment System Tests', () => {
       ORDER BY name
       LIMIT 5
     `;
-    
-    // This test documents clubs that can be used for testing payment error messages
+
     if (result.length > 0) {
       console.log('\n📋 Clubs without Zelle URLs (for testing):');
       result.forEach((club, index) => {
@@ -43,8 +42,7 @@ describe('Payment System Tests', () => {
         console.log(`   Test URL: http://localhost:3000/payment.html?id=${club.id}&club=${encodeURIComponent(club.name)}`);
       });
     }
-    
-    // We expect some clubs to not have Zelle URLs for testing purposes
+
     expect(result.length).toBeGreaterThanOrEqual(0);
   });
 
@@ -64,11 +62,10 @@ describe('Payment System Tests', () => {
       WHERE is_active = true
       LIMIT 3
     `;
-    
+
     result.forEach(club => {
       expect(club.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
       expect(club.name).toBeTruthy();
     });
   });
 });
-
