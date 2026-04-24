@@ -23,8 +23,7 @@ const backupData = {
     officers: { count: 6, sample: [] },
     payment_audit_log: { count: 35, sample: [] },
     test_table: { count: 0, sample: [] },
-    users: { count: 2, sample: [] },
-    volunteers: { count: 1, sample: [] }
+    users: { count: 2, sample: [] }
   }
 };
 

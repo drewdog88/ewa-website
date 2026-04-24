@@ -89,27 +89,6 @@ describe('EWA API Endpoints', () => {
     });
   });
 
-  describe('Volunteers API', () => {
-    test('GET /api/volunteers should return volunteers list', async () => {
-      const response = await request(server).get('/api/volunteers');
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-    });
-
-    test('POST /api/volunteers should validate email format', async () => {
-      const response = await request(server)
-        .post('/api/volunteers')
-        .send({
-          name: 'Test Volunteer',
-          email: 'invalid-email',
-          club: 'test-club'
-        });
-      
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('success', false);
-    });
-  });
-
   describe('Security Headers', () => {
     test('Should include security headers', async () => {
       const response = await request(server).get('/api/health');
@@ -134,10 +113,10 @@ describe('EWA API Endpoints', () => {
 
     test('Should validate XSS attempts', async () => {
       const response = await request(server)
-        .post('/api/volunteers')
+        .post('/api/officers')
         .send({
           name: '<script>alert("xss")</script>',
-          email: 'test@test.com',
+          position: 'Test',
           club: 'test-club'
         });
       

@@ -726,7 +726,6 @@
                 </li>
                 
                 <!-- Individual Items -->
-                <li><a href="#volunteers" class="nav-link" data-section="volunteers">🤝 Volunteer Management</a></li>
                 <li><a href="#profile" class="nav-link" data-section="profile">👤 Profile</a></li>
             </ul>
         </div>
@@ -893,62 +892,6 @@
                             <!-- Website links will be dynamically added here -->
                         </tbody>
                     </table>
-                </div>
-            </div>
-            
-            <!-- Volunteer Management Section -->
-            <div id="volunteers" class="content-section">
-                <div class="section-header">
-                    <h2>Volunteer Management</h2>
-                    <p>View and manage volunteer interest submissions for your booster club.</p>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Filter Volunteers</h3>
-                    <div class="form-group">
-                        <label for="volunteerClubFilter">Filter by Club</label>
-                        <select id="volunteerClubFilter">
-                            <option value="">All Clubs</option>
-                            <!-- Clubs will be loaded dynamically from database -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="volunteerStatusFilter">Filter by Status</label>
-                        <select id="volunteerStatusFilter">
-                            <option value="">All Statuses</option>
-                            <option value="pending">Pending</option>
-                            <option value="contacted">Contacted</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="declined">Declined</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Volunteer Submissions</h3>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Booster Club</th>
-                                <th>Volunteer Name</th>
-                                <th>Child's Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                                            <tbody>
-                        <!-- Volunteer data will be loaded dynamically -->
-                    </tbody>
-                    </table>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Export Volunteer Data</h3>
-                    <p>Download volunteer submissions for your club in CSV format.</p>
-                    <button class="action-btn" onclick="exportVolunteerData()">Export to CSV</button>
                 </div>
             </div>
             
@@ -1578,9 +1521,6 @@
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('selectstart', e => e.preventDefault());
         
-        // Store volunteer data globally for filtering
-        let allVolunteerData = [];
-        
         // Store booster clubs globally
         let allBoosterClubs = [];
         
@@ -1607,7 +1547,6 @@
                         const clubDropdowns = [
                             'boosterClub',
                             'websiteClubSelect', 
-                            'volunteerClubFilter',
                             'officerClubFilter',
                             'insuranceClubFilter',
                             'insuranceBoosterClub',
@@ -1650,76 +1589,6 @@
                         });
                     }
         
-        // Load volunteer data
-        function loadVolunteerData() {
-            // Get current user to determine what data to load
-            const currentUser = userSession.currentUser || {};
-            
-            let url = '/api/volunteers';
-            if ((currentUser.role === 'booster_admin' || currentUser.role === 'booster_officer') && currentUser.club) {
-                url = `/api/volunteers/${currentUser.club}`;
-            }
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        allVolunteerData = data.volunteers; // Store all data
-                        displayVolunteerData(allVolunteerData);
-                    } else {
-                        console.error('Error loading volunteers:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-        
-        // Display volunteer data in table
-        function displayVolunteerData(volunteers) {
-            const tbody = document.querySelector('#volunteers .data-table tbody');
-            if (!tbody) return;
-            
-            // Get filter values
-            const clubFilter = document.getElementById('volunteerClubFilter').value;
-            const statusFilter = document.getElementById('volunteerStatusFilter').value;
-            
-            // Filter volunteers based on selected criteria
-            let filteredVolunteers = volunteers.filter(volunteer => {
-                const clubMatch = !clubFilter || volunteer.club === clubFilter;
-                const statusMatch = !statusFilter || volunteer.status === statusFilter;
-                return clubMatch && statusMatch;
-            });
-            
-            tbody.innerHTML = '';
-            
-            filteredVolunteers.forEach(volunteer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${new Date(volunteer.created_at).toLocaleDateString()}</td>
-                    <td>${volunteer.club}</td>
-                    <td>${volunteer.name}</td>
-                    <td>${volunteer.interests || ''}</td>
-                    <td>${volunteer.email}</td>
-                    <td>${volunteer.phone || ''}</td>
-                    <td><span class="status-${volunteer.status === 'pending' ? 'active' : volunteer.status === 'contacted' ? 'warning' : volunteer.status === 'confirmed' ? 'success' : 'inactive'}">${volunteer.status}</span></td>
-                    <td>
-                        ${volunteer.status === 'pending' ? `
-                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'contacted')">Contact</button>
-                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'confirmed')">Confirm</button>
-                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'declined')">Decline</button>
-                        ` : volunteer.status === 'contacted' ? `
-                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'confirmed')">Confirm</button>
-                            <button class="btn-small" onclick="updateVolunteerStatus('${volunteer.id}', 'declined')">Decline</button>
-                        ` : `
-                            <button class="btn-small" onclick="viewVolunteerDetails('${volunteer.id}')">View Details</button>
-                        `}
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
         // Helper function to get club display name
         function getClubDisplayName(clubCode) {
             const clubNames = {
@@ -1747,105 +1616,6 @@
                 'wrestling': 'Eastlake Wrestling Booster Club'
             };
             return clubNames[clubCode] || clubCode;
-        }
-
-        // Update volunteer status
-        function updateVolunteerStatus(volunteerId, newStatus) {
-            const statusMessages = {
-                'contacted': 'Contacted',
-                'confirmed': 'Confirmed',
-                'declined': 'Declined'
-            };
-
-            if (!confirm(`Are you sure you want to mark this volunteer as ${statusMessages[newStatus]}?`)) {
-                return;
-            }
-
-            fetch(`/api/volunteers/${volunteerId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    status: newStatus
-                })
-            })
-            .then(response => response.json())
-                                .then(data => {
-                        if (data.success) {
-                            alert(`Volunteer status updated to ${statusMessages[newStatus]}`);
-                            // Update the stored data and re-display
-                            const volunteerIndex = allVolunteerData.findIndex(v => v.id === volunteerId);
-                            if (volunteerIndex !== -1) {
-                                allVolunteerData[volunteerIndex].status = newStatus;
-                                allVolunteerData[volunteerIndex].updatedAt = new Date().toISOString();
-                            }
-                            displayVolunteerData(allVolunteerData); // Re-display with current filters
-                        } else {
-                            alert('Error updating volunteer status: ' + data.message);
-                        }
-                    })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating volunteer status. Please try again.');
-            });
-        }
-
-        // View volunteer details
-        function viewVolunteerDetails(volunteerId) {
-            // For now, just show a simple alert with the volunteer ID
-            // In a real application, this would open a modal or navigate to a details page
-            alert(`Viewing details for volunteer ID: ${volunteerId}\n\nThis would show detailed information about the volunteer including contact history, notes, etc.`);
-        }
-
-        // Export volunteer data to CSV
-        function exportVolunteerData() {
-            const currentUser = userSession.currentUser || {};
-            
-            // Get current filter values
-            const clubFilter = document.getElementById('volunteerClubFilter').value;
-            const statusFilter = document.getElementById('volunteerStatusFilter').value;
-            
-            // Filter volunteers based on current selections
-            let filteredVolunteers = allVolunteerData.filter(volunteer => {
-                const clubMatch = !clubFilter || volunteer.boosterClub === clubFilter;
-                const statusMatch = !statusFilter || volunteer.status === statusFilter;
-                return clubMatch && statusMatch;
-            });
-            
-            if (filteredVolunteers.length === 0) {
-                alert('No volunteer data to export. Please check your filters or add some volunteer data first.');
-                return;
-            }
-            
-            // Create CSV content
-            const headers = ['Name', 'Child Name', 'Email', 'Phone', 'Booster Club', 'Status', 'Submitted Date', 'Notes'];
-            const csvContent = [
-                headers.join(','),
-                ...filteredVolunteers.map(volunteer => [
-                    `"${volunteer.name || ''}"`,
-                    `"${volunteer.childName || ''}"`,
-                    `"${volunteer.email || ''}"`,
-                    `"${volunteer.phone || ''}"`,
-                    `"${volunteer.boosterClub || ''}"`,
-                    `"${volunteer.status || ''}"`,
-                    `"${volunteer.submittedAt || ''}"`,
-                    `"${volunteer.notes || ''}"`
-                ].join(','))
-            ].join('\n');
-            
-            // Create and download the file
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `volunteer_data_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            alert(`Exported ${filteredVolunteers.length} volunteer records to CSV.`);
         }
 
         // News Management Functions
@@ -2488,22 +2258,6 @@
             // Set up navigation functionality
             setupNavigation();
             
-            // Load volunteer data when volunteers section is shown
-            document.querySelector('[data-section="volunteers"]').addEventListener('click', function() {
-                setTimeout(loadVolunteerData, 100);
-            });
-            
-            // Add event listeners for volunteer filters
-            document.getElementById('volunteerClubFilter').addEventListener('change', function() {
-                // Re-display current volunteer data with new filter
-                displayVolunteerData(allVolunteerData);
-            });
-            
-            document.getElementById('volunteerStatusFilter').addEventListener('change', function() {
-                // Re-display current volunteer data with new filter
-                displayVolunteerData(allVolunteerData);
-            });
-            
             // Load news data when news section is shown
             document.querySelector('[data-section="news"]').addEventListener('click', function() {
                 setTimeout(loadNewsData, 100);
@@ -2596,9 +2350,6 @@
                 if (header && userData.clubName) {
                     header.textContent = `EWA Admin Dashboard - ${userData.clubName}`;
                 }
-                
-                // Filter volunteer data to only show their club's volunteers
-                // This is handled in the loadVolunteerData function
             } else if (userData.role === 'admin') {
                 // Full admin - show all features
                 document.querySelectorAll('.admin-only').forEach(el => {
@@ -4066,9 +3817,6 @@
                     case 'club-websites':
                         loadWebsiteLinks();
                         break;
-                    case 'volunteers':
-                        loadVolunteerData();
-                        break;
                     case 'news':
                         loadNewsData();
                         break;
@@ -4129,9 +3877,6 @@
                             break;
                         case 'club-websites':
                             loadWebsiteLinks();
-                            break;
-                        case 'volunteers':
-                            loadVolunteerData();
                             break;
                         case 'news':
                             loadNewsData();

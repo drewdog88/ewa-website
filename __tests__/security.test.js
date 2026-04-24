@@ -76,10 +76,10 @@ describe('Security Tests', () => {
 
     test('Should prevent command injection', async () => {
       const response = await request(server)
-        .post('/api/volunteers')
+        .post('/api/officers')
         .send({
           name: '$(rm -rf /)',
-          email: 'test@test.com',
+          position: 'Test',
           club: 'test-club'
         });
       

@@ -13,9 +13,6 @@ const {
   deleteOfficer,
   getUsers,
   updateUser,
-  getVolunteers,
-  addVolunteer,
-  updateVolunteer,
   getInsurance,
   addInsurance,
   updateInsuranceStatus,
@@ -119,7 +116,6 @@ async function initializeDatabase() {
 // In-memory storage for development fallback
 const initialData = loadInitialData();
 const memoryStorage = {
-  volunteers: [],
   users: {
     'admin': {
       'username': 'admin',
@@ -436,161 +432,6 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Internal server error' 
-    });
-  }
-});
-
-// Volunteer Management
-
-// Submit volunteer interest
-app.post('/volunteers', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    console.log('Received volunteer submission request:', req.body);
-        
-    const { boosterClub, volunteerName, childName, email, phone, message } = req.body;
-        
-    // Sanitize inputs
-    const sanitizedBoosterClub = sanitizeInput(boosterClub);
-    const sanitizedVolunteerName = sanitizeInput(volunteerName);
-    const sanitizedChildName = sanitizeInput(childName);
-    const sanitizedEmail = sanitizeInput(email);
-    const sanitizedPhone = sanitizeInput(phone);
-    const sanitizedMessage = sanitizeInput(message);
-        
-    // Validate required fields
-    if (!sanitizedBoosterClub || !sanitizedVolunteerName || !sanitizedEmail) {
-      const missingFields = [];
-      if (!sanitizedBoosterClub) missingFields.push('boosterClub');
-      if (!sanitizedVolunteerName) missingFields.push('volunteerName');
-      if (!sanitizedEmail) missingFields.push('email');
-            
-      return res.status(400).json({ 
-        success: false, 
-        message: `Missing required fields: ${missingFields.join(', ')}` 
-      });
-    }
-        
-    // Validate email format
-    if (!validateEmail(sanitizedEmail)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid email format'
-      });
-    }
-        
-    // Validate phone format if provided
-    if (sanitizedPhone && !validatePhone(sanitizedPhone)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid phone number format'
-      });
-    }
-
-    const volunteerData = {
-      name: sanitizedVolunteerName,
-      email: sanitizedEmail,
-      phone: sanitizedPhone || '',
-      club: sanitizedBoosterClub,
-      clubName: getBoosterClubDisplayName(sanitizedBoosterClub),
-      interests: sanitizedMessage || '',
-      availability: sanitizedChildName ? `Child: ${sanitizedChildName}` : ''
-    };
-
-    console.log('Adding new volunteer:', volunteerData);
-        
-    const result = await addVolunteer(volunteerData);
-    if (result) {
-      console.log('Volunteer saved successfully');
-      res.json({ 
-        success: true, 
-        message: 'Volunteer interest submitted successfully',
-        volunteer: result
-      });
-    } else {
-      console.error('Failed to save volunteer data');
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to save volunteer data' 
-      });
-    }
-  } catch (error) {
-    console.error('Error submitting volunteer form:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get all volunteers (for admin)
-app.get('/volunteers', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const volunteers = await getVolunteers();
-    res.json({ success: true, volunteers });
-  } catch (error) {
-    console.error('Error getting volunteers:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get volunteers by club (for booster club officers)
-app.get('/volunteers/:club', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { club } = req.params;
-    const volunteers = await getVolunteers();
-    const clubVolunteers = volunteers.filter(v => v.club === club);
-    res.json({ success: true, volunteers: clubVolunteers });
-  } catch (error) {
-    console.error('Error getting club volunteers:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Update volunteer status (for admin)
-app.put('/volunteers/:id', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { id } = req.params;
-    const { status } = req.body;
-    
-    // Validate status
-    const validStatuses = ['pending', 'contacted', 'confirmed', 'declined'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid status. Must be one of: pending, contacted, confirmed, declined'
-      });
-    }
-    
-    // Update volunteer status
-    const updatedVolunteer = await updateVolunteer(id, { status });
-    
-    if (!updatedVolunteer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Volunteer not found'
-      });
-    }
-    
-    res.json({
-      success: true,
-      message: 'Volunteer status updated successfully',
-      volunteer: updatedVolunteer
-    });
-  } catch (error) {
-    console.error('Error updating volunteer status:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
     });
   }
 });

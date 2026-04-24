@@ -43,20 +43,6 @@ async function migrateToNeon() {
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
         
-    // Create volunteers table
-    await sql`CREATE TABLE IF NOT EXISTS volunteers (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            name VARCHAR(255) NOT NULL,
-            email VARCHAR(255),
-            phone VARCHAR(50),
-            club VARCHAR(100) NOT NULL,
-            club_name VARCHAR(255) NOT NULL,
-            interests TEXT[],
-            availability TEXT,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        )`;
-        
     // Create insurance forms table
     await sql`CREATE TABLE IF NOT EXISTS insurance_forms (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -85,7 +71,6 @@ async function migrateToNeon() {
         
     // Create indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_officers_club ON officers(club)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_volunteers_club ON volunteers(club)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club)`;
         
@@ -144,7 +129,6 @@ async function migrateToNeon() {
         
     backup.tables.officers = await sql`SELECT * FROM officers ORDER BY created_at`;
     backup.tables.users = await sql`SELECT * FROM users ORDER BY created_at`;
-    backup.tables.volunteers = await sql`SELECT * FROM volunteers ORDER BY created_at`;
     backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at`;
     backup.tables.documents = await sql`SELECT * FROM documents ORDER BY created_at`;
         
@@ -163,7 +147,6 @@ async function migrateToNeon() {
     console.log('📊 Backup contains:');
     console.log(`   - Officers: ${backup.tables.officers.length}`);
     console.log(`   - Users: ${backup.tables.users.length}`);
-    console.log(`   - Volunteers: ${backup.tables.volunteers.length}`);
     console.log(`   - Insurance Forms: ${backup.tables.insurance_forms.length}`);
     console.log(`   - Documents: ${backup.tables.documents.length}`);
         

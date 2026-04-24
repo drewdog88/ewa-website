@@ -50,7 +50,6 @@ async function createBackup() {
       'users',
       'booster_clubs', 
       'officers',
-      'volunteers',
       'insurance_forms',
       'documents',
       'links',

@@ -92,10 +92,6 @@ async function createBoosterClubsTable() {
     await sql`ALTER TABLE officers ADD COLUMN IF NOT EXISTS club_id UUID REFERENCES booster_clubs(id)`;
     console.log('✅ Added club_id to officers table');
         
-    // Add club_id to volunteers table
-    await sql`ALTER TABLE volunteers ADD COLUMN IF NOT EXISTS club_id UUID REFERENCES booster_clubs(id)`;
-    console.log('✅ Added club_id to volunteers table');
-        
     // Add club_id to users table
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS club_id UUID REFERENCES booster_clubs(id)`;
     console.log('✅ Added club_id to users table');
@@ -113,7 +109,6 @@ async function createBoosterClubsTable() {
     await sql`CREATE INDEX IF NOT EXISTS idx_booster_clubs_name ON booster_clubs(name)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_booster_clubs_active ON booster_clubs(is_active)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_officers_club_id ON officers(club_id)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_volunteers_club_id ON volunteers(club_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_users_club_id ON users(club_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_documents_club_id ON documents(club_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_insurance_club_id ON insurance_forms(club_id)`;
@@ -130,7 +125,7 @@ async function createBoosterClubsTable() {
                 column_name,
                 data_type
             FROM information_schema.columns 
-            WHERE table_name IN ('booster_clubs', 'officers', 'volunteers', 'users', 'documents', 'insurance_forms')
+            WHERE table_name IN ('booster_clubs', 'officers', 'users', 'documents', 'insurance_forms')
             AND column_name = 'club_id'
             ORDER BY table_name
         `;

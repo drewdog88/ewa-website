@@ -5,6 +5,10 @@ module.exports = {
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/tests/helpers/test-setup.js'],
 
+  // Use V8 coverage so `jest --coverage` does not run babel-plugin-istanbul (avoids test-exclude/minimatch
+  // breakage on Windows and keeps CI instrumentation stable).
+  coverageProvider: 'v8',
+
   // Coverage: off for normal `npm test` / `jest` (use `npm run test:coverage` or `npm run test:ci`)
   collectCoverage: false,
   coverageDirectory: 'coverage',

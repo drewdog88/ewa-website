@@ -30,8 +30,6 @@ const {
   addOfficer,
   getUsers,
   updateUser,
-  getVolunteers,
-  addVolunteer,
   getInsurance,
   addInsurance,
   getDocuments,
@@ -223,38 +221,6 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       expectMockSqlToContain(mockSql, 'UPDATE users');
       expect(result).toEqual(mockUser);
-    });
-  });
-
-  describe('Volunteers Functions', () => {
-    test('getVolunteers should return volunteers', async () => {
-      const mockVolunteers = [
-        { id: 1, name: 'Volunteer 1', email: 'vol1@example.com' },
-        { id: 2, name: 'Volunteer 2', email: 'vol2@example.com' }
-      ];
-      mockSql.mockResolvedValue(mockVolunteers);
-
-      const result = await getVolunteers();
-
-      expectMockSqlToContain(mockSql, 'SELECT * FROM volunteers');
-      expect(result).toEqual(mockVolunteers);
-    });
-
-    test('addVolunteer should add new volunteer', async () => {
-      const mockVolunteer = { id: 1, name: 'New Volunteer', email: 'new@example.com' };
-      mockSql.mockResolvedValue([mockVolunteer]);
-
-      const volunteerData = {
-        volunteerName: 'New Volunteer',
-        email: 'new@example.com',
-        phone: '555-1234',
-        boosterClub: 'Orchestra'
-      };
-
-      const result = await addVolunteer(volunteerData);
-
-      expectMockSqlToContain(mockSql, 'INSERT INTO volunteers');
-      expect(result).toEqual(mockVolunteer);
     });
   });
 

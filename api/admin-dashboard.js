@@ -40,7 +40,6 @@ router.get('/search', requireAdminAuth, async (req, res) => {
             return res.json({
                 officers: [],
                 clubs: [],
-                volunteers: [],
                 activity: []
             });
         }

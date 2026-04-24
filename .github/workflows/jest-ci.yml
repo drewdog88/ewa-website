@@ -15,9 +15,9 @@ jobs:
     name: Unit, integration, security
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22.x'
           cache: 'npm'
@@ -25,7 +25,6 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      # Gate: unit + integration + security, with coverage. Resolves to green once
-      # pre-existing failing tests are fixed (run npm run test:security to check security only).
+      # Gate: unit + integration + security (see test:ci:coverage for coverage + thresholds).
       - name: Run Jest (CI gate)
         run: npm run test:ci

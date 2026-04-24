@@ -1,6 +1,6 @@
 # Eastlake Wolfpack Association Website
 
-The official website for the Eastlake Wolfpack Association, managing booster clubs, payments, officers, volunteers, and administration.
+The official website for the Eastlake Wolfpack Association, managing booster clubs, payments, officers, and administration.
 
 ## 🚀 **Current Features**
 
@@ -8,7 +8,6 @@ The official website for the Eastlake Wolfpack Association, managing booster clu
 - **Booster Club Directory**: Dynamic listing of all Eastlake booster clubs
 - **Payment System**: Zelle® QR codes and Stripe payment links for each club
 - **Team Page**: Officer information and contact details
-- **Volunteer Portal**: Sign up for events and opportunities
 - **News & Updates**: Latest announcements and events
 - **Photo Gallery**: Event photos and memories
 - **Resources & Links**: Important documents and external resources
@@ -16,9 +15,7 @@ The official website for the Eastlake Wolfpack Association, managing booster clu
 ### **Admin Dashboard**
 - **Payment Management**: Configure Zelle and Stripe payment links for all clubs
 - **Officer Management**: Add, edit, and manage club officers
-- **Volunteer Coordination**: Track volunteer signups and assignments
 - **Insurance Forms**: Process event insurance requests
-- **1099 Form Processing**: Secure tax document handling
 - **Content Management**: Update club descriptions and website content
 - **Security Dashboard**: Monitor system security and performance
 - **Backup Management**: Automated database backups and restoration
@@ -65,7 +62,6 @@ The official website for the Eastlake Wolfpack Association, managing booster clu
 - `GET /api/booster-clubs` - List all clubs
 - `GET /api/qr-code?clubId=<id>` - Generate Zelle QR code
 - `GET /api/officers` - Get officer information
-- `GET /api/volunteers` - Volunteer data
 
 ### **Admin APIs**
 - `GET /api/admin/payment-status` - Payment statistics
@@ -85,10 +81,12 @@ The official website for the Eastlake Wolfpack Association, managing booster clu
 ## 🧪 **Testing**
 
 ```bash
-npm test                    # Unit tests
-npm run test:integration    # Integration tests
-npm run test:e2e           # End-to-end tests
-npm run test:security      # Security tests
+npm test                 # All Jest projects (unit, integration, e2e, security)
+npm run test:ci          # CI gate: unit + integration + security
+npm run test:unit        # Unit tests only
+npm run test:integration # Integration tests only
+npm run test:security    # Security scanner tests
+npm run test:e2e         # Playwright E2E
 ```
 
 ## 🚀 **Deployment**

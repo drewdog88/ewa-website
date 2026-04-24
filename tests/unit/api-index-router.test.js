@@ -59,8 +59,6 @@ describe('Main API Router - Comprehensive Tests', () => {
       }
     });
     neonFunctions.updateUser.mockResolvedValue({ username: 'test' });
-    neonFunctions.getVolunteers.mockResolvedValue([]);
-    neonFunctions.addVolunteer.mockResolvedValue({ id: 1, name: 'Test Volunteer' });
     neonFunctions.getInsurance.mockResolvedValue([]);
     neonFunctions.addInsurance.mockResolvedValue({ id: 1 });
     neonFunctions.getDocuments.mockResolvedValue([]);
@@ -155,42 +153,6 @@ describe('Main API Router - Comprehensive Tests', () => {
     });
 
     
-  });
-
-  describe('Volunteers API', () => {
-    test('GET /volunteers should return all volunteers', async () => {
-      const mockVolunteers = [
-        { id: 1, name: 'Volunteer 1', email: 'vol1@example.com' },
-        { id: 2, name: 'Volunteer 2', email: 'vol2@example.com' }
-      ];
-      neonFunctions.getVolunteers.mockResolvedValue(mockVolunteers);
-
-             const response = await request(app)
-         .get('/volunteers')
-         .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.volunteers).toEqual(mockVolunteers);
-    });
-
-    test('POST /volunteers should add new volunteer', async () => {
-      const volunteerData = {
-        boosterClub: 'orchestra',
-        volunteerName: 'New Volunteer',
-        childName: 'Child Name',
-        email: 'newvol@example.com',
-        phone: '555-123-4567',
-        message: 'Interested in volunteering'
-      };
-
-      const response = await request(app)
-        .post('/volunteers')
-        .send(volunteerData)
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain('Volunteer interest submitted successfully');
-    });
   });
 
     describe('Validation Functions', () => {

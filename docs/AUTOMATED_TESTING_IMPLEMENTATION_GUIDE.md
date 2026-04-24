@@ -165,10 +165,11 @@ tests/
 {
   "scripts": {
     "test": "jest",
-    "test:unit": "jest --project=unit",
-    "test:integration": "jest --project=integration",
-    "test:security": "jest --project=security",
-    "test:all": "jest --projects=unit,integration,security",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "jest --selectProjects integration",
+    "test:security": "jest --selectProjects security",
+    "test:all": "jest --selectProjects unit integration e2e security",
+    "test:ci": "jest --ci --watchAll=false --selectProjects unit integration security",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
