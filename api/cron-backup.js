@@ -245,7 +245,8 @@ function validateEnvironment() {
   console.log('  BLOB_TOKEN exists:', !!BLOB_TOKEN);
   console.log('  BLOB_TOKEN length:', BLOB_TOKEN ? BLOB_TOKEN.length : 0);
   console.log('  DATABASE_URL exists:', !!DATABASE_URL);
-  console.log('  DATABASE_URL starts with:', DATABASE_URL ? DATABASE_URL.substring(0, 20) + '...' : 'NOT SET');
+  // Log only the host portion; the URL embeds the DB password so never log its prefix
+  console.log('  DATABASE_URL host:', DATABASE_URL ? (DATABASE_URL.match(/@([^/?]+)/) || [])[1] || 'unparseable' : 'NOT SET');
 }
 
 // Vercel Function Handler - Using CommonJS for better compatibility

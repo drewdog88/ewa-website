@@ -8,7 +8,8 @@ async function verifyDevEnvironment() {
   try {
     const sql = neon(process.env.DATABASE_URL);
     console.log('✅ Connected to database');
-    console.log(`📋 DATABASE_URL: ${process.env.DATABASE_URL.substring(0, 50)}...`);
+    // Log only the host; the URL embeds the DB password
+    console.log(`📋 DATABASE_URL host: ${(process.env.DATABASE_URL.match(/@([^/?]+)/) || [])[1] || 'unparseable'}`);
     console.log(`📋 NODE_ENV: ${process.env.NODE_ENV}`);
 
     // Check if we're connected to production database

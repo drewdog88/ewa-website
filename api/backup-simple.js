@@ -115,9 +115,8 @@ router.get('/test', requireAdmin, async (req, res) => {
     // Debug: Log environment variable info
     console.log('🔍 DEBUG: Environment variable check');
     console.log('   NODE_ENV:', process.env.NODE_ENV);
-    console.log('   BLOB_TOKEN exists:', !!process.env.BLOB_READ_WRITE_TOKEN);
-    console.log('   BLOB_TOKEN starts with:', process.env.BLOB_READ_WRITE_TOKEN ? process.env.BLOB_READ_WRITE_TOKEN.substring(0, 20) + '...' : 'NOT SET');
-    console.log('   BLOB_TOKEN length:', process.env.BLOB_READ_WRITE_TOKEN ? process.env.BLOB_READ_WRITE_TOKEN.length : 0);
+    // Never log any portion of the token value, only whether it is configured
+    console.log('   BLOB_TOKEN configured:', !!process.env.BLOB_READ_WRITE_TOKEN);
 
     // Test 1: Check blob storage connectivity
     try {
