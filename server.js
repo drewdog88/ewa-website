@@ -85,10 +85,6 @@ const {
   addOfficer,
   getUsers,
   updateUser,
-  getInsurance,
-  addInsurance,
-  updateInsuranceStatus,
-  deleteInsuranceSubmission,
   getDocuments,
   addDocument,
   deleteDocument,
@@ -185,13 +181,16 @@ async function initializeDatabase() {
         
 
 
-// In-memory storage for development fallback
+// In-memory storage for development fallback.
+// Unless FALLBACK_ADMIN_PASSWORD is set, an unguessable random value is used so the
+// in-memory users can never be logged into with a known password.
+const FALLBACK_PASSWORD = process.env.FALLBACK_ADMIN_PASSWORD || require('crypto').randomBytes(24).toString('hex');
 const initialData = loadInitialData();
 const memoryStorage = {
   users: {
     'admin': {
       'username': 'admin',
-      'password': '***REMOVED***',
+      'password': FALLBACK_PASSWORD,
       'role': 'admin',
       'club': '',
       'clubName': '',
@@ -204,7 +203,7 @@ const memoryStorage = {
     },
     'orchestra_booster': {
       'username': 'orchestra_booster',
-      'password': '***REMOVED***',
+      'password': FALLBACK_PASSWORD,
       'role': 'booster_admin',
       'club': 'orchestra',
       'clubName': 'EHS Orchestra Boosters Club',
@@ -216,8 +215,7 @@ const memoryStorage = {
       'lastLogin': null
     }
   },
-  officers: initialData.officers,
-  insurance: []
+  officers: initialData.officers
 };
 
 // Security middleware
@@ -579,146 +577,6 @@ app.post('/api/users', async (req, res) => {
     }
   } catch (error) {
     ErrorHandler.sendError(res, 'create_user', error, 500, req);
-  }
-});
-
-// Booster Admin API Routes
-
-// Submit insurance form
-app.post('/api/insurance', async (req, res) => {
-  try {
-    const { eventName, eventDate, eventDescription, participantCount, submittedBy } = req.body;
-        
-    if (!eventName || !eventDate || !eventDescription) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields: eventName, eventDate, eventDescription' 
-      });
-    }
-
-                    const insuranceData = {
-                  eventName,
-                  eventDate,
-                  eventDescription,
-                  participantCount: participantCount || 0,
-                  submittedBy: submittedBy || 'admin',
-                  status: 'pending',
-                  clubId: req.body.clubId || null
-                };
-
-    const result = await addInsurance(insuranceData);
-    
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Insurance form submitted successfully',
-        submission: result
-      });
-    } else {
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to save insurance data' 
-      });
-    }
-  } catch (error) {
-    console.error('Error submitting insurance form:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get insurance submissions for a club
-app.get('/api/insurance/:club', async (req, res) => {
-  try {
-    const { club } = req.params;
-    const insuranceSubmissions = await getInsurance();
-    const clubSubmissions = insuranceSubmissions.filter(sub => sub.club === club);
-    res.json({ success: true, submissions: clubSubmissions });
-  } catch (error) {
-    console.error('Error getting insurance submissions:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get all insurance submissions (admin only)
-app.get('/api/insurance', async (req, res) => {
-  try {
-    const insuranceSubmissions = await getInsurance();
-    res.json({ success: true, submissions: insuranceSubmissions });
-  } catch (error) {
-    console.error('Error getting all insurance submissions:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Update insurance submission status
-app.put('/api/insurance/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    
-    if (!status) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Status is required' 
-      });
-    }
-    
-    const result = await updateInsuranceStatus(id, status);
-    
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Insurance submission status updated successfully',
-        submission: result
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: 'Insurance submission not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error updating insurance submission status:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Delete insurance submission
-app.delete('/api/insurance/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const result = await deleteInsuranceSubmission(id);
-    
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Insurance submission deleted successfully'
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: 'Insurance submission not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error deleting insurance submission:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
   }
 });
 
@@ -1222,7 +1080,7 @@ app.post('/api/upload', async (req, res) => {
   }
 });
 
-// Upload document (for insurance forms, etc.)
+// Upload document
 app.post('/api/upload-document', async (req, res) => {
   try {
     if (!blob) {
@@ -1735,16 +1593,12 @@ app.get('/api/dashboard/stats', async (req, res) => {
         
     // Get real counts from database
     const officers = await getOfficers();
-    const insurance = await getInsurance();
     const documents = await getDocuments();
-    const pendingInsurance = insurance.filter(f => f.status === 'pending').length;
 
     // Calculate statistics
     const stats = {
       totalOfficers: officers.length,
-      pendingInsuranceSubmissions: pendingInsurance,
       totalDocuments: documents.length,
-      totalInsuranceForms: insurance.length,
       // Note: Site visitors would need analytics integration
       siteVisitors: 'N/A'
     };
@@ -2565,7 +2419,6 @@ if (require.main === module) {
     console.log('🚀 EWA Website server started successfully!');
     console.log(`📍 Server running on http://localhost:${PORT}`);
     console.log('💾 Storage: Neon PostgreSQL (production)');
-    console.log('🔐 Orchestra Booster login: orchestra_booster / ***REMOVED***');
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
         
     // Initialize database connection

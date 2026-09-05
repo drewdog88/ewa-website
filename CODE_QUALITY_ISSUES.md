@@ -6,14 +6,7 @@ This document tracks code quality issues found in production code that should be
 
 ### API Files
 
-#### `api/1099-upload-w9.js`
-- **Line 2**: `put` - imported but never used
-- **Line 27**: `contentType` - assigned but never used
-- **Risk**: Low - likely safe to remove, but verify no dynamic usage
-
 #### `api/index.js`
-- **Line 18**: `getInsurance` - imported but never used
-- **Line 19**: `addInsurance` - imported but never used  
 - **Line 23**: `getDocuments` - imported but never used
 - **Line 24**: `addDocument` - imported but never used
 - **Line 25**: `deleteDocument` - imported but never used

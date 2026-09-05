@@ -27,7 +27,7 @@ async function testTableDisplay() {
             
             // Fill login credentials
             await page.fill('#username', 'admin');
-            await page.fill('#password', '***REMOVED***');
+            await page.fill('#password', process.env.ADMIN_PASSWORD);
             console.log('✅ Filled login credentials');
             
             // Submit login form

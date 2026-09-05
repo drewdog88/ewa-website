@@ -13,10 +13,6 @@ const {
   deleteOfficer,
   getUsers,
   updateUser,
-  getInsurance,
-  addInsurance,
-  updateInsuranceStatus,
-  deleteInsuranceSubmission,
   getDocuments,
   addDocument,
   deleteDocument,
@@ -113,13 +109,16 @@ async function initializeDatabase() {
 }
 
 
-// In-memory storage for development fallback
+// In-memory storage for development fallback.
+// Unless FALLBACK_ADMIN_PASSWORD is set, an unguessable random value is used so the
+// in-memory users can never be logged into with a known password.
+const FALLBACK_PASSWORD = process.env.FALLBACK_ADMIN_PASSWORD || require('crypto').randomBytes(24).toString('hex');
 const initialData = loadInitialData();
 const memoryStorage = {
   users: {
     'admin': {
       'username': 'admin',
-      'password': '***REMOVED***',
+      'password': FALLBACK_PASSWORD,
       'role': 'admin',
       'club': '',
       'clubName': '',
@@ -132,7 +131,7 @@ const memoryStorage = {
     },
     'orchestra_booster': {
       'username': 'orchestra_booster',
-      'password': '***REMOVED***',
+      'password': FALLBACK_PASSWORD,
       'role': 'booster_admin',
       'club': 'orchestra',
       'clubName': 'EHS Orchestra Boosters Club',
@@ -144,8 +143,7 @@ const memoryStorage = {
       'lastLogin': null
     }
   },
-  officers: initialData.officers,
-  insurance: []
+  officers: initialData.officers
 };
 
 // Security middleware
@@ -962,134 +960,6 @@ app.post('/api/booster-clubs', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: error.message || 'Internal server error' 
-    });
-  }
-});
-
-// Insurance Management API Endpoints
-
-// Submit insurance form
-app.post('/insurance', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { eventName, eventDate, eventDescription, participantCount, submittedBy } = req.body;
-        
-    if (!eventName || !eventDate || !eventDescription) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields: eventName, eventDate, eventDescription' 
-      });
-    }
-
-                    const insuranceData = {
-                  eventName,
-                  eventDate,
-                  eventDescription,
-                  participantCount: participantCount || 0,
-                  submittedBy: submittedBy || 'admin',
-                  status: 'pending',
-                  clubId: req.body.clubId || null
-                };
-
-    const result = await addInsurance(insuranceData);
-    
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Insurance form submitted successfully',
-        submission: result
-      });
-    } else {
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to save insurance data' 
-      });
-    }
-  } catch (error) {
-    console.error('Error submitting insurance form:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Get all insurance submissions (admin only)
-app.get('/insurance', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const insuranceSubmissions = await getInsurance();
-    res.json({ success: true, submissions: insuranceSubmissions });
-  } catch (error) {
-    console.error('Error getting all insurance submissions:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Update insurance submission status
-app.put('/insurance/:id', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { id } = req.params;
-    const { status } = req.body;
-    
-    if (!status) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Status is required' 
-      });
-    }
-    
-    const result = await updateInsuranceStatus(id, status);
-    
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Insurance submission status updated successfully',
-        submission: result
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: 'Insurance submission not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error updating insurance submission status:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
-    });
-  }
-});
-
-// Delete insurance submission
-app.delete('/insurance/:id', async (req, res) => {
-  try {
-    await ensureDatabaseInitialized();
-    const { id } = req.params;
-    
-    const result = await deleteInsuranceSubmission(id);
-    
-    if (result) {
-      res.json({ 
-        success: true, 
-        message: 'Insurance submission deleted successfully'
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: 'Insurance submission not found' 
-      });
-    }
-  } catch (error) {
-    console.error('Error deleting insurance submission:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
     });
   }
 });

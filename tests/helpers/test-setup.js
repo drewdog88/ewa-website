@@ -28,8 +28,6 @@ const mockUtils = {
     deleteOfficer: jest.fn(),
     getUsers: jest.fn(),
     updateUser: jest.fn(),
-    getInsurance: jest.fn(),
-    addInsurance: jest.fn(),
     getDocuments: jest.fn(),
     addDocument: jest.fn(),
     deleteDocument: jest.fn()

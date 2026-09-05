@@ -184,18 +184,17 @@ curl -X POST http://localhost:3000/api/backup/restore \
 -- Created: 2025-08-07T01:48:52.803Z
 -- Database: neondb
 
--- Table: form_1099
-DROP TABLE IF EXISTS "form_1099" CASCADE;
-CREATE TABLE "form_1099" (
+-- Table: officers
+DROP TABLE IF EXISTS "officers" CASCADE;
+CREATE TABLE "officers" (
   "id" uuid NOT NULL,
-  "recipient_name" character varying NOT NULL,
-  "recipient_tin" character varying,
-  "amount" numeric NOT NULL,
+  "name" character varying NOT NULL,
+  "position" character varying NOT NULL,
   -- ... more columns
 );
 
--- Data for form_1099
-INSERT INTO "form_1099" ("id", "recipient_name", "recipient_tin", "amount") VALUES ('0bf49073-024b-4b7e-90df-832cd83ea5e6', 'Joseph Smith', '555-55-5555', 1000.00);
+-- Data for officers
+INSERT INTO "officers" ("id", "name", "position") VALUES ('<uuid>', '<name>', '<position>');
 ```
 
 ### Blob Backup
@@ -210,9 +209,6 @@ INSERT INTO "form_1099" ("id", "recipient_name", "recipient_tin", "amount") VALU
 **Structure**:
 ```
 blob-backup-2025-08-07T01-48-53-152Z.zip
-├── w9-1754530611450-StevenSmith.pdf
-├── w9-1754501558027-StevenSmith.pdf
-├── w9-1754433616026-StevenSmith.pdf
 └── ... (all blob files)
 ```
 

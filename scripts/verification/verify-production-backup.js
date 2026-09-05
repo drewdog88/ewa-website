@@ -24,7 +24,6 @@ async function verifyProductionBackupIntegrity() {
         const boosterClubsCount = await sql`SELECT COUNT(*) as count FROM booster_clubs`;
         const officersCount = await sql`SELECT COUNT(*) as count FROM officers`;
         const usersCount = await sql`SELECT COUNT(*) as count FROM users`;
-        const insuranceCount = await sql`SELECT COUNT(*) as count FROM insurance_forms`;
         const newsCount = await sql`SELECT COUNT(*) as count FROM news`;
         const linksCount = await sql`SELECT COUNT(*) as count FROM links`;
         
@@ -32,7 +31,6 @@ async function verifyProductionBackupIntegrity() {
         console.log(`   Booster Clubs: ${boosterClubsCount[0].count}`);
         console.log(`   Officers: ${officersCount[0].count}`);
         console.log(`   Users: ${usersCount[0].count}`);
-        console.log(`   Insurance Forms: ${insuranceCount[0].count}`);
         console.log(`   News Articles: ${newsCount[0].count}`);
         console.log(`   Links: ${linksCount[0].count}`);
         

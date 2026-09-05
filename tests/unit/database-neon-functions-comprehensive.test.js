@@ -30,8 +30,6 @@ const {
   addOfficer,
   getUsers,
   updateUser,
-  getInsurance,
-  addInsurance,
   getDocuments,
   addDocument,
   deleteDocument,
@@ -221,41 +219,6 @@ describe('Database Neon Functions - Comprehensive Tests', () => {
 
       expectMockSqlToContain(mockSql, 'UPDATE users');
       expect(result).toEqual(mockUser);
-    });
-  });
-
-  describe('Insurance Functions', () => {
-    test('getInsurance should return insurance forms', async () => {
-      const mockInsurance = [
-        { id: 1, event_name: 'Event 1', event_date: '2024-01-01' },
-        { id: 2, event_name: 'Event 2', event_date: '2024-02-01' }
-      ];
-      mockSql.mockResolvedValue(mockInsurance);
-
-      const result = await getInsurance();
-
-      expectMockSqlToContain(mockSql, 'insurance_forms');
-      expect(result).toEqual(mockInsurance);
-    });
-
-    test('addInsurance should add new insurance form', async () => {
-      const mockInsurance = { id: 1, event_name: 'Spring Concert', event_date: '2024-06-01' };
-      mockSql.mockResolvedValue([mockInsurance]);
-
-      const insuranceData = {
-        eventName: 'Spring Concert',
-        eventDate: '2024-06-01',
-        eventDescription: 'Evening performance',
-        participantCount: 50,
-        submittedBy: 'admin',
-        status: 'pending',
-        clubId: null
-      };
-
-      const result = await addInsurance(insuranceData);
-
-      expectMockSqlToContain(mockSql, 'INSERT INTO insurance_forms');
-      expect(result).toEqual(mockInsurance);
     });
   });
 

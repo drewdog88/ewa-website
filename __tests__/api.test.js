@@ -48,7 +48,7 @@ describe('EWA API Endpoints', () => {
         .post('/api/login')
         .send({
           username: 'admin',
-          password: '***REMOVED***'
+          password: 'test-password'
         });
       
       expect(response.status).toBe(200);

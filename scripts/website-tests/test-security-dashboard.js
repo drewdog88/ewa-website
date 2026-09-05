@@ -99,7 +99,7 @@ async function testSecurityDashboard() {
       const loginResponse = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'admin', password: '***REMOVED***' })
+        body: JSON.stringify({ username: 'admin', password: process.env.ADMIN_PASSWORD })
       });
       
       if (loginResponse.ok) {
@@ -128,7 +128,7 @@ async function testSecurityDashboard() {
     console.log('\n🎉 All security dashboard tests completed successfully!');
     console.log('\n📋 Next Steps:');
     console.log('1. Open http://localhost:3000/admin/login.html');
-    console.log('2. Login with admin/***REMOVED***');
+    console.log('2. Login with admin/$ADMIN_PASSWORD');
     console.log('3. Navigate to the security dashboard');
     console.log('4. Test the interactive features');
 

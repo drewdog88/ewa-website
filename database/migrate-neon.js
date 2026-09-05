@@ -43,19 +43,6 @@ async function migrateToNeon() {
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`;
         
-    // Create insurance forms table
-    await sql`CREATE TABLE IF NOT EXISTS insurance_forms (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            event_name VARCHAR(255) NOT NULL,
-            event_date DATE NOT NULL,
-            event_description TEXT,
-            participant_count INTEGER,
-            submitted_by VARCHAR(100) REFERENCES users(username),
-            status VARCHAR(50) DEFAULT 'pending',
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        )`;
-        
     // Create documents table
     await sql`CREATE TABLE IF NOT EXISTS documents (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -71,7 +58,6 @@ async function migrateToNeon() {
         
     // Create indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_officers_club ON officers(club)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club)`;
         
     console.log('✅ Database schema created successfully');
@@ -80,11 +66,11 @@ async function migrateToNeon() {
     console.log('👥 Creating default users...');
         
     await sql`INSERT INTO users (username, password, role, club, club_name, is_first_login) 
-                  VALUES ('admin', '***REMOVED***', 'admin', '', '', false)
+                  VALUES ('admin', 'CHANGE_ME', 'admin', '', '', false)
                   ON CONFLICT (username) DO NOTHING`;
         
     await sql`INSERT INTO users (username, password, role, club, club_name, is_first_login) 
-                  VALUES ('orchestra_booster', '***REMOVED***', 'booster', 'orchestra', 'Eastlake Orchestra Booster Club', false)
+                  VALUES ('orchestra_booster', 'CHANGE_ME', 'booster', 'orchestra', 'Eastlake Orchestra Booster Club', false)
                   ON CONFLICT (username) DO NOTHING`;
         
     console.log('✅ Default users created');
@@ -129,7 +115,6 @@ async function migrateToNeon() {
         
     backup.tables.officers = await sql`SELECT * FROM officers ORDER BY created_at`;
     backup.tables.users = await sql`SELECT * FROM users ORDER BY created_at`;
-    backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at`;
     backup.tables.documents = await sql`SELECT * FROM documents ORDER BY created_at`;
         
     // Create backups directory if it doesn't exist
@@ -147,7 +132,6 @@ async function migrateToNeon() {
     console.log('📊 Backup contains:');
     console.log(`   - Officers: ${backup.tables.officers.length}`);
     console.log(`   - Users: ${backup.tables.users.length}`);
-    console.log(`   - Insurance Forms: ${backup.tables.insurance_forms.length}`);
     console.log(`   - Documents: ${backup.tables.documents.length}`);
         
     console.log('✅ Migration completed successfully!');

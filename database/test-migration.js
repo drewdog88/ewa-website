@@ -39,7 +39,7 @@ async function testMigration() {
         
     // Test 2: Verify all tables have club_id columns
     console.log('\n🔗 Test 2: Foreign Key Columns');
-    const tables = ['officers', 'users', 'documents', 'insurance_forms'];
+    const tables = ['officers', 'users', 'documents'];
         
     for (const table of tables) {
       const hasClubId = await sql`
@@ -57,8 +57,7 @@ async function testMigration() {
       'idx_booster_clubs_active',
       'idx_officers_club_id',
       'idx_users_club_id',
-      'idx_documents_club_id',
-      'idx_insurance_club_id'
+      'idx_documents_club_id'
     ];
         
     for (const index of indexes) {

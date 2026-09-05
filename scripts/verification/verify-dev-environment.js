@@ -62,7 +62,7 @@ async function verifyDevEnvironment() {
     console.log('\n🔗 You can now:');
     console.log('   - Visit: https://ewa-website-dev.vercel.app');
     console.log('   - Login to admin: https://ewa-website-dev.vercel.app/admin/login.html');
-    console.log('   - Use admin credentials: admin/***REMOVED***');
+    console.log('   - Use admin credentials: admin/$ADMIN_PASSWORD');
     console.log('   - All data will be from production (read-only)');
 
   } catch (error) {

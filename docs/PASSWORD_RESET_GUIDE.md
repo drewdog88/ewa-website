@@ -154,7 +154,7 @@ curl -X POST https://eastlakewolfpack.org/api/users/forgot-password \
   -d '{
     "username": "orchestra_booster",
     "secretAnswer": "Pizza",
-    "newPassword": "***REMOVED***"
+    "newPassword": "NewStrongPassword!123"
   }'
 ```
 
@@ -170,7 +170,7 @@ Invoke-RestMethod -Uri "https://eastlakewolfpack.org/api/users/orchestra_booster
 $body = @{
   username = "orchestra_booster"
   secretAnswer = "Pizza"
-  newPassword = "***REMOVED***"
+  newPassword = "NewStrongPassword!123"
 } | ConvertTo-Json
 
 Invoke-RestMethod -Uri "https://eastlakewolfpack.org/api/users/forgot-password" -Method POST -Body $body -ContentType "application/json"

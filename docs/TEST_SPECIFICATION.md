@@ -33,20 +33,6 @@ This document defines the comprehensive testing strategy for the Eastlake Wolfpa
   - ✅ CSV Import → handles valid/invalid CSV files
   - ✅ Duplicate detection → prevents duplicate officers
 
-- **Volunteers Management**
-  - ✅ GET /api/volunteers → returns volunteers list
-  - ✅ POST /api/volunteers → creates volunteer with email validation
-  - ✅ PUT /api/volunteers/:id → updates volunteer
-  - ✅ DELETE /api/volunteers/:id → deletes volunteer
-
-- **1099 Forms Management**
-  - ✅ GET /api/1099 → returns 1099 forms list
-  - ✅ POST /api/1099 → creates 1099 form with validation
-  - ✅ PUT /api/1099/:id → updates 1099 form
-  - ✅ DELETE /api/1099/:id → deletes 1099 form
-  - ✅ W-9 Upload → validates file type/size
-  - ✅ CSV Export → generates proper CSV format
-  - ✅ SSN Masking → masks SSN in responses
 
 - **Health & System**
   - ✅ GET /api/health → returns system status
@@ -114,16 +100,9 @@ This document defines the comprehensive testing strategy for the Eastlake Wolfpa
   - ✅ Unauthorized access → redirected to login
 
 #### User Journeys
-- **Volunteer Signup**
   - ✅ Form validation → proper error messages
   - ✅ Successful signup → confirmation message
   - ✅ Duplicate email → error handling
-
-- **1099 Workflow**
-  - ✅ Form creation → data saved correctly
-  - ✅ W-9 upload → file validation and storage
-  - ✅ Admin review → status updates
-  - ✅ CSV export → proper file download
 
 - **Admin Dashboard**
   - ✅ Data loading → all sections populate
@@ -175,8 +154,6 @@ This document defines the comprehensive testing strategy for the Eastlake Wolfpa
 // Test data factories for consistent test data
 const createAdminUser = () => ({ /* admin user data */ });
 const createBoosterUser = () => ({ /* booster user data */ });
-const createVolunteer = () => ({ /* volunteer data */ });
-const create1099Form = () => ({ /* 1099 form data */ });
 ```
 
 ### Database Isolation

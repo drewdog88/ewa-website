@@ -23,7 +23,7 @@ async function testAdminPaymentUI() {
     if (pageTitle.includes('Admin Login')) {
       console.log('🔐 Logging in...');
       await page.fill('#username', 'admin');
-      await page.fill('#password', '***REMOVED***');
+      await page.fill('#password', process.env.ADMIN_PASSWORD);
       await page.locator('#password').press('Enter');
       await page.waitForTimeout(3000);
       

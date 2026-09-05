@@ -711,7 +711,6 @@
                     <ul class="group-items" style="display: none;">
                         <li class="admin-only"><a href="#news" class="nav-link" data-section="news">📰 News & Announcements</a></li>
                         <li class="admin-only"><a href="#links" class="nav-link" data-section="links">🔗 Links & Resources</a></li>
-                        <li><a href="#insurance" class="nav-link" data-section="insurance">🛡️ Insurance Forms</a></li>
                     </ul>
                 </li>
                 
@@ -990,70 +989,6 @@
                         <!-- Links will be dynamically loaded here -->
                     </tbody>
                 </table>
-            </div>
-            
-            <!-- Insurance Forms Section -->
-            <div id="insurance" class="content-section">
-                <div class="section-header">
-                    <h2>Insurance Forms</h2>
-                    <p>Submit event and activity information for insurance purposes.</p>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Submit Insurance Form</h3>
-                    <form id="insuranceForm" onsubmit="submitInsuranceForm(event)">
-                        <div class="form-group">
-                            <label for="insuranceBoosterClub">Booster Club *</label>
-                            <select id="insuranceBoosterClub" required>
-                                <option value="">Select Booster Club</option>
-                                <!-- Clubs will be loaded dynamically from database -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="insuranceEventName">Event/Activity Name *</label>
-                            <input type="text" id="insuranceEventName" placeholder="Event Name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="insuranceEventDate">Event Date *</label>
-                            <input type="date" id="insuranceEventDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="insuranceEventDescription">Event Description *</label>
-                            <textarea id="insuranceEventDescription" placeholder="Describe the event, activities, and any special requirements..." required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="insuranceParticipantCount">Expected Participants</label>
-                            <input type="number" id="insuranceParticipantCount" placeholder="Number of participants" min="1" oninput="validateParticipantCount(this)">
-                            <div id="participantCountError" class="error-message" style="display: none; color: #dc3545; font-size: 12px; margin-top: 5px;"></div>
-                        </div>
-                        <button type="submit" id="submitInsuranceBtn" class="action-btn">Submit Insurance Form</button>
-                    </form>
-                </div>
-                
-                <div class="form-section">
-                    <h3>Your Insurance Submissions</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h4>Insurance Submissions</h4>
-                        <button class="btn btn-success btn-sm" onclick="downloadInsuranceCSV()">📥 Download CSV</button>
-                    </div>
-                    <table class="data-table" id="insuranceTable">
-                        <thead>
-                            <tr>
-                                <th>Date Submitted</th>
-                                <th>Booster Club</th>
-                                <th>Event Name</th>
-                                <th>Event Date</th>
-                                <th>Description</th>
-                                <th>Participants</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data will be loaded dynamically -->
-                        </tbody>
-                    </table>
-                </div>
             </div>
             
             <!-- Content Management Section -->
@@ -1548,8 +1483,6 @@
                             'boosterClub',
                             'websiteClubSelect', 
                             'officerClubFilter',
-                            'insuranceClubFilter',
-                            'insuranceBoosterClub',
                             'userClub',
                             'editOfficerClub',
                             'editBoosterClub',
@@ -1571,17 +1504,8 @@
                                 // Add clubs from database
                                 allBoosterClubs.forEach(club => {
                                     const option = document.createElement('option');
-                                    
-                                    // Handle different value formats based on dropdown type
-                                    if (dropdownId === 'insuranceBoosterClub') {
-                                        // Insurance dropdown uses UUIDs as values
-                                        option.value = club.id;
-                                        option.textContent = club.name;
-                                    } else {
-                                        // All other dropdowns use club names as values
-                                        option.value = club.name;
-                                        option.textContent = club.name;
-                                    }
+                                    option.value = club.name;
+                                    option.textContent = club.name;
                                     
                                     dropdown.appendChild(option);
                                 });
@@ -2279,11 +2203,6 @@
                 }
             });
             
-            // Load insurance data when insurance section is shown
-            document.querySelector('[data-section="insurance"]').addEventListener('click', function() {
-                setTimeout(loadInsuranceData, 100);
-            });
-            
             console.log('Admin dashboard loaded');
             
             // Load dashboard statistics
@@ -2362,232 +2281,6 @@
                     header.textContent = 'EWA Admin Dashboard';
                 }
             }
-        }
-        
-        // Submit insurance form
-        function submitInsuranceForm(event) {
-            // Prevent default form submission
-            if (event) {
-                event.preventDefault();
-            }
-            
-            const currentUser = userSession.currentUser || {};
-            const submitBtn = document.getElementById('submitInsuranceBtn');
-            
-            // Disable submit button to prevent double submission
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            const participantCountInput = document.getElementById('insuranceParticipantCount');
-            const boosterClubSelect = document.getElementById('insuranceBoosterClub');
-            
-            const formData = {
-                clubId: boosterClubSelect.value,
-                eventName: document.getElementById('insuranceEventName').value,
-                eventDate: document.getElementById('insuranceEventDate').value,
-                eventDescription: document.getElementById('insuranceEventDescription').value,
-                participantCount: participantCountInput.value
-            };
-            
-            if (!formData.clubId || !formData.eventName || !formData.eventDate || !formData.eventDescription) {
-                alert('Please fill in all required fields including Booster Club selection');
-                // Re-enable submit button
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Insurance Form';
-                return;
-            }
-            
-            // Validate participant count if provided
-            if (formData.participantCount && !validateParticipantCount(participantCountInput)) {
-                alert('Please fix the participant count errors before submitting');
-                // Re-enable submit button
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Insurance Form';
-                return;
-            }
-            
-            fetch('/api/insurance', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Insurance form submitted successfully!');
-                    // Clear form
-                    document.getElementById('insuranceBoosterClub').value = '';
-                    document.getElementById('insuranceEventName').value = '';
-                    document.getElementById('insuranceEventDate').value = '';
-                    document.getElementById('insuranceEventDescription').value = '';
-                    document.getElementById('insuranceParticipantCount').value = '';
-                    // Reload data
-                    loadInsuranceData();
-                } else {
-                    alert('Error submitting form: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error submitting form. Please try again.');
-            })
-            .finally(() => {
-                // Re-enable submit button
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Insurance Form';
-            });
-        }
-        
-        // Load insurance data
-        function loadInsuranceData() {
-            const currentUser = userSession.currentUser || {};
-            
-            let url = '/api/insurance';
-            if (currentUser.role === 'booster_admin' && currentUser.club) {
-                url = `/api/insurance/${currentUser.club}`;
-            }
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayInsuranceData(data.submissions);
-                    } else {
-                        console.error('Error loading insurance data:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-        
-        // Display insurance data
-        function displayInsuranceData(submissions) {
-            const tbody = document.querySelector('#insuranceTable tbody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            submissions.forEach(submission => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${new Date(submission.created_at).toLocaleDateString()}</td>
-                    <td>${submission.booster_club_name || 'N/A'}</td>
-                    <td>${submission.event_name}</td>
-                    <td>${new Date(submission.event_date).toLocaleDateString()}</td>
-                    <td>${submission.event_description}</td>
-                    <td>${submission.participant_count}</td>
-                    <td>
-                        <select class="status-select" data-id="${submission.id}" onchange="updateInsuranceStatus('${submission.id}', this.value)">
-                            <option value="pending" ${submission.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="approved" ${submission.status === 'approved' ? 'selected' : ''}>Approved</option>
-                            <option value="rejected" ${submission.status === 'rejected' ? 'selected' : ''}>Rejected</option>
-                            <option value="completed" ${submission.status === 'completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteInsuranceSubmission('${submission.id}')">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        // Update insurance submission status
-        function updateInsuranceStatus(id, newStatus) {
-            fetch(`/api/insurance/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: newStatus })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Status updated successfully');
-                    // Reload the data to show the updated status
-                    loadInsuranceData();
-                } else {
-                    console.error('Error updating status:', data.message);
-                    alert('Error updating status: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating status. Please try again.');
-            });
-        }
-        
-        // Delete insurance submission
-        function deleteInsuranceSubmission(id) {
-            if (!confirm('Are you sure you want to delete this insurance submission? This action cannot be undone.')) {
-                return;
-            }
-            
-            fetch(`/api/insurance/${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Submission deleted successfully');
-                    // Reload the data
-                    loadInsuranceData();
-                } else {
-                    console.error('Error deleting submission:', data.message);
-                    alert('Error deleting submission: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error deleting submission. Please try again.');
-            });
-        }
-        
-        // Download insurance submissions as CSV
-        function downloadInsuranceCSV() {
-            fetch('/api/insurance')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.submissions) {
-                        const submissions = data.submissions;
-                        
-                        // Create CSV content
-                        const headers = ['Date Submitted', 'Booster Club', 'Event Name', 'Event Date', 'Description', 'Participants', 'Status'];
-                        const csvContent = [
-                            headers.join(','),
-                            ...submissions.map(submission => [
-                                new Date(submission.created_at).toLocaleDateString(),
-                                submission.booster_club_name || 'N/A',
-                                `"${submission.event_name}"`,
-                                new Date(submission.event_date).toLocaleDateString(),
-                                `"${submission.event_description}"`,
-                                submission.participant_count,
-                                submission.status
-                            ].join(','))
-                        ].join('\n');
-                        
-                        // Create and download file
-                        const blob = new Blob([csvContent], { type: 'text/csv' });
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `insurance_submissions_${new Date().toISOString().split('T')[0]}.csv`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(url);
-                    } else {
-                        alert('Error loading data for CSV download');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error downloading CSV. Please try again.');
-                });
         }
         
         // Security Settings Functions
@@ -3730,44 +3423,6 @@
         return true;
     }
     
-    // Participant count validation function
-    function validateParticipantCount(input) {
-        const value = input.value;
-        const errorDiv = document.getElementById('participantCountError');
-        
-        // Clear previous error
-        errorDiv.style.display = 'none';
-        
-        // Check if empty
-        if (!value) {
-            return true; // Let HTML5 validation handle required field
-        }
-        
-        // Check if it's a valid integer
-        const intValue = parseInt(value);
-        if (isNaN(intValue)) {
-            errorDiv.textContent = 'Please enter a valid number';
-            errorDiv.style.display = 'block';
-            return false;
-        }
-        
-        // Check if it's less than 1
-        if (intValue < 1) {
-            errorDiv.textContent = 'Participant count must be at least 1';
-            errorDiv.style.display = 'block';
-            return false;
-        }
-        
-        // Check if it's too large (prevent overflow)
-        if (intValue > 999999) {
-            errorDiv.textContent = 'Participant count is too large';
-            errorDiv.style.display = 'block';
-            return false;
-        }
-        
-        return true;
-    }
-    
     // Initialize page data when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 Page loaded, initializing data...');
@@ -3781,12 +3436,6 @@
         
         // Handle hash navigation for direct links
         const hash = window.location.hash.substring(1); // Remove the # symbol
-        
-        // Only load default data if no specific section is requested
-        if (!hash) {
-            // Load insurance data automatically
-            loadInsuranceData();
-        }
         if (hash) {
             // Check if user is logged in and not logging out before loading data
             const currentUser = userSession.currentUser || {};
@@ -3822,10 +3471,7 @@
                         break;
                     case 'links':
                         loadLinksData();
-                        break;
-                    case 'insurance':
-                        loadInsuranceData();
-                        break;
+                        break;
                     case 'content':
                         loadContentData();
                         break;
@@ -3883,10 +3529,7 @@
                             break;
                         case 'links':
                             loadLinksData();
-                            break;
-                        case 'insurance':
-                            loadInsuranceData();
-                            break;
+                            break;
                         case 'content':
                             loadContentData();
                             break;

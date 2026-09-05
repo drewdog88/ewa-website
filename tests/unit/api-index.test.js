@@ -48,8 +48,6 @@ describe('Main API Router Tests', () => {
     mockNeonFunctions.addOfficer.mockResolvedValue({ id: 2, ...mockOfficers[0] });
     mockNeonFunctions.getUsers.mockResolvedValue([]);
     mockNeonFunctions.updateUser.mockResolvedValue({ rowCount: 1 });
-    mockNeonFunctions.getInsurance.mockResolvedValue([]);
-    mockNeonFunctions.addInsurance.mockResolvedValue({ id: 1 });
     mockNeonFunctions.getDocuments.mockResolvedValue([]);
     mockNeonFunctions.addDocument.mockResolvedValue({ id: 1 });
     mockNeonFunctions.deleteDocument.mockResolvedValue({ rowCount: 1 });

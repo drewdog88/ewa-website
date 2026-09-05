@@ -43,9 +43,6 @@ class DatabaseBackup {
       // Backup users
       backup.tables.users = await sql`SELECT * FROM users ORDER BY created_at` || [];
 
-      // Backup insurance forms
-      backup.tables.insurance_forms = await sql`SELECT * FROM insurance_forms ORDER BY created_at` || [];
-
       // Backup documents
       backup.tables.documents = await sql`SELECT * FROM documents ORDER BY created_at` || [];
 
@@ -56,7 +53,6 @@ class DatabaseBackup {
       console.log('📊 Backup contains:');
       console.log(`   - Officers: ${backup.tables.officers.length}`);
       console.log(`   - Users: ${backup.tables.users.length}`);
-      console.log(`   - Insurance Forms: ${backup.tables.insurance_forms.length}`);
       console.log(`   - Documents: ${backup.tables.documents.length}`);
 
       return backupPath;
@@ -95,7 +91,6 @@ class DatabaseBackup {
       try {
         // Clear existing data (except users to preserve admin access)
         await sql`DELETE FROM documents`;
-        await sql`DELETE FROM insurance_forms`;
         await sql`DELETE FROM officers`;
 
         // Restore officers
@@ -107,17 +102,6 @@ class DatabaseBackup {
                         `;
           }
           console.log(`✅ Restored ${backup.tables.officers.length} officers`);
-        }
-
-        // Restore insurance forms
-        if (backup.tables.insurance_forms) {
-          for (const form of backup.tables.insurance_forms) {
-            await sql`
-                            INSERT INTO insurance_forms (id, event_name, event_date, event_description, participant_count, submitted_by, status, created_at, updated_at) 
-                            VALUES (${form.id}, ${form.event_name}, ${form.event_date}, ${form.event_description}, ${form.participant_count}, ${form.submitted_by}, ${form.status}, ${form.created_at}, ${form.updated_at})
-                        `;
-          }
-          console.log(`✅ Restored ${backup.tables.insurance_forms.length} insurance forms`);
         }
 
         // Restore documents

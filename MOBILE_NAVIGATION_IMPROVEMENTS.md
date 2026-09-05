@@ -130,11 +130,6 @@ body {
 - Improved team member card spacing
 - Enhanced content readability
 
-### 3. volunteers.html
-- Fixed form layout for mobile
-- Added touch-friendly form inputs
-- Improved navigation experience
-
 ### 4. news.html
 - Enhanced article layout for mobile
 - Improved navigation spacing
@@ -196,7 +191,6 @@ body {
 ## Files Modified
 1. `index.html` - Main navigation and content improvements
 2. `team.html` - Header and content layout fixes
-3. `volunteers.html` - Form and navigation enhancements
 4. `news.html` - Article layout and navigation improvements
 5. `gallery.html` - Gallery controls and navigation fixes
 6. `links.html` - Filter controls and link grid improvements

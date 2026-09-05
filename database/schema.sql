@@ -1,5 +1,5 @@
 -- EWA Website Database Schema for Neon PostgreSQL
--- This schema supports officers, users, insurance forms, and documents
+-- This schema supports officers, users, news, links, and documents
 
 -- Enable UUID extension for better ID management
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -28,19 +28,6 @@ CREATE TABLE IF NOT EXISTS users (
     is_first_login BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP WITH TIME ZONE,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Insurance forms table
-CREATE TABLE IF NOT EXISTS insurance_forms (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    event_name VARCHAR(255) NOT NULL,
-    event_date DATE NOT NULL,
-    event_description TEXT,
-    participant_count INTEGER,
-    submitted_by VARCHAR(100) REFERENCES users(username),
-    status VARCHAR(50) DEFAULT 'pending',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -86,7 +73,6 @@ CREATE TABLE IF NOT EXISTS documents (
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_officers_club ON officers(club);
-CREATE INDEX IF NOT EXISTS idx_insurance_submitted_by ON insurance_forms(submitted_by);
 CREATE INDEX IF NOT EXISTS idx_documents_booster_club ON documents(booster_club);
 CREATE INDEX IF NOT EXISTS idx_news_status ON news(status);
 CREATE INDEX IF NOT EXISTS idx_news_published_at ON news(published_at);
@@ -107,14 +93,13 @@ $$ language 'plpgsql';
 -- Add updated_at triggers to all tables
 CREATE TRIGGER update_officers_updated_at BEFORE UPDATE ON officers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_insurance_forms_updated_at BEFORE UPDATE ON insurance_forms FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert default admin user
+-- Insert default admin user (placeholder password: set a real one before first use)
 INSERT INTO users (username, password, role, club, club_name, is_first_login) 
-VALUES ('admin', '***REMOVED***', 'admin', '', '', false)
+VALUES ('admin', 'CHANGE_ME', 'admin', '', '', true)
 ON CONFLICT (username) DO NOTHING;
 
--- Insert default orchestra booster user
+-- Insert default orchestra booster user (placeholder password: set a real one before first use)
 INSERT INTO users (username, password, role, club, club_name, is_first_login) 
-VALUES ('orchestra_booster', '***REMOVED***', 'booster', 'orchestra', 'Eastlake Orchestra Booster Club', false)
-ON CONFLICT (username) DO NOTHING; 
+VALUES ('orchestra_booster', 'CHANGE_ME', 'booster', 'orchestra', 'Eastlake Orchestra Booster Club', true)
+ON CONFLICT (username) DO NOTHING;

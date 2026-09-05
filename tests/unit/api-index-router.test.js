@@ -53,14 +53,12 @@ describe('Main API Router - Comprehensive Tests', () => {
     neonFunctions.getUsers.mockResolvedValue({
       admin: {
         username: 'admin',
-        password: '***REMOVED***',
+        password: 'test-password',
         role: 'admin',
         isLocked: false
       }
     });
     neonFunctions.updateUser.mockResolvedValue({ username: 'test' });
-    neonFunctions.getInsurance.mockResolvedValue([]);
-    neonFunctions.addInsurance.mockResolvedValue({ id: 1 });
     neonFunctions.getDocuments.mockResolvedValue([]);
     neonFunctions.addDocument.mockResolvedValue({ id: 1 });
     neonFunctions.deleteDocument.mockResolvedValue({ id: 1 });
@@ -288,7 +286,7 @@ describe('Main API Router - Comprehensive Tests', () => {
       const mockUsers = {
         admin: {
           username: 'admin',
-          password: '***REMOVED***',
+          password: 'test-password',
           role: 'admin',
           isLocked: false
         }
@@ -298,7 +296,7 @@ describe('Main API Router - Comprehensive Tests', () => {
 
       const response = await request(app)
         .post('/login')
-        .send({ username: 'admin', password: '***REMOVED***' })
+        .send({ username: 'admin', password: 'test-password' })
         .expect(200);
 
       expect(response.body.success).toBe(true);
@@ -311,7 +309,7 @@ describe('Main API Router - Comprehensive Tests', () => {
       const mockUsers = {
         admin: {
           username: 'admin',
-          password: '***REMOVED***',
+          password: 'test-password',
           role: 'admin',
           isLocked: false
         }
@@ -331,7 +329,7 @@ describe('Main API Router - Comprehensive Tests', () => {
       const mockUsers = {
         admin: {
           username: 'admin',
-          password: '***REMOVED***',
+          password: 'test-password',
           role: 'admin',
           isLocked: true
         }
@@ -340,7 +338,7 @@ describe('Main API Router - Comprehensive Tests', () => {
 
       const response = await request(app)
         .post('/login')
-        .send({ username: 'admin', password: '***REMOVED***' })
+        .send({ username: 'admin', password: 'test-password' })
         .expect(403);
 
       expect(response.body.success).toBe(false);

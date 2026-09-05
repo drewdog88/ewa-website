@@ -100,7 +100,7 @@ async function migrateProduction() {
         
     // Step 2: Verify and add club_id columns
     console.log('\n🔗 Step 2: Verifying foreign key columns...');
-    const tables = ['officers', 'users', 'documents', 'insurance_forms'];
+    const tables = ['officers', 'users', 'documents'];
         
     for (const table of tables) {
       const hasClubId = await sql`
@@ -126,7 +126,6 @@ async function migrateProduction() {
       { name: 'idx_officers_club_id', table: 'officers', column: 'club_id' },
       { name: 'idx_users_club_id', table: 'users', column: 'club_id' },
       { name: 'idx_documents_club_id', table: 'documents', column: 'club_id' },
-      { name: 'idx_insurance_club_id', table: 'insurance_forms', column: 'club_id' }
     ];
         
     for (const index of indexes) {

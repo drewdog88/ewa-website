@@ -157,77 +157,6 @@ async function updateUser(username, updates) {
   }
 }
 
-// Insurance forms functions
-async function getInsurance() {
-  const sql = getSql();
-  if (!sql) return [];
-    
-  try {
-    const forms = await sql`
-      SELECT 
-        i.*,
-        bc.name as booster_club_name
-      FROM insurance_forms i
-      LEFT JOIN booster_clubs bc ON i.club_id = bc.id
-      ORDER BY i.created_at
-    `;
-    return forms;
-  } catch (error) {
-    console.error('Error getting insurance forms:', error);
-    return [];
-  }
-}
-
-async function addInsurance(form) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    const result = await sql`
-            INSERT INTO insurance_forms (event_name, event_date, event_description, participant_count, submitted_by, status, club_id)
-            VALUES (${form.eventName}, ${form.eventDate}, ${form.eventDescription}, ${form.participantCount}, ${form.submittedBy}, ${form.status}, ${form.clubId || null})
-            RETURNING *
-        `;
-    return result[0];
-  } catch (error) {
-    console.error('Error adding insurance form:', error);
-    throw error;
-  }
-}
-
-// Update insurance submission status
-async function updateInsuranceStatus(id, status) {
-  const sql = getSql();
-  if (!sql) return null;
-    
-  try {
-    const result = await sql`
-            UPDATE insurance_forms 
-            SET status = ${status}, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ${id}
-            RETURNING *
-        `;
-    return result[0];
-  } catch (error) {
-    console.error('Error updating insurance status:', error);
-    throw error;
-  }
-}
-
-// Delete insurance submission
-async function deleteInsuranceSubmission(id) {
-  const sql = getSql();
-  if (!sql) return false;
-    
-  try {
-    const result = await sql`DELETE FROM insurance_forms WHERE id = ${id} RETURNING *`;
-    return result.length > 0;
-  } catch (error) {
-    console.error('Error deleting insurance submission:', error);
-    throw error;
-  }
-}
-
 // Documents functions
 async function getDocuments(boosterClub = null) {
   const sql = getSql();
@@ -833,10 +762,6 @@ module.exports = {
   addOfficer,
   getUsers,
   updateUser,
-  getInsurance,
-  addInsurance,
-  updateInsuranceStatus,
-  deleteInsuranceSubmission,
   getDocuments,
   addDocument,
   deleteDocument,

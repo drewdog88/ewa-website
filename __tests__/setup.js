@@ -16,11 +16,9 @@ jest.mock('../database/neon-functions', () => ({
   ]),
   addOfficer: jest.fn().mockResolvedValue({ success: true }),
   getUsers: jest.fn().mockResolvedValue({
-    'admin': { username: 'admin', role: 'admin', password: '***REMOVED***' }
+    'admin': { username: 'admin', role: 'admin', password: 'test-password' }
   }),
   updateUser: jest.fn().mockResolvedValue({ success: true }),
-  getInsurance: jest.fn().mockResolvedValue([]),
-  addInsurance: jest.fn().mockResolvedValue({ success: true }),
   getDocuments: jest.fn().mockResolvedValue([]),
   addDocument: jest.fn().mockResolvedValue({ success: true }),
   deleteDocument: jest.fn().mockResolvedValue({ success: true })

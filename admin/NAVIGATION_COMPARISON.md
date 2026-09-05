@@ -16,13 +16,10 @@ This document compares the original admin dashboard navigation with the new hybr
 📊 Dashboard
 👔 Officers Management
 🔗 Club Website Links
-🤝 Volunteer Management
 📝 Booster Descriptions
 ➕ Add New Club
 📰 News & Updates
 📄 Documents
-🛡️ Insurance Forms
-📋 1099 Processing
 💳 Payment Settings
 📈 Analytics & Reports
 👥 User Management
@@ -60,19 +57,16 @@ This document compares the original admin dashboard navigation with the new hybr
 
 #### 3. 💳 Payments
 - 💳 Payment Settings
-- 📋 1099 Processing
 
 #### 4. 👔 Booster Clubs
 - 👔 Officers Management
 - 🔗 Club Website Links
-- 🤝 Volunteer Management
 - 📝 Booster Descriptions
 - ➕ Add New Club
 
 #### 5. 📰 Content & Forms
 - 📰 News & Updates
 - 📄 Documents
-- 🛡️ Insurance Forms
 
 ## Key Improvements
 

@@ -102,9 +102,6 @@ Manual backups are stored as JSON files with the following structure:
   "tables": {
     "officers": [...],
     "users": [...],
-    "volunteers": [...],
-    "insurance_forms": [...],
-    "form_1099": [...],
     "documents": [...]
   }
 }

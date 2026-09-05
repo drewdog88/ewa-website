@@ -3,16 +3,7 @@
 ## 🎯 Project Overview
 This is the Eastlake Wolfpack Association (EWA) website - a Node.js/Express application with PostgreSQL database, deployed on Vercel. The system manages booster clubs, officers, news, resources, and user administration.
 
-### Project history (read this before assuming features exist)
-The following features were **removed entirely** and are NOT part of the application. Do not re-implement, extend, "fix", or reason from them:
-- **1099 / tax form processing** (recipient TINs, tax years, IRS submission status)
-- **W9 form uploads and storage**
-- **Volunteer signup / coordination**
-- **Insurance questionnaire forms**
-
-You will still find remnants in this repository: references in `admin/*.html`, `index.html`, `news.html`, docs under `docs/`, archived JSON under `data/`, `NeonDBBackup/`, `devbackup/`, `backup/`, `ManualBackups/`, and tables such as `form_1099`, `insurance_forms` in old database dumps. These are leftovers from the pre-removal codebase, not active functionality. Treat any 1099 / W9 / volunteer / insurance code path you encounter as dead code that is a candidate for deletion, never as a feature to maintain.
-
-Note also that this repository (`ewa-website`) deploys to the Vercel project `ewa-website-original` (ewa-website.vercel.app). The live public site www.eastlakewolfpack.org is served by the separate `ewa-website-revamp` repository and Vercel project, which has its own Neon database.
+Note that this repository (`ewa-website`) deploys to the Vercel project `ewa-website-original` (ewa-website.vercel.app). The live public site www.eastlakewolfpack.org is served by the separate `ewa-website-revamp` repository and Vercel project, which has its own Neon database.
 
 ## 🔐 Security & Privacy (CRITICAL)
 - **PII Protection**: This application stores contact details (names, phone numbers, email addresses) for club officers. Treat these as personal data.

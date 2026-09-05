@@ -15,7 +15,6 @@ The official website for the Eastlake Wolfpack Association, managing booster clu
 ### **Admin Dashboard**
 - **Payment Management**: Configure Zelle and Stripe payment links for all clubs
 - **Officer Management**: Add, edit, and manage club officers
-- **Insurance Forms**: Process event insurance requests
 - **Content Management**: Update club descriptions and website content
 - **Security Dashboard**: Monitor system security and performance
 - **Backup Management**: Automated database backups and restoration
@@ -66,7 +65,6 @@ The official website for the Eastlake Wolfpack Association, managing booster clu
 ### **Admin APIs**
 - `GET /api/admin/payment-status` - Payment statistics
 - `PUT /api/admin/payment-settings/club/<id>` - Update payment settings
-- `POST /api/insurance` - Submit insurance forms
 - `GET /api/admin/security-dashboard` - Security monitoring
 
 ## 🔐 **Security Features**
