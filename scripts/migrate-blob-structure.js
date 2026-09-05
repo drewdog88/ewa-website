@@ -6,7 +6,7 @@ const https = require('https');
 console.log('🔄 Migrating Production Vercel Blob Storage Structure...');
 
 // Production blob token
-const PRODUCTION_BLOB_TOKEN = '***REMOVED***';
+const PRODUCTION_BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 // Helper function to download blob content
 async function downloadBlob(url) {

@@ -5,8 +5,8 @@
 Create a file called `.env.local` in the root directory with the following content:
 
 ```
-BLOB_READ_WRITE_TOKEN=***REMOVED***
-DATABASE_URL=postgres://neondb_owner:***REMOVED***@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require
+BLOB_READ_WRITE_TOKEN=<BLOB_READ_WRITE_TOKEN>
+DATABASE_URL=postgres://neondb_owner:<password>@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require
 ```
 
 ## For Vercel Production
@@ -17,12 +17,12 @@ Go to "Settings" → "Environment Variables" and add:
 
 **Blob Storage:**
 - **Name**: `BLOB_READ_WRITE_TOKEN`
-- **Value**: `***REMOVED***`
+- **Value**: `<BLOB_READ_WRITE_TOKEN>`
 - **Environment**: Production (and optionally Preview/Development)
 
 **Neon Database:**
 - **Name**: `DATABASE_URL`
-- **Value**: `postgres://neondb_owner:***REMOVED***@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require`
+- **Value**: `postgres://neondb_owner:<password>@ep-jolly-silence-afmn89zf-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require`
 - **Environment**: Production
 
 ## Testing

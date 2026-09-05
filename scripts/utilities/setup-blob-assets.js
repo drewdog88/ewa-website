@@ -9,7 +9,7 @@ async function setupBlobAssets() {
     // Get the correct blob token based on environment
     let BLOB_TOKEN;
     if (process.env.NODE_ENV === 'development') {
-      BLOB_TOKEN = process.env.***REMOVED***_READ_WRITE_TOKEN;
+      BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
     } else {
       BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
     }

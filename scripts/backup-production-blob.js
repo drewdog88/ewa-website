@@ -9,7 +9,7 @@ const http = require('http');
 console.log('🔄 Starting Production Vercel Blob Backup...');
 
 // Production blob token (the old one we want to clean up)
-const PRODUCTION_BLOB_TOKEN = '***REMOVED***';
+const PRODUCTION_BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 // Local backup directory
 const BACKUP_DIR = path.join(__dirname, '..', 'devbackup');

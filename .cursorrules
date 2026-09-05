@@ -1,12 +1,23 @@
 # EWA Website Development Rules
 
 ## 🎯 Project Overview
-This is the Eastlake Wolfpack Association (EWA) website - a Node.js/Express application with PostgreSQL database, deployed on Vercel. The system manages booster clubs, officers, volunteers, 1099 forms, and user administration.
+This is the Eastlake Wolfpack Association (EWA) website - a Node.js/Express application with PostgreSQL database, deployed on Vercel. The system manages booster clubs, officers, news, resources, and user administration.
+
+### Project history (read this before assuming features exist)
+The following features were **removed entirely** and are NOT part of the application. Do not re-implement, extend, "fix", or reason from them:
+- **1099 / tax form processing** (recipient TINs, tax years, IRS submission status)
+- **W9 form uploads and storage**
+- **Volunteer signup / coordination**
+- **Insurance questionnaire forms**
+
+You will still find remnants in this repository: references in `admin/*.html`, `index.html`, `news.html`, docs under `docs/`, archived JSON under `data/`, `NeonDBBackup/`, `devbackup/`, `backup/`, `ManualBackups/`, and tables such as `form_1099`, `insurance_forms` in old database dumps. These are leftovers from the pre-removal codebase, not active functionality. Treat any 1099 / W9 / volunteer / insurance code path you encounter as dead code that is a candidate for deletion, never as a feature to maintain.
+
+Note also that this repository (`ewa-website`) deploys to the Vercel project `ewa-website-original` (ewa-website.vercel.app). The live public site www.eastlakewolfpack.org is served by the separate `ewa-website-revamp` repository and Vercel project, which has its own Neon database.
 
 ## 🔐 Security & Privacy (CRITICAL)
-- **PII Protection**: This application handles sensitive data including Social Security Numbers, phone numbers, and email addresses
-- **Compliance**: Follow US and Washington State privacy laws for PII handling
-- **Environment Variables**: Never commit `.env.local` or any files containing secrets
+- **PII Protection**: This application stores contact details (names, phone numbers, email addresses) for club officers. Treat these as personal data.
+- **Compliance**: Follow US and Washington State privacy laws for personal data handling
+- **Environment Variables**: Never commit any `.env*` file except `.env.example`. All `.env.*` files are gitignored; secrets live in Vercel as Secret-type variables and are pulled locally with `vercel env pull`
 - **Input Validation**: Always validate and sanitize user inputs, especially for forms
 - **SQL Injection Prevention**: Use parameterized queries (already implemented with Neon)
 - **File Upload Security**: Validate file types, sizes, and scan for malicious content
@@ -84,10 +95,8 @@ This is the Eastlake Wolfpack Association (EWA) website - a Node.js/Express appl
 
 ## 🎯 Specific to This Project
 - **Booster Club Management**: Maintain accurate club relationships and officer data
-- **1099 Processing**: Handle tax documents securely and accurately
-- **Volunteer Coordination**: Ensure smooth volunteer signup and management
 - **Admin Functions**: Maintain secure admin panel with proper access controls
-- **File Management**: Secure handling of W9 forms and other documents
+- **File Management**: Secure handling of uploaded documents (Vercel Blob)
 
 ## 🔍 Code Review Checklist
 - [ ] Security vulnerabilities addressed

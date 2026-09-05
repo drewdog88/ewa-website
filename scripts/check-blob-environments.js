@@ -6,9 +6,9 @@ console.log('🔍 Checking Vercel Blob Environments...');
 
 // All known blob tokens
 const BLOB_TOKENS = {
-  'Production/Preview': '***REMOVED***',
-  'Development': '***REMOVED***',
-  'Old (to be removed)': '***REMOVED***'
+  'Production/Preview': process.env.BLOB_READ_WRITE_TOKEN,
+  'Development': process.env.BLOB_READ_WRITE_TOKEN,
+  'Old (to be removed)': process.env.BLOB_READ_WRITE_TOKEN
 };
 
 async function checkBlobEnvironments() {

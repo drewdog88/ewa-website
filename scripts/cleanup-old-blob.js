@@ -5,7 +5,7 @@ const { list, del } = require('@vercel/blob');
 console.log('🧹 Starting Old Production Vercel Blob Cleanup...');
 
 // Production blob token (the old one we want to clean up)
-const PRODUCTION_BLOB_TOKEN = '***REMOVED***';
+const PRODUCTION_BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 async function cleanupOldBlobStorage() {
   try {
